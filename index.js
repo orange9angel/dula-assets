@@ -75,7 +75,10 @@ import {
   registerScene,
   registerCameraMove,
   registerVoice,
+  registerDirector,
 } from 'dula-engine';
+
+import { CourtDirector } from './lib/CourtDirector.js';
 
 export function registerAll() {
   // Characters
@@ -144,4 +147,7 @@ export function registerAll() {
   registerVoice('Doraemon', DoraemonVoice);
   registerVoice('Nobita', NobitaVoice);
   registerVoice('Shizuka', ShizukaVoice);
+
+  // Directors
+  registerDirector('CourtDirector', CourtDirector);
 }
