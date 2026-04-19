@@ -1,6 +1,6 @@
 {
   "name": "dula-assets",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Official asset pack for dula-engine — characters, animations, scenes, camera moves, voices, CourtDirector",
   "type": "module",
   "main": "index.js",

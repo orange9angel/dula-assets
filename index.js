@@ -55,12 +55,18 @@ import { ParkScene } from './scenes/ParkScene.js';
 import { RoomScene } from './scenes/RoomScene.js';
 
 // Camera moves
+import { CloseUp } from './camera/common/CloseUp.js';
 import { FollowCharacter } from './camera/common/FollowCharacter.js';
 import { LowAngle } from './camera/common/LowAngle.js';
 import { Orbit } from './camera/common/Orbit.js';
+import { OverShoulder } from './camera/common/OverShoulder.js';
 import { Pan } from './camera/common/Pan.js';
+import { ReactionShot } from './camera/common/ReactionShot.js';
 import { Shake } from './camera/common/Shake.js';
 import { Static } from './camera/common/Static.js';
+import { TrackingCloseUp } from './camera/common/TrackingCloseUp.js';
+import { TwoShot } from './camera/common/TwoShot.js';
+import { WhipPan } from './camera/common/WhipPan.js';
 import { ZoomIn } from './camera/common/ZoomIn.js';
 import { ZoomOut } from './camera/common/ZoomOut.js';
 
@@ -135,12 +141,18 @@ export function registerAll() {
   registerScene('ParkScene', ParkScene);
   registerScene('RoomScene', RoomScene);
   // Camera moves
+  registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);
   registerCameraMove('LowAngle', LowAngle);
   registerCameraMove('Orbit', Orbit);
+  registerCameraMove('OverShoulder', OverShoulder);
   registerCameraMove('Pan', Pan);
+  registerCameraMove('ReactionShot', ReactionShot);
   registerCameraMove('Shake', Shake);
   registerCameraMove('Static', Static);
+  registerCameraMove('TrackingCloseUp', TrackingCloseUp);
+  registerCameraMove('TwoShot', TwoShot);
+  registerCameraMove('WhipPan', WhipPan);
   registerCameraMove('ZoomIn', ZoomIn);
   registerCameraMove('ZoomOut', ZoomOut);
   // Voices
