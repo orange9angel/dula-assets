@@ -37,15 +37,22 @@ dula-assets/
 │   └── shizuka/          # 小静专属
 ├── scenes/               # 场景实现
 │   ├── RoomScene.js
-│   └── ParkScene.js
+│   ├── ParkScene.js
+│   └── SkyScene.js
 ├── camera/               # 运镜实现
 │   └── common/
 ├── voices/               # 配音配置
 │   ├── DoraemonVoice.js
 │   ├── NobitaVoice.js
 │   └── ShizukaVoice.js
-└── lib/
-    └── CourtDirector.js  # 网球场语义化站位与球轨迹计算
+├── lib/
+│   └── CourtDirector.js  # 网球场语义化站位与球轨迹计算
+└── audio-registry/       # 音频资产元数据注册表
+    ├── bgm/              # BGM 元数据（5 主题）
+    ├── ambient/          # 环境音元数据（4 条目）
+    ├── sfx/              # 音效元数据（5 条目）
+    ├── download.py       # 按场景过滤生成下载计划
+    └── README.md
 ```
 
 ---
@@ -115,6 +122,29 @@ gh release create vX.Y.Z dula-assets-X.Y.Z.tgz --title "dula-assets vX.Y.Z" --no
 
 ---
 
-## 6. 已知约束
+## 6. Audio Registry（音频资产注册表）
+
+`audio-registry/` 是音频资产的**元数据层**，不存储二进制文件，只记录：
+- 资产名称、类型（BGM/Ambient/SFX）
+- 推荐来源 URL（Pixabay / Freesound）
+- 许可证信息
+- 建议场景（`suggested_scenes`）
+- 触发提示（`trigger_hint`）
+
+### 使用方式
+```bash
+# 查看所有注册资产
+python audio-registry/download.py --list
+
+# 为特定 Episode 生成下载计划（按场景过滤）
+python audio-registry/download.py <episode_path> --scene RoomScene,ParkScene,SkyScene
+# 输出 audio_download_plan.json + audio_download_plan.md
+```
+
+引擎的 `generate_bgm.py` / `generate_audio.py` 会自动识别 `materials/bgm/` 和 `materials/sfx/` 中的手动下载素材，无需修改注册表。
+
+---
+
+## 7. 已知约束
 
 - `CourtDirector.js` 目前被 `dula-engine/storyboard/Storyboard.js` 硬编码 `import`。长期应改为动态注入或从 Registry 获取，使 engine 彻底不依赖 assets。
