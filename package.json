@@ -17,7 +17,7 @@
     "index.js"
   ],
   "peerDependencies": {
-    "dula-engine": ">=0.1.2",
+    "dula-engine": ">=0.1.6",
     "three": ">=0.160.0"
   }
 }

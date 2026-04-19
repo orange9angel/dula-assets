@@ -42,7 +42,7 @@ registerAll(); // registers all characters, animations, scenes, camera moves, vo
 
 ## Peer Dependencies
 
-- `dula-engine` >= 0.1.2
+- `dula-engine` >= 0.1.6
 - `three` >= 0.160.0
 
 ## Architecture
