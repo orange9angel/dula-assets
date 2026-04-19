@@ -1,0 +1,147 @@
+// Characters
+import { Doraemon } from './characters/Doraemon.js';
+import { Nobita } from './characters/Nobita.js';
+import { Shizuka } from './characters/Shizuka.js';
+
+// Animations - common
+import { Bow } from './animations/common/Bow.js';
+import { Celebrate } from './animations/common/Celebrate.js';
+import { ClapHands } from './animations/common/ClapHands.js';
+import { CrossArms } from './animations/common/CrossArms.js';
+import { HandsOnHips } from './animations/common/HandsOnHips.js';
+import { Jump } from './animations/common/Jump.js';
+import { LookAround } from './animations/common/LookAround.js';
+import { Nod } from './animations/common/Nod.js';
+import { PointForward } from './animations/common/PointForward.js';
+import { Run } from './animations/common/Run.js';
+import { ScratchHead } from './animations/common/ScratchHead.js';
+import { ShakeHead } from './animations/common/ShakeHead.js';
+import { Shrug } from './animations/common/Shrug.js';
+import { SitDown } from './animations/common/SitDown.js';
+import { StompFoot } from './animations/common/StompFoot.js';
+import { SurprisedJump } from './animations/common/SurprisedJump.js';
+import { SwayBody } from './animations/common/SwayBody.js';
+import { SwingRacket } from './animations/common/SwingRacket.js';
+import { Think } from './animations/common/Think.js';
+import { Tremble } from './animations/common/Tremble.js';
+import { TurnToCamera } from './animations/common/TurnToCamera.js';
+import { Walk } from './animations/common/Walk.js';
+import { WaveHand } from './animations/common/WaveHand.js';
+// Animations - doraemon
+import { Float } from './animations/doraemon/Float.js';
+import { NoseBlink } from './animations/doraemon/NoseBlink.js';
+import { PanicSpin } from './animations/doraemon/PanicSpin.js';
+import { PullOutRacket } from './animations/doraemon/PullOutRacket.js';
+import { Spin } from './animations/doraemon/Spin.js';
+import { TakeOutFromPocket } from './animations/doraemon/TakeOutFromPocket.js';
+import { WaddleWalk } from './animations/doraemon/WaddleWalk.js';
+// Animations - nobita
+import { Cry } from './animations/nobita/Cry.js';
+import { Grovel } from './animations/nobita/Grovel.js';
+import { LazyStretch } from './animations/nobita/LazyStretch.js';
+import { RunAway } from './animations/nobita/RunAway.js';
+import { StudyDespair } from './animations/nobita/StudyDespair.js';
+import { TriumphPose } from './animations/nobita/TriumphPose.js';
+// Animations - shizuka
+import { Baking } from './animations/shizuka/Baking.js';
+import { Blush } from './animations/shizuka/Blush.js';
+import { Curtsy } from './animations/shizuka/Curtsy.js';
+import { Giggle } from './animations/shizuka/Giggle.js';
+import { PlayViolin } from './animations/shizuka/PlayViolin.js';
+import { Scold } from './animations/shizuka/Scold.js';
+
+// Scenes
+import { ParkScene } from './scenes/ParkScene.js';
+import { RoomScene } from './scenes/RoomScene.js';
+
+// Camera moves
+import { FollowCharacter } from './camera/common/FollowCharacter.js';
+import { LowAngle } from './camera/common/LowAngle.js';
+import { Orbit } from './camera/common/Orbit.js';
+import { Pan } from './camera/common/Pan.js';
+import { Shake } from './camera/common/Shake.js';
+import { Static } from './camera/common/Static.js';
+import { ZoomIn } from './camera/common/ZoomIn.js';
+import { ZoomOut } from './camera/common/ZoomOut.js';
+
+// Voices
+import { default as DoraemonVoice } from './voices/DoraemonVoice.js';
+import { default as NobitaVoice } from './voices/NobitaVoice.js';
+import { default as ShizukaVoice } from './voices/ShizukaVoice.js';
+
+import {
+  registerCharacter,
+  registerAnimation,
+  registerScene,
+  registerCameraMove,
+  registerVoice,
+} from 'dula-engine';
+
+export function registerAll() {
+  // Characters
+  registerCharacter('Doraemon', Doraemon);
+  registerCharacter('Nobita', Nobita);
+  registerCharacter('Shizuka', Shizuka);
+  // Animations - common
+  registerAnimation('Bow', Bow);
+  registerAnimation('Celebrate', Celebrate);
+  registerAnimation('ClapHands', ClapHands);
+  registerAnimation('CrossArms', CrossArms);
+  registerAnimation('HandsOnHips', HandsOnHips);
+  registerAnimation('Jump', Jump);
+  registerAnimation('LookAround', LookAround);
+  registerAnimation('Nod', Nod);
+  registerAnimation('PointForward', PointForward);
+  registerAnimation('Run', Run);
+  registerAnimation('ScratchHead', ScratchHead);
+  registerAnimation('ShakeHead', ShakeHead);
+  registerAnimation('Shrug', Shrug);
+  registerAnimation('SitDown', SitDown);
+  registerAnimation('StompFoot', StompFoot);
+  registerAnimation('SurprisedJump', SurprisedJump);
+  registerAnimation('SwayBody', SwayBody);
+  registerAnimation('SwingRacket', SwingRacket);
+  registerAnimation('Think', Think);
+  registerAnimation('Tremble', Tremble);
+  registerAnimation('TurnToCamera', TurnToCamera);
+  registerAnimation('Walk', Walk);
+  registerAnimation('WaveHand', WaveHand);
+  // Animations - doraemon
+  registerAnimation('Float', Float);
+  registerAnimation('NoseBlink', NoseBlink);
+  registerAnimation('PanicSpin', PanicSpin);
+  registerAnimation('PullOutRacket', PullOutRacket);
+  registerAnimation('Spin', Spin);
+  registerAnimation('TakeOutFromPocket', TakeOutFromPocket);
+  registerAnimation('WaddleWalk', WaddleWalk);
+  // Animations - nobita
+  registerAnimation('Cry', Cry);
+  registerAnimation('Grovel', Grovel);
+  registerAnimation('LazyStretch', LazyStretch);
+  registerAnimation('RunAway', RunAway);
+  registerAnimation('StudyDespair', StudyDespair);
+  registerAnimation('TriumphPose', TriumphPose);
+  // Animations - shizuka
+  registerAnimation('Baking', Baking);
+  registerAnimation('Blush', Blush);
+  registerAnimation('Curtsy', Curtsy);
+  registerAnimation('Giggle', Giggle);
+  registerAnimation('PlayViolin', PlayViolin);
+  registerAnimation('Scold', Scold);
+  // Scenes
+  registerScene('ParkScene', ParkScene);
+  registerScene('RoomScene', RoomScene);
+  // Camera moves
+  registerCameraMove('FollowCharacter', FollowCharacter);
+  registerCameraMove('LowAngle', LowAngle);
+  registerCameraMove('Orbit', Orbit);
+  registerCameraMove('Pan', Pan);
+  registerCameraMove('Shake', Shake);
+  registerCameraMove('Static', Static);
+  registerCameraMove('ZoomIn', ZoomIn);
+  registerCameraMove('ZoomOut', ZoomOut);
+  // Voices
+  registerVoice('Doraemon', DoraemonVoice);
+  registerVoice('Nobita', NobitaVoice);
+  registerVoice('Shizuka', ShizukaVoice);
+}

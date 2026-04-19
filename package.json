@@ -1,0 +1,20 @@
+﻿{
+  "name": "dula-assets",
+  "version": "0.1.0",
+  "description": "Official asset pack for dula-engine",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "characters/",
+    "animations/",
+    "scenes/",
+    "camera/",
+    "lib/",
+    "voices/",
+    "index.js"
+  ],
+  "dependencies": {
+    "dula-engine": "file:../dula-engine",
+    "three": "^0.183.2"
+  }
+}
