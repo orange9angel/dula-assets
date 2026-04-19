@@ -1,9 +1,12 @@
-﻿{
+{
   "name": "dula-assets",
   "version": "0.1.0",
-  "description": "Official asset pack for dula-engine",
+  "description": "Official asset pack for dula-engine — characters, animations, scenes, camera moves, voices, CourtDirector",
   "type": "module",
   "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
   "files": [
     "characters/",
     "animations/",
@@ -13,8 +16,8 @@
     "voices/",
     "index.js"
   ],
-  "dependencies": {
-    "dula-engine": "file:../dula-engine",
-    "three": "^0.183.2"
+  "peerDependencies": {
+    "dula-engine": ">=0.1.2",
+    "three": ">=0.160.0"
   }
 }
