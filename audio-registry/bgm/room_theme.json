@@ -1,0 +1,35 @@
+{
+  "name": "room_theme",
+  "category": "bgm",
+  "description": "Warm, cozy indoor background music for Nobita's room. Light, relaxed, slightly nostalgic anime-style mood.",
+  "mood": ["warm", "cozy", "relaxed", "nostalgic", "indoor"],
+  "suggested_scenes": ["RoomScene"],
+  "trigger_hints": null,
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Lofi Instrumental",
+      "author": "FreeMusicForVideo",
+      "url": "https://pixabay.com/music/beats-lofi-instrumental-409202/",
+      "license": "Pixabay Content License",
+      "notes": "Dreamy, laid-back, relaxing. Good for calm indoor scenes. Duration ~2:35."
+    },
+    {
+      "platform": "pixabay",
+      "title": "Calm (Short, Pixabay)",
+      "author": "tinevibe",
+      "url": "https://pixabay.com/music/meditationspiritual-calm-short-pixabay-370850/",
+      "license": "Pixabay Content License",
+      "notes": "Calm, meditative ambient. Shorter (~1:30). Good for quiet room moments."
+    }
+  ],
+  "local_filename": "room_theme.mp3",
+  "format": "mp3",
+  "loop": true,
+  "mixing_notes": {
+    "bgm_volume": 0.12,
+    "ducking": "reduce by 3-6 dB during dialogue",
+    "fade_in": "2s",
+    "fade_out": "3s"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "park_birds",
+  "category": "ambient",
+  "description": "Outdoor park ambience with birds chirping. Light, natural, fills outdoor scenes.",
+  "mood": ["natural", "outdoor", "peaceful", "birds"],
+  "suggested_scenes": ["ParkScene"],
+  "trigger_hints": null,
+  "sources": [
+    {
+      "platform": "freesound",
+      "title": "07032 sparrows tweeting loop",
+      "author": "Robinhood76",
+      "url": "https://freesound.org/people/Robinhood76/sounds/07032/",
+      "license": "CC-BY 3.0",
+      "notes": "Sparrows tweeting loop. ~1:00. Good seamless loop."
+    },
+    {
+      "platform": "freesound",
+      "title": "05687 morning birds ambience",
+      "author": "Robinhood76",
+      "url": "https://freesound.org/people/Robinhood76/sounds/05687/",
+      "license": "CC-BY 3.0",
+      "notes": "Suburban morning bird ambience. ~2:00."
+    },
+    {
+      "platform": "pixabay",
+      "title": "Bird sound",
+      "author": "u_uep0ai84mb",
+      "url": "https://pixabay.com/zh/sound-effects/search/bird%20sound/",
+      "license": "Pixabay Content License",
+      "notes": "General bird ambience from Pixabay SFX library."
+    }
+  ],
+  "local_filename": "park_birds.wav",
+  "format": "wav",
+  "loop": true,
+  "mixing_notes": {
+    "ambient_volume": 0.08,
+    "ducking": "none",
+    "crossfade_loop": true
+  }
+}

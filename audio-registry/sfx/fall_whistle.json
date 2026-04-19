@@ -1,0 +1,35 @@
+{
+  "name": "fall_whistle",
+  "category": "sfx",
+  "description": "Classic cartoon-style falling whistle sound. Used when a character falls from height.",
+  "mood": ["falling", "cartoon", "slapstick"],
+  "suggested_scenes": ["SkyScene", "ParkScene"],
+  "trigger_hints": ["{Event:Move|y=...|relative=true}" , "falling action", "CrashLand animation"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Fall / Whistle sound effect",
+      "author": "Search on Pixabay",
+      "url": "https://pixabay.com/zh/sound-effects/search/fall%20whistle/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'fall', 'whistle', 'cartoon fall'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: fall, whistle, cartoon",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=cartoon+fall",
+      "license": "Varies",
+      "notes": "Look for short, descending whistle sounds."
+    }
+  ],
+  "local_filename": "fall_whistle.wav",
+  "format": "wav",
+  "loop": false,
+  "mixing_notes": {
+    "sfx_volume": 0.35,
+    "fade_in": "0s",
+    "fade_out": "0.5s",
+    "duck_bgm": "reduce BGM by 4 dB during fall"
+  }
+}

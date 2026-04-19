@@ -1,0 +1,35 @@
+{
+  "name": "tension_theme",
+  "category": "bgm",
+  "description": "Tense, slightly dramatic music for rescue and danger moments. Builds urgency without being scary.",
+  "mood": ["tense", "urgent", "dramatic", "rescue", "building"],
+  "suggested_scenes": ["SkyScene", "ParkScene"],
+  "trigger_hints": null,
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Agressive Phonk Music (Hard Phonk Mix)",
+      "author": "Tunetank",
+      "url": "https://pixabay.com/music/beats-krushology-348448/",
+      "license": "Pixabay Content License",
+      "notes": "Energetic, restless, driving. Duration ~1:38. Good for chase/tension."
+    },
+    {
+      "platform": "pixabay",
+      "title": "Funny Chase Music",
+      "author": "Pixabay Funk",
+      "url": "https://pixabay.com/music/funk-spy-adventures-349625/",
+      "license": "Pixabay Content License",
+      "notes": "Spy/funk chase. Duration varies. Search 'funny chase' on Pixabay for more."
+    }
+  ],
+  "local_filename": "tension_theme.mp3",
+  "format": "mp3",
+  "loop": true,
+  "mixing_notes": {
+    "bgm_volume": 0.15,
+    "ducking": "reduce by 2-4 dB during critical dialogue",
+    "fade_in": "1s",
+    "fade_out": "2s"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "slide_whoosh",
+  "category": "sfx",
+  "description": "Playground slide whoosh / zip sound. Light, fun, used with slide action.",
+  "mood": ["playful", "slide", "fun", "kids"],
+  "suggested_scenes": ["ParkScene"],
+  "trigger_hints": ["slide action", "playground"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Slide sound effect",
+      "author": "Search on Pixabay",
+      "url": "https://pixabay.com/zh/sound-effects/search/slide/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'slide', 'playground'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: slide, playground",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=slide",
+      "license": "Varies",
+      "notes": "Look for short sliding/friction sounds."
+    }
+  ],
+  "local_filename": "slide_whoosh.wav",
+  "format": "wav",
+  "loop": false,
+  "mixing_notes": {
+    "sfx_volume": 0.25,
+    "fade_in": "0s",
+    "fade_out": "0.2s"
+  }
+}

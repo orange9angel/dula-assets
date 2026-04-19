@@ -9,7 +9,7 @@ export class TrackingCloseUp extends CameraMoveBase {
   constructor(options = {}) {
     super({ duration: options.duration ?? 1.0 });
     this.characterName = options.characterName ?? 'Nobita';
-    this.distance = options.distance ?? 1.5;
+    this.distance = options.distance ?? 2.8;
     this.heightOffset = options.heightOffset ?? 0.05;
     this.sideAngle = (options.sideAngle ?? 10) * (Math.PI / 180);
   }
@@ -27,10 +27,15 @@ export class TrackingCloseUp extends CameraMoveBase {
 
     const lookAt = headPos.clone().add(new THREE.Vector3(0, this.heightOffset, 0));
 
-    const charDir = new THREE.Vector3(0, 0, 1);
-    charDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), char.mesh.rotation.y + this.sideAngle);
+    // Use world forward projected onto XZ plane so lookAt() tilts don't break framing
+    const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(char.mesh.quaternion);
+    forward.y = 0;
+    if (forward.lengthSq() < 0.001) forward.set(0, 0, 1);
+    forward.normalize();
+    const side = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+    const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle)).add(side.multiplyScalar(Math.sin(this.sideAngle)));
 
-    const camPos = lookAt.clone().sub(charDir.multiplyScalar(this.distance));
+    const camPos = lookAt.clone().sub(camDir.multiplyScalar(this.distance));
     camPos.y = lookAt.y + 0.02;
 
     camera.position.copy(camPos);

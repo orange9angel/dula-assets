@@ -1,0 +1,35 @@
+{
+  "name": "impact_thud",
+  "category": "sfx",
+  "description": "Heavy body impact / thud sound. Used when character crashes to ground.",
+  "mood": ["impact", "crash", "thud", "body fall"],
+  "suggested_scenes": ["ParkScene", "RoomScene"],
+  "trigger_hints": ["CrashLand animation", "impact moment", "{Camera:Shake}"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Impact Sound Effect",
+      "author": "Recordx_media",
+      "url": "https://pixabay.com/zh/sound-effects/search/impact/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'impact', 'thud', 'body fall'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: impact, thud, body fall",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=thud+impact",
+      "license": "Varies",
+      "notes": "Look for short, low-frequency thud sounds."
+    }
+  ],
+  "local_filename": "impact_thud.wav",
+  "format": "wav",
+  "loop": false,
+  "mixing_notes": {
+    "sfx_volume": 0.40,
+    "fade_in": "0s",
+    "fade_out": "0.3s",
+    "duck_bgm": "reduce BGM by 6 dB for 1 second"
+  }
+}

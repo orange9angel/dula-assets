@@ -21,6 +21,9 @@ export { Tremble } from './Tremble.js';
 export { Think } from './Think.js';
 export { SitDown } from './SitDown.js';
 export { CrossArms } from './CrossArms.js';
+export { FlailArms } from './FlailArms.js';
+export { LookUp } from './LookUp.js';
+export { ReachOut } from './ReachOut.js';
 
 import { Nod } from './Nod.js';
 import { Jump } from './Jump.js';
@@ -45,6 +48,9 @@ import { Tremble } from './Tremble.js';
 import { Think } from './Think.js';
 import { SitDown } from './SitDown.js';
 import { CrossArms } from './CrossArms.js';
+import { FlailArms } from './FlailArms.js';
+import { LookUp } from './LookUp.js';
+import { ReachOut } from './ReachOut.js';
 
 export const CommonAnimations = {
   Nod,
@@ -70,4 +76,7 @@ export const CommonAnimations = {
   Think,
   SitDown,
   CrossArms,
+  FlailArms,
+  LookUp,
+  ReachOut,
 };

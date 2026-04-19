@@ -32,10 +32,15 @@ export class ReactionShot extends CameraMoveBase {
 
     const lookAt = headPos.clone().add(new THREE.Vector3(0, this.heightOffset, 0));
 
-    const charDir = new THREE.Vector3(0, 0, 1);
-    charDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), char.mesh.rotation.y + this.sideAngle);
+    // Use world forward projected onto XZ plane so lookAt() tilts don't break framing
+    const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(char.mesh.quaternion);
+    forward.y = 0;
+    if (forward.lengthSq() < 0.001) forward.set(0, 0, 1);
+    forward.normalize();
+    const side = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+    const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle)).add(side.multiplyScalar(Math.sin(this.sideAngle)));
 
-    this.endPos = lookAt.clone().sub(charDir.multiplyScalar(this.distance));
+    this.endPos = lookAt.clone().sub(camDir.multiplyScalar(this.distance));
     this.endPos.y = lookAt.y - 0.15; // slightly lower to capture upper body
 
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;

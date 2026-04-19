@@ -8,6 +8,9 @@ import { Bow } from './animations/common/Bow.js';
 import { Celebrate } from './animations/common/Celebrate.js';
 import { ClapHands } from './animations/common/ClapHands.js';
 import { CrossArms } from './animations/common/CrossArms.js';
+import { FlailArms } from './animations/common/FlailArms.js';
+import { LookUp } from './animations/common/LookUp.js';
+import { ReachOut } from './animations/common/ReachOut.js';
 import { HandsOnHips } from './animations/common/HandsOnHips.js';
 import { Jump } from './animations/common/Jump.js';
 import { LookAround } from './animations/common/LookAround.js';
@@ -31,12 +34,16 @@ import { WaveHand } from './animations/common/WaveHand.js';
 import { Float } from './animations/doraemon/Float.js';
 import { NoseBlink } from './animations/doraemon/NoseBlink.js';
 import { PanicSpin } from './animations/doraemon/PanicSpin.js';
+import { ReachHand } from './animations/doraemon/ReachHand.js';
 import { PullOutRacket } from './animations/doraemon/PullOutRacket.js';
 import { Spin } from './animations/doraemon/Spin.js';
 import { TakeOutFromPocket } from './animations/doraemon/TakeOutFromPocket.js';
 import { WaddleWalk } from './animations/doraemon/WaddleWalk.js';
 // Animations - nobita
+import { CrashLand } from './animations/nobita/CrashLand.js';
 import { Cry } from './animations/nobita/Cry.js';
+import { FallPanic } from './animations/nobita/FallPanic.js';
+import { FlyPose } from './animations/nobita/FlyPose.js';
 import { Grovel } from './animations/nobita/Grovel.js';
 import { LazyStretch } from './animations/nobita/LazyStretch.js';
 import { RunAway } from './animations/nobita/RunAway.js';
@@ -48,11 +55,14 @@ import { Blush } from './animations/shizuka/Blush.js';
 import { Curtsy } from './animations/shizuka/Curtsy.js';
 import { Giggle } from './animations/shizuka/Giggle.js';
 import { PlayViolin } from './animations/shizuka/PlayViolin.js';
+import { LookUpSky } from './animations/shizuka/LookUpSky.js';
 import { Scold } from './animations/shizuka/Scold.js';
+import { WaveUp } from './animations/shizuka/WaveUp.js';
 
 // Scenes
 import { ParkScene } from './scenes/ParkScene.js';
 import { RoomScene } from './scenes/RoomScene.js';
+import { SkyScene } from './scenes/SkyScene.js';
 
 // Camera moves
 import { CloseUp } from './camera/common/CloseUp.js';
@@ -95,14 +105,20 @@ export function registerAll() {
   registerAnimation('Bow', Bow);
   registerAnimation('Celebrate', Celebrate);
   registerAnimation('ClapHands', ClapHands);
+  registerAnimation('CrashLand', CrashLand);
   registerAnimation('CrossArms', CrossArms);
   registerAnimation('HandsOnHips', HandsOnHips);
   registerAnimation('Jump', Jump);
   registerAnimation('LookAround', LookAround);
+  registerAnimation('LookUp', LookUp);
+  registerAnimation('LookUpSky', LookUpSky);
   registerAnimation('Nod', Nod);
   registerAnimation('PointForward', PointForward);
   registerAnimation('Run', Run);
   registerAnimation('ScratchHead', ScratchHead);
+  registerAnimation('FallPanic', FallPanic);
+  registerAnimation('FlailArms', FlailArms);
+  registerAnimation('FlyPose', FlyPose);
   registerAnimation('ShakeHead', ShakeHead);
   registerAnimation('Shrug', Shrug);
   registerAnimation('SitDown', SitDown);
@@ -115,11 +131,14 @@ export function registerAll() {
   registerAnimation('TurnToCamera', TurnToCamera);
   registerAnimation('Walk', Walk);
   registerAnimation('WaveHand', WaveHand);
+  registerAnimation('WaveUp', WaveUp);
   // Animations - doraemon
   registerAnimation('Float', Float);
   registerAnimation('NoseBlink', NoseBlink);
   registerAnimation('PanicSpin', PanicSpin);
   registerAnimation('PullOutRacket', PullOutRacket);
+  registerAnimation('ReachHand', ReachHand);
+  registerAnimation('ReachOut', ReachOut);
   registerAnimation('Spin', Spin);
   registerAnimation('TakeOutFromPocket', TakeOutFromPocket);
   registerAnimation('WaddleWalk', WaddleWalk);
@@ -135,11 +154,14 @@ export function registerAll() {
   registerAnimation('Blush', Blush);
   registerAnimation('Curtsy', Curtsy);
   registerAnimation('Giggle', Giggle);
+  registerAnimation('LookUpSky', LookUpSky);
   registerAnimation('PlayViolin', PlayViolin);
   registerAnimation('Scold', Scold);
+  registerAnimation('WaveUp', WaveUp);
   // Scenes
   registerScene('ParkScene', ParkScene);
   registerScene('RoomScene', RoomScene);
+  registerScene('SkyScene', SkyScene);
   // Camera moves
   registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);

@@ -1,0 +1,34 @@
+{
+  "name": "room_indoor",
+  "category": "ambient",
+  "description": "Subtle indoor room tone. Very quiet background to fill silence in room scenes.",
+  "mood": ["quiet", "indoor", "subtle"],
+  "suggested_scenes": ["RoomScene"],
+  "trigger_hints": null,
+  "sources": [
+    {
+      "platform": "freesound",
+      "title": "Living Room Room Tone",
+      "author": "mixxythepixxy",
+      "url": "https://freesound.org/people/mixxythepixxy/sounds/348013/",
+      "license": "CC-BY 4.0",
+      "notes": "Real living room ambience. ~53s stereo. Good as subtle room fill."
+    },
+    {
+      "platform": "freesound",
+      "title": "Empty Office Ambience",
+      "author": "simonjeffery13",
+      "url": "https://freesound.org/people/simonjeffery13/sounds/750799/",
+      "license": "CC0",
+      "notes": "Quiet office/studio room tone. ~2:37 stereo. CC0 = no attribution needed."
+    }
+  ],
+  "local_filename": "room_indoor.wav",
+  "format": "wav",
+  "loop": true,
+  "mixing_notes": {
+    "ambient_volume": 0.06,
+    "ducking": "none — keep at very low level",
+    "crossfade_loop": true
+  }
+}

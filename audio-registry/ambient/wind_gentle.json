@@ -1,0 +1,34 @@
+{
+  "name": "wind_gentle",
+  "category": "ambient",
+  "description": "Gentle breeze or light wind for outdoor scenes. Softer than wind_strong.",
+  "mood": ["gentle", "breeze", "outdoor", "soft"],
+  "suggested_scenes": ["ParkScene", "SkyScene"],
+  "trigger_hints": null,
+  "sources": [
+    {
+      "platform": "freesound",
+      "title": "Smooth Cold Wind - Looped",
+      "author": "Shut_Up_Ghost",
+      "url": "https://freesound.org/people/Shut_Up_Ghost/sounds/407874/",
+      "license": "CC0",
+      "notes": "Smooth looping wind. ~4:51. CC0. Excellent gentle wind loop."
+    },
+    {
+      "platform": "pixabay",
+      "title": "Wind",
+      "author": "freesound_community",
+      "url": "https://pixabay.com/zh/sound-effects/search/wind/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'wind' to find gentle variants."
+    }
+  ],
+  "local_filename": "wind_gentle.wav",
+  "format": "wav",
+  "loop": true,
+  "mixing_notes": {
+    "ambient_volume": 0.06,
+    "ducking": "none",
+    "crossfade_loop": true
+  }
+}

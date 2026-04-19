@@ -230,5 +230,61 @@ export class Doraemon extends CharacterBase {
     rightLegGroup.add(rightFoot);
     this.mesh.add(rightLegGroup);
     this.rightLeg = rightLegGroup;
+
+    // Take-copter (bamboo-copter) prop — hidden by default
+    this.takeCopter = this.createTakeCopter();
+    this.takeCopter.visible = false;
+    this.headGroup.add(this.takeCopter);
+  }
+
+  createTakeCopter() {
+    const group = new THREE.Group();
+    group.position.y = 0.72; // on top of large head
+
+    const yellowMat = new THREE.MeshToonMaterial({ color: 0xffd700 });
+    const propMat = new THREE.MeshToonMaterial({ color: 0xdddddd });
+
+    // Base disc
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.03, 16), yellowMat);
+    group.add(base);
+
+    // Shaft
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.35, 8), propMat);
+    shaft.position.y = 0.19;
+    group.add(shaft);
+
+    // Blades (3 radiating flat ovals like a real bamboo-copter)
+    const bladeMat = new THREE.MeshToonMaterial({ color: 0xffcc33 });
+    for (let i = 0; i < 3; i++) {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.015, 0.22), bladeMat);
+      blade.position.y = 0.38;
+      blade.rotation.y = (i / 3) * Math.PI * 2;
+      group.add(blade);
+    }
+
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), yellowMat);
+    cap.position.y = 0.40;
+    group.add(cap);
+
+    return group;
+  }
+
+  attachTakeCopter() {
+    if (this.takeCopter) {
+      this.takeCopter.visible = true;
+    }
+  }
+
+  detachTakeCopter() {
+    if (this.takeCopter) {
+      this.takeCopter.visible = false;
+    }
+  }
+
+  update(time, delta) {
+    super.update(time, delta);
+    if (this.takeCopter && this.takeCopter.visible) {
+      this.takeCopter.rotation.y += 15 * delta;
+    }
   }
 }

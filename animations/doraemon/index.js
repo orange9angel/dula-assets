@@ -1,4 +1,5 @@
 export { PullOutRacket } from './PullOutRacket.js';
+export { ReachHand } from './ReachHand.js';
 export { Spin } from './Spin.js';
 export { PanicSpin } from './PanicSpin.js';
 export { NoseBlink } from './NoseBlink.js';
@@ -7,6 +8,7 @@ export { WaddleWalk } from './WaddleWalk.js';
 export { TakeOutFromPocket } from './TakeOutFromPocket.js';
 
 import { PullOutRacket } from './PullOutRacket.js';
+import { ReachHand } from './ReachHand.js';
 import { Spin } from './Spin.js';
 import { PanicSpin } from './PanicSpin.js';
 import { NoseBlink } from './NoseBlink.js';
@@ -16,6 +18,7 @@ import { TakeOutFromPocket } from './TakeOutFromPocket.js';
 
 export const DoraemonAnimations = {
   PullOutRacket,
+  ReachHand,
   Spin,
   PanicSpin,
   NoseBlink,

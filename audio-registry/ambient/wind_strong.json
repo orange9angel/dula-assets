@@ -1,0 +1,42 @@
+{
+  "name": "wind_strong",
+  "category": "ambient",
+  "description": "Strong, howling wind for high-altitude flying or stormy scenes. Continuous loop.",
+  "mood": ["windy", "stormy", "flying", "intense"],
+  "suggested_scenes": ["SkyScene"],
+  "trigger_hints": null,
+  "sources": [
+    {
+      "platform": "freesound",
+      "title": "Desert Ambient LOOP",
+      "author": "Imjeax",
+      "url": "https://freesound.org/people/Imjeax/sounds/427401/",
+      "license": "CC-BY 3.0",
+      "notes": "Desert wind loop, seamless, ~1:13. Very good for sustained strong wind."
+    },
+    {
+      "platform": "freesound",
+      "title": "wind_howling_03",
+      "author": "Fasolt",
+      "url": "https://freesound.org/people/Fasolt/sounds/113175/",
+      "license": "CC0",
+      "notes": "Howling wind. CC0. May need to be looped."
+    },
+    {
+      "platform": "pixabay",
+      "title": "Wind Sound",
+      "author": "SoundReality",
+      "url": "https://pixabay.com/zh/sound-effects/wind-sound-119254/",
+      "license": "Pixabay Content License",
+      "notes": "General wind sound effect. May need to search Pixabay for exact URL."
+    }
+  ],
+  "local_filename": "wind_strong.wav",
+  "format": "wav",
+  "loop": true,
+  "mixing_notes": {
+    "ambient_volume": 0.12,
+    "ducking": "reduce by 2-3 dB during dialogue",
+    "crossfade_loop": true
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "takecopter_spin",
+  "category": "sfx",
+  "description": "The distinctive spinning sound of the Take-Copter (Bamboo-Copter) propeller. High-pitched mechanical whirring.",
+  "mood": ["mechanical", "spinning", "flying"],
+  "suggested_scenes": ["RoomScene", "ParkScene", "SkyScene"],
+  "trigger_hints": ["{Prop:TakeCopter}", "flying start", "hovering"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Helicopter / Propeller sound",
+      "author": "Search on Pixabay",
+      "url": "https://pixabay.com/zh/sound-effects/search/propeller/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay for 'propeller', 'helicopter', or 'spinning' SFX. Filter for short mechanical sounds."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: propeller, helicopter, spin",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=propeller",
+      "license": "Varies",
+      "notes": "Freesound has many propeller/spinning sounds. Prefer CC0 for simplicity."
+    }
+  ],
+  "local_filename": "takecopter_spin.wav",
+  "format": "wav",
+  "loop": false,
+  "mixing_notes": {
+    "sfx_volume": 0.25,
+    "fade_in": "0.1s",
+    "fade_out": "0.3s",
+    "layer_with": ["wind_gentle", "wind_strong"]
+  }
+}

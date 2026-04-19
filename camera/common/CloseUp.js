@@ -39,10 +39,16 @@ export class CloseUp extends CameraMoveBase {
 
     this.lookAtPos = headPos.clone().add(new THREE.Vector3(0, this.heightOffset, 0));
 
-    const charDir = new THREE.Vector3(0, 0, 1);
-    charDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), char.mesh.rotation.y + this.sideAngle);
+    // Use world forward projected onto XZ plane so lookAt() tilts don't break framing
+    const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(char.mesh.quaternion);
+    forward.y = 0;
+    if (forward.lengthSq() < 0.001) forward.set(0, 0, 1);
+    forward.normalize();
+    // side offset
+    const side = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+    const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle)).add(side.multiplyScalar(Math.sin(this.sideAngle)));
 
-    this.endPos = this.lookAtPos.clone().sub(charDir.multiplyScalar(this.distance));
+    this.endPos = this.lookAtPos.clone().sub(camDir.multiplyScalar(this.distance));
     this.endPos.y = this.lookAtPos.y + 0.05;
 
     if (!this.startPos) {

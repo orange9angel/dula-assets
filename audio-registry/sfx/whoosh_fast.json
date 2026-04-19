@@ -1,0 +1,34 @@
+{
+  "name": "whoosh_fast",
+  "category": "sfx",
+  "description": "Fast air whoosh / swoosh sound. Used for rapid movement, passing objects, or camera whip pans.",
+  "mood": ["fast", "swoosh", "movement", "transition"],
+  "suggested_scenes": ["SkyScene", "ParkScene"],
+  "trigger_hints": ["{Camera:WhipPan}", "fast fly-by", "rapid movement"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Swoosh #3",
+      "author": "Universfield",
+      "url": "https://pixabay.com/zh/sound-effects/search/swoosh/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'swoosh', 'whoosh', 'fast air'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: whoosh, swoosh, fast",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=whoosh",
+      "license": "Varies",
+      "notes": "Look for short, clean air-rushing sounds."
+    }
+  ],
+  "local_filename": "whoosh_fast.wav",
+  "format": "wav",
+  "loop": false,
+  "mixing_notes": {
+    "sfx_volume": 0.30,
+    "fade_in": "0s",
+    "fade_out": "0.2s"
+  }
+}
