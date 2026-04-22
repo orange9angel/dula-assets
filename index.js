@@ -2,6 +2,7 @@
 import { Doraemon } from './characters/Doraemon.js';
 import { Nobita } from './characters/Nobita.js';
 import { Shizuka } from './characters/Shizuka.js';
+import { RockLee } from './characters/RockLee.js';
 
 // Animations - common
 import { Bow } from './animations/common/Bow.js';
@@ -58,11 +59,16 @@ import { PlayViolin } from './animations/shizuka/PlayViolin.js';
 import { LookUpSky } from './animations/shizuka/LookUpSky.js';
 import { Scold } from './animations/shizuka/Scold.js';
 import { WaveUp } from './animations/shizuka/WaveUp.js';
+// Animations - rocklee
+import { DynamicEntry } from './animations/rocklee/DynamicEntry.js';
+import { ThumbUp } from './animations/rocklee/ThumbUp.js';
 
 // Scenes
 import { ParkScene } from './scenes/ParkScene.js';
 import { RoomScene } from './scenes/RoomScene.js';
 import { SkyScene } from './scenes/SkyScene.js';
+import { BasketballArenaScene } from './scenes/BasketballArenaScene.js';
+import { GLTFArenaScene } from './scenes/GLTFArenaScene.js';
 
 // Camera moves
 import { CloseUp } from './camera/common/CloseUp.js';
@@ -84,6 +90,7 @@ import { ZoomOut } from './camera/common/ZoomOut.js';
 import { default as DoraemonVoice } from './voices/DoraemonVoice.js';
 import { default as NobitaVoice } from './voices/NobitaVoice.js';
 import { default as ShizukaVoice } from './voices/ShizukaVoice.js';
+import { default as RockLeeVoice } from './voices/RockLeeVoice.js';
 
 import {
   registerCharacter,
@@ -95,12 +102,14 @@ import {
 } from 'dula-engine';
 
 import { CourtDirector } from './lib/CourtDirector.js';
+import { DunkDirector } from './lib/DunkDirector.js';
 
 export function registerAll() {
   // Characters
   registerCharacter('Doraemon', Doraemon);
   registerCharacter('Nobita', Nobita);
   registerCharacter('Shizuka', Shizuka);
+  registerCharacter('RockLee', RockLee);
   // Animations - common
   registerAnimation('Bow', Bow);
   registerAnimation('Celebrate', Celebrate);
@@ -158,10 +167,15 @@ export function registerAll() {
   registerAnimation('PlayViolin', PlayViolin);
   registerAnimation('Scold', Scold);
   registerAnimation('WaveUp', WaveUp);
+  // Animations - rocklee
+  registerAnimation('DynamicEntry', DynamicEntry);
+  registerAnimation('ThumbUp', ThumbUp);
   // Scenes
   registerScene('ParkScene', ParkScene);
   registerScene('RoomScene', RoomScene);
   registerScene('SkyScene', SkyScene);
+  registerScene('BasketballArenaScene', BasketballArenaScene);
+  registerScene('GLTFArenaScene', GLTFArenaScene);
   // Camera moves
   registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);
@@ -181,7 +195,12 @@ export function registerAll() {
   registerVoice('Doraemon', DoraemonVoice);
   registerVoice('Nobita', NobitaVoice);
   registerVoice('Shizuka', ShizukaVoice);
+  registerVoice('RockLee', RockLeeVoice);
 
   // Directors
   registerDirector('CourtDirector', CourtDirector);
+  registerDirector('DunkDirector', DunkDirector);
 }
+
+// Re-exports for custom bootstrap use
+export { GLTFArenaScene };
