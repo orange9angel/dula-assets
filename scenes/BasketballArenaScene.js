@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { SceneBase } from 'dula-engine';
 
 /**
@@ -20,6 +22,7 @@ export class BasketballArenaScene extends SceneBase {
     this.basketballTrajectory = null;
     this.dunkWindow = null;
     this.rimBend = { north: 0, south: 0 };
+    this.readyPromise = null;
   }
 
   build() {
@@ -44,6 +47,9 @@ export class BasketballArenaScene extends SceneBase {
 
     // ---- Arena Lights ----
     this._buildArenaLights();
+
+    // ---- Sports Car under north hoop ----
+    this.readyPromise = this._loadSportsCar();
 
     return this.scene;
   }
@@ -744,6 +750,49 @@ export class BasketballArenaScene extends SceneBase {
         fb.mesh.scale.set(s, s, s);
       }
     }
+  }
+
+  _loadSportsCar() {
+    return new Promise((resolve) => {
+      const loader = new GLTFLoader();
+      // Setup DRACO decoder for compressed models
+      const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath('/episode/draco/');
+      loader.setDRACOLoader(dracoLoader);
+
+      loader.load(
+        '/episode/materials/models/ferrari.glb',
+        (gltf) => {
+          const car = gltf.scene;
+          // Compute bounding box to center and scale the car
+          const box = new THREE.Box3().setFromObject(car);
+          const size = box.getSize(new THREE.Vector3());
+          const center = box.getCenter(new THREE.Vector3());
+
+          // Normalize scale so car is ~2.5m long
+          const maxDim = Math.max(size.x, size.y, size.z);
+          const scale = 2.5 / maxDim;
+
+          // Center the geometry
+          car.position.sub(center);
+          car.scale.set(scale, scale, scale);
+
+          // Position under north hoop, on floor, facing south
+          car.position.set(0, size.y * scale * 0.5, -10);
+          car.rotation.y = Math.PI;
+
+          this.scene.add(car);
+          this.sportsCar = car;
+          console.log('[BasketballArenaScene] Sports car loaded, size:', size.x, size.y, size.z, 'scale:', scale);
+          resolve();
+        },
+        undefined,
+        (error) => {
+          console.warn('[BasketballArenaScene] Failed to load sports car:', error);
+          resolve(); // resolve anyway so rendering doesn't block
+        }
+      );
+    });
   }
 
   _updateBasketball(time) {
