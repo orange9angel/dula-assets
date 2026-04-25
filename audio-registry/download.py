@@ -3,18 +3,22 @@
 Audio Asset Download Helper
 
 Reads metadata from audio-registry/ and helps prepare audio assets for an episode.
-Since many sources require manual download (Pixabay click-to-download),
-this script generates a download plan and attempts direct downloads where possible.
+Supports:
+  - Direct file URL downloads (.mp3, .wav, etc.)
+  - Pixabay page scraping (uses Playwright to extract CDN link, then downloads)
+  - Fallback to manual download plans for unsupported sources
 
 Usage:
     python download.py <episode_path> [--scene RoomScene,ParkScene,SkyScene]
     python download.py <episode_path> --list
     python download.py <episode_path> --plan-only
+    python download.py <episode_path> --try-download
 """
 
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.request
 import urllib.error
@@ -119,10 +123,11 @@ def write_plan_files(plan, episode_path):
         f.write("# Audio Download Plan\n\n")
         f.write("Generated from `dula-assets/audio-registry/`.\n\n")
         f.write("## Instructions\n\n")
-        f.write("1. Files marked **MISSING** need to be downloaded manually.\n")
-        f.write("2. Click the source URL and download the audio file.\n")
-        f.write("3. Rename it to the `Local Filename` and place it in the indicated directory.\n")
-        f.write("4. Files marked **EXISTS** are already in place.\n\n")
+        f.write("1. Files marked **MISSING** need to be downloaded.\n")
+        f.write("2. Run with `--try-download` to auto-download where possible.\n")
+        f.write("3. For manual sources, click the source URL and download the audio file.\n")
+        f.write("4. Rename it to the `Local Filename` and place it in the indicated directory.\n")
+        f.write("5. Files marked **EXISTS** are already in place.\n\n")
 
         missing = [p for p in plan if not p["exists"]]
         exists = [p for p in plan if p["exists"]]
@@ -147,8 +152,97 @@ def write_plan_files(plan, episode_path):
     print(f"  MD:   {md_file}")
 
 
+def is_direct_file_url(url):
+    """Check if URL points directly to an audio file."""
+    if not url:
+        return False
+    return any(url.lower().endswith(ext) for ext in [".mp3", ".wav", ".ogg", ".flac"])
+
+
+def is_pixabay_url(url):
+    """Check if URL is a Pixabay page (not direct CDN link)."""
+    if not url:
+        return False
+    return "pixabay.com" in url.lower() and not is_direct_file_url(url)
+
+
+def extract_pixabay_cdn(page_url, timeout=30):
+    """
+    Use Playwright to load a Pixabay page and extract the CDN audio URL.
+    Returns the CDN URL string, or None if extraction fails or no audio link found.
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print("    Playwright not installed. Cannot scrape Pixabay pages.")
+        return None
+
+    cdn_url = None
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=True,
+            args=["--disable-blink-features=AutomationControlled"],
+        )
+        context = browser.new_context(
+            viewport={"width": 1920, "height": 1080},
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+        )
+        context.add_init_script(
+            """
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            });
+            """
+        )
+        page = context.new_page()
+        try:
+            page.goto(page_url, wait_until="load", timeout=timeout * 1000)
+            page.wait_for_timeout(2000)
+            html = page.content()
+            matches = list(
+                set(re.findall(r'https?://cdn\.pixabay\.com/[^\s"\'<>]+', html))
+            )
+            # Only accept actual audio file links
+            audio_exts = (".mp3", ".wav", ".ogg", ".flac")
+            audio_matches = [m for m in matches if any(ext in m.lower() for ext in audio_exts)]
+            if audio_matches:
+                cdn_url = audio_matches[0]
+        except Exception as e:
+            print(f"    Playwright error: {e}")
+        finally:
+            browser.close()
+
+    return cdn_url
+
+
+def download_to_file(url, dest, timeout=60):
+    """Download a file from URL to dest path. Returns (ok, message)."""
+    dest = Path(dest)
+    if dest.exists():
+        return True, "already exists"
+
+    try:
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            )
+        }
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=timeout) as response:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            with open(dest, "wb") as f:
+                f.write(response.read())
+        return True, f"downloaded ({dest.stat().st_size} bytes)"
+    except Exception as e:
+        return False, f"download failed: {e}"
+
+
 def try_download(plan_item, timeout=30):
-    """Attempt to download a file from a known direct URL."""
+    """Attempt to download a file from a known direct URL or scrape Pixabay."""
     url = plan_item["source_url"]
     dest = Path(plan_item["local_path"])
 
@@ -156,22 +250,25 @@ def try_download(plan_item, timeout=30):
     if dest.exists():
         return True, "already exists"
 
-    # Only attempt direct file URLs
-    if not any(url.endswith(ext) for ext in [".mp3", ".wav", ".ogg", ".flac"]):
-        return False, "not a direct file URL — manual download required"
+    if not url:
+        return False, "no source URL"
 
-    try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as response:
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            with open(dest, "wb") as f:
-                f.write(response.read())
-        return True, "downloaded"
-    except Exception as e:
-        return False, f"download failed: {e}"
+    # Case 1: Direct file URL
+    if is_direct_file_url(url):
+        return download_to_file(url, dest, timeout=timeout)
+
+    # Case 2: Pixabay page URL -> scrape CDN link -> download
+    if is_pixabay_url(url):
+        print(f"    Pixabay page detected, extracting CDN link...")
+        cdn_url = extract_pixabay_cdn(url, timeout=timeout)
+        if cdn_url:
+            print(f"    CDN link: {cdn_url[:100]}...")
+            return download_to_file(cdn_url, dest, timeout=timeout)
+        else:
+            return False, "failed to extract Pixabay CDN link — manual download required"
+
+    # Fallback: unsupported source
+    return False, "unsupported source platform — manual download required"
 
 
 def main():
@@ -180,7 +277,7 @@ def main():
     parser.add_argument("--scene", help="Comma-separated scene names to filter by (e.g. RoomScene,ParkScene)")
     parser.add_argument("--list", action="store_true", help="List all available assets and exit")
     parser.add_argument("--plan-only", action="store_true", help="Generate plan files without attempting downloads")
-    parser.add_argument("--try-download", action="store_true", help="Attempt automatic downloads for direct URLs")
+    parser.add_argument("--try-download", action="store_true", help="Attempt automatic downloads for direct URLs and Pixabay pages")
     args = parser.parse_args()
 
     registry = load_registry()
@@ -208,14 +305,14 @@ def main():
     print(f"{'='*60}")
 
     if args.try_download and missing > 0:
-        print("\nAttempting automatic downloads for direct URLs...")
+        print("\nAttempting automatic downloads...")
         for p in plan:
             if not p["exists"]:
                 ok, msg = try_download(p)
                 status = "OK" if ok else "SKIP"
-                print(f"  [{status}] {p['name']}: {msg}")
+                print(f"  [{status}] {p['name']} ({p['platform']}): {msg}")
 
-    print("\nDone. Please review the markdown plan for manual download instructions.")
+    print("\nDone. Please review the markdown plan for any remaining manual downloads.")
 
 
 if __name__ == "__main__":

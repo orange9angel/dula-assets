@@ -85,6 +85,7 @@ import { TwoShot } from './camera/common/TwoShot.js';
 import { WhipPan } from './camera/common/WhipPan.js';
 import { ZoomIn } from './camera/common/ZoomIn.js';
 import { ZoomOut } from './camera/common/ZoomOut.js';
+import { OrbitCharacter } from './camera/common/OrbitCharacter.js';
 
 // Voices
 import { default as DoraemonVoice } from './voices/DoraemonVoice.js';
@@ -191,6 +192,7 @@ export function registerAll() {
   registerCameraMove('WhipPan', WhipPan);
   registerCameraMove('ZoomIn', ZoomIn);
   registerCameraMove('ZoomOut', ZoomOut);
+  registerCameraMove('OrbitCharacter', OrbitCharacter);
   // Voices
   registerVoice('Doraemon', DoraemonVoice);
   registerVoice('Nobita', NobitaVoice);

@@ -12,6 +12,7 @@ export { ReactionShot } from './ReactionShot.js';
 export { TwoShot } from './TwoShot.js';
 export { TrackingCloseUp } from './TrackingCloseUp.js';
 export { WhipPan } from './WhipPan.js';
+export { OrbitCharacter } from './OrbitCharacter.js';
 
 import { Static } from './Static.js';
 import { ZoomIn } from './ZoomIn.js';
@@ -27,6 +28,7 @@ import { ReactionShot } from './ReactionShot.js';
 import { TwoShot } from './TwoShot.js';
 import { TrackingCloseUp } from './TrackingCloseUp.js';
 import { WhipPan } from './WhipPan.js';
+import { OrbitCharacter } from './OrbitCharacter.js';
 
 export const CommonCameraMoves = {
   Static,
@@ -43,4 +45,5 @@ export const CommonCameraMoves = {
   TwoShot,
   TrackingCloseUp,
   WhipPan,
+  OrbitCharacter,
 };
