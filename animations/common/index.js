@@ -24,6 +24,7 @@ export { CrossArms } from './CrossArms.js';
 export { FlailArms } from './FlailArms.js';
 export { LookUp } from './LookUp.js';
 export { ReachOut } from './ReachOut.js';
+export { WaveUp } from './WaveUp.js';
 
 import { Nod } from './Nod.js';
 import { Jump } from './Jump.js';
@@ -51,6 +52,7 @@ import { CrossArms } from './CrossArms.js';
 import { FlailArms } from './FlailArms.js';
 import { LookUp } from './LookUp.js';
 import { ReachOut } from './ReachOut.js';
+import { WaveUp } from './WaveUp.js';
 
 export const CommonAnimations = {
   Nod,
@@ -79,4 +81,5 @@ export const CommonAnimations = {
   FlailArms,
   LookUp,
   ReachOut,
+  WaveUp,
 };

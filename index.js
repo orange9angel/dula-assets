@@ -3,6 +3,16 @@ import { Doraemon } from './characters/Doraemon.js';
 import { Nobita } from './characters/Nobita.js';
 import { Shizuka } from './characters/Shizuka.js';
 import { RockLee } from './characters/RockLee.js';
+import { Xingzai } from './characters/Xingzai.js';
+import { Xiaoyue } from './characters/Xiaoyue.js';
+
+// Transitions
+import { Fade } from './transitions/Fade.js';
+import { Iris } from './transitions/Iris.js';
+import { Wipe } from './transitions/Wipe.js';
+import { ZoomBlur } from './transitions/ZoomBlur.js';
+import { Pixelate } from './transitions/Pixelate.js';
+import { SpinTransition } from './transitions/Spin.js';
 
 // Animations - common
 import { Bow } from './animations/common/Bow.js';
@@ -59,6 +69,11 @@ import { PlayViolin } from './animations/shizuka/PlayViolin.js';
 import { LookUpSky } from './animations/shizuka/LookUpSky.js';
 import { Scold } from './animations/shizuka/Scold.js';
 import { WaveUp } from './animations/shizuka/WaveUp.js';
+// Animations - xingzai
+import { XingzaiFloat } from './animations/xingzai/Float.js';
+import { TandemFlight } from './animations/xingzai/TandemFlight.js';
+// Animations - xiaoyue
+import { RidingPose } from './animations/xiaoyue/RidingPose.js';
 // Animations - rocklee
 import { DynamicEntry } from './animations/rocklee/DynamicEntry.js';
 import { ThumbUp } from './animations/rocklee/ThumbUp.js';
@@ -69,6 +84,9 @@ import { RoomScene } from './scenes/RoomScene.js';
 import { SkyScene } from './scenes/SkyScene.js';
 import { BasketballArenaScene } from './scenes/BasketballArenaScene.js';
 import { GLTFArenaScene } from './scenes/GLTFArenaScene.js';
+import { NightStreetScene } from './scenes/NightStreetScene.js';
+import { NightRoomScene } from './scenes/NightRoomScene.js';
+import { StarSkyScene } from './scenes/StarSkyScene.js';
 
 // Camera moves
 import { CloseUp } from './camera/common/CloseUp.js';
@@ -100,6 +118,7 @@ import {
   registerCameraMove,
   registerVoice,
   registerDirector,
+  registerTransition,
 } from 'dula-engine';
 
 import { CourtDirector } from './lib/CourtDirector.js';
@@ -111,6 +130,8 @@ export function registerAll() {
   registerCharacter('Nobita', Nobita);
   registerCharacter('Shizuka', Shizuka);
   registerCharacter('RockLee', RockLee);
+  registerCharacter('Xingzai', Xingzai);
+  registerCharacter('Xiaoyue', Xiaoyue);
   // Animations - common
   registerAnimation('Bow', Bow);
   registerAnimation('Celebrate', Celebrate);
@@ -141,7 +162,6 @@ export function registerAll() {
   registerAnimation('TurnToCamera', TurnToCamera);
   registerAnimation('Walk', Walk);
   registerAnimation('WaveHand', WaveHand);
-  registerAnimation('WaveUp', WaveUp);
   // Animations - doraemon
   registerAnimation('Float', Float);
   registerAnimation('NoseBlink', NoseBlink);
@@ -168,6 +188,11 @@ export function registerAll() {
   registerAnimation('PlayViolin', PlayViolin);
   registerAnimation('Scold', Scold);
   registerAnimation('WaveUp', WaveUp);
+  // Animations - xingzai
+  registerAnimation('XingzaiFloat', XingzaiFloat);
+  registerAnimation('TandemFlight', TandemFlight);
+  // Animations - xiaoyue
+  registerAnimation('RidingPose', RidingPose);
   // Animations - rocklee
   registerAnimation('DynamicEntry', DynamicEntry);
   registerAnimation('ThumbUp', ThumbUp);
@@ -177,6 +202,9 @@ export function registerAll() {
   registerScene('SkyScene', SkyScene);
   registerScene('BasketballArenaScene', BasketballArenaScene);
   registerScene('GLTFArenaScene', GLTFArenaScene);
+  registerScene('NightStreetScene', NightStreetScene);
+  registerScene('NightRoomScene', NightRoomScene);
+  registerScene('StarSkyScene', StarSkyScene);
   // Camera moves
   registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);
@@ -202,6 +230,14 @@ export function registerAll() {
   // Directors
   registerDirector('CourtDirector', CourtDirector);
   registerDirector('DunkDirector', DunkDirector);
+
+  // Transitions
+  registerTransition('Fade', Fade);
+  registerTransition('Iris', Iris);
+  registerTransition('Wipe', Wipe);
+  registerTransition('ZoomBlur', ZoomBlur);
+  registerTransition('Pixelate', Pixelate);
+  registerTransition('Spin', SpinTransition);
 }
 
 // Re-exports for custom bootstrap use
