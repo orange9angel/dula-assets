@@ -87,6 +87,7 @@ import { GLTFArenaScene } from './scenes/GLTFArenaScene.js';
 import { NightStreetScene } from './scenes/NightStreetScene.js';
 import { NightRoomScene } from './scenes/NightRoomScene.js';
 import { StarSkyScene } from './scenes/StarSkyScene.js';
+import { BeachScene } from './scenes/BeachScene.js';
 
 // Camera moves
 import { CloseUp } from './camera/common/CloseUp.js';
@@ -205,6 +206,7 @@ export function registerAll() {
   registerScene('NightStreetScene', NightStreetScene);
   registerScene('NightRoomScene', NightRoomScene);
   registerScene('StarSkyScene', StarSkyScene);
+  registerScene('BeachScene', BeachScene);
   // Camera moves
   registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);
