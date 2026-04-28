@@ -31,7 +31,7 @@ export class BeachScene extends SceneBase {
     const sandMat = new THREE.MeshStandardMaterial({ color: 0xe6c288, roughness: 1.0 });
     const sand = new THREE.Mesh(sandGeo, sandMat);
     sand.rotation.x = -Math.PI / 2;
-    sand.position.set(0, 0, 10);
+    sand.position.set(0, 0, 0);
     sand.receiveShadow = true;
     this.scene.add(sand);
 
@@ -78,8 +78,8 @@ export class BeachScene extends SceneBase {
     const leafMat = new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.7, side: THREE.DoubleSide });
 
     const palmPositions = [
-      [-12, 0, 8], [12, 0, 6], [-18, 0, 12], [18, 0, 10],
-      [-8, 0, 18], [8, 0, 16], [-22, 0, 5], [22, 0, 3],
+      [-12, 0, -8], [12, 0, -6], [-18, 0, -12], [18, 0, -10],
+      [-8, 0, -18], [8, 0, -16], [-22, 0, -5], [22, 0, -3],
     ];
 
     for (const [px, py, pz] of palmPositions) {
@@ -130,7 +130,7 @@ export class BeachScene extends SceneBase {
     // ---- Beach umbrellas ----
     const umbrellaColors = [0xff5252, 0xffeb3b, 0x4caf50, 0x2196f3, 0xff9800];
     const umbrellaPositions = [
-      [-6, 0, 15], [6, 0, 14], [-15, 0, 20], [15, 0, 18],
+      [-6, 0, -8], [6, 0, -8], [-15, 0, -12], [15, 0, -12],
     ];
     for (let i = 0; i < umbrellaPositions.length; i++) {
       const [ux, uy, uz] = umbrellaPositions[i];
@@ -165,7 +165,7 @@ export class BeachScene extends SceneBase {
     for (let i = 0; i < 3; i++) {
       const ballGroup = new THREE.Group();
       const bx = -4 + i * 4 + (Math.random() - 0.5) * 2;
-      const bz = 12 + Math.random() * 6;
+      const bz = -8 + Math.random() * 4;
       ballGroup.position.set(bx, 0.35, bz);
 
       // Simple striped ball using multiple sphere segments
