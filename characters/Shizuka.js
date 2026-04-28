@@ -47,18 +47,24 @@ export class Shizuka extends CharacterBase {
     chin.scale.set(1.1, 0.7, 0.9);
     headGroup.add(chin);
 
-    // Hair cap (covers top and back more generously)
-    const hairGeo = new THREE.SphereGeometry(0.35, 32, 32, 0, Math.PI * 2, 0, Math.PI / 1.7);
+    // Hair cap (top only - phiStart=0, phiLength=Math.PI/2 covers just the top hemisphere)
+    const hairGeo = new THREE.SphereGeometry(0.36, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
     const hair = new THREE.Mesh(hairGeo, hairMat);
-    hair.position.set(0, 0.04, -0.05);
+    hair.position.set(0, 0.04, -0.02);
     headGroup.add(hair);
 
-    // Extra back-hair volume (a slightly larger partial sphere behind)
-    const backHairGeo = new THREE.SphereGeometry(0.33, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+    // Back hair volume (covers back of head, moved up to meet top hair)
+    const backHairGeo = new THREE.SphereGeometry(0.34, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
     const backHair = new THREE.Mesh(backHairGeo, hairMat);
-    backHair.position.set(0, 0.02, -0.1);
-    backHair.rotation.x = Math.PI * 0.85;
+    backHair.position.set(0, 0.08, -0.12);
+    backHair.rotation.x = Math.PI;
     headGroup.add(backHair);
+
+    // Mid-back hair patch (fills the gap between top and back hair)
+    const midHairGeo = new THREE.SphereGeometry(0.35, 32, 32, 0, Math.PI * 2, Math.PI / 3, Math.PI / 3);
+    const midHair = new THREE.Mesh(midHairGeo, hairMat);
+    midHair.position.set(0, 0.02, -0.08);
+    headGroup.add(midHair);
 
     // Bangs (5 thin black plates fanning across forehead)
     const bangGeo = new THREE.BoxGeometry(0.07, 0.16, 0.015);
@@ -135,7 +141,8 @@ export class Shizuka extends CharacterBase {
     rightBrow.rotation.z = -0.2;
     headGroup.add(rightBrow);
 
-    // ========== MOUTH (smile curve) ==========
+    // ========== MOUTH (smile curve + invisible sphere for speaking animation) ==========
+    // Smile curve (visible, static)
     const smileCurve = new THREE.QuadraticBezierCurve3(
       new THREE.Vector3(-0.028, -0.1, 0.3),
       new THREE.Vector3(0, -0.118, 0.3),
@@ -144,14 +151,17 @@ export class Shizuka extends CharacterBase {
     const smileGeo = new THREE.TubeGeometry(smileCurve, 12, 0.0045, 8, false);
     const smile = new THREE.Mesh(smileGeo, lipMat);
     headGroup.add(smile);
-    this.mouth = smile;
-    // Store base scale for speaking animation ( TubeGeometry doesn't scale well, so we use a proxy sphere )
-    const mouthProxy = new THREE.Mesh(new THREE.SphereGeometry(0.035), lipMat);
+
+    // Invisible sphere for speaking animation (scales without deforming visible geometry)
+    const mouthProxy = new THREE.Mesh(new THREE.SphereGeometry(0.02), lipMat);
+    mouthProxy.position.set(0, -0.11, 0.3);
+    mouthProxy.scale.set(0.1, 0.1, 0.1);
     mouthProxy.visible = false;
     headGroup.add(mouthProxy);
-    this.mouthBaseScaleX = 1;
-    this.mouthBaseScaleY = 1;
-    this.mouthBaseScaleZ = 1;
+    this.mouth = mouthProxy;
+    this.mouthBaseScaleX = 0.1;
+    this.mouthBaseScaleY = 0.1;
+    this.mouthBaseScaleZ = 0.1;
 
     // ========== BLUSH (cheeks) ==========
     const blushGeo = new THREE.SphereGeometry(0.032, 16, 16);

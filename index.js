@@ -40,6 +40,7 @@ import { Think } from './animations/common/Think.js';
 import { Tremble } from './animations/common/Tremble.js';
 import { TurnToCamera } from './animations/common/TurnToCamera.js';
 import { Walk } from './animations/common/Walk.js';
+import { Swim } from './animations/common/Swim.js';
 import { WaveHand } from './animations/common/WaveHand.js';
 // Animations - doraemon
 import { Float } from './animations/doraemon/Float.js';
@@ -162,6 +163,7 @@ export function registerAll() {
   registerAnimation('Tremble', Tremble);
   registerAnimation('TurnToCamera', TurnToCamera);
   registerAnimation('Walk', Walk);
+  registerAnimation('Swim', Swim);
   registerAnimation('WaveHand', WaveHand);
   // Animations - doraemon
   registerAnimation('Float', Float);

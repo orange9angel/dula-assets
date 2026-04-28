@@ -4,6 +4,7 @@ export { SwayBody } from './SwayBody.js';
 export { WaveHand } from './WaveHand.js';
 export { StompFoot } from './StompFoot.js';
 export { Walk } from './Walk.js';
+export { Swim } from './Swim.js';
 export { TurnToCamera } from './TurnToCamera.js';
 export { SwingRacket } from './SwingRacket.js';
 export { Run } from './Run.js';

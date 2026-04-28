@@ -12,6 +12,7 @@
     "animations/",
     "scenes/",
     "camera/",
+    "transitions/",
     "lib/",
     "voices/",
     "audio-registry/",

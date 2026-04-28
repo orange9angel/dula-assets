@@ -259,6 +259,16 @@ export class BeachScene extends SceneBase {
       });
     }
 
+    // ---- Shark (hidden initially, appears on Event:SharkAppear) ----
+    this.shark = this._createShark();
+    this.shark.position.set(15, 0.3, -12);
+    this.shark.rotation.y = Math.PI / 2;
+    this.shark.visible = false;
+    this.scene.add(this.shark);
+    this.sharkBaseZ = -18;
+    this.sharkSpeed = 2.5;
+    this.sharkAppeared = false;
+
     // ---- Sun (bright glow in sky) ----
     const sunGeo = new THREE.SphereGeometry(3, 16, 16);
     const sunMat = new THREE.MeshBasicMaterial({ color: 0xfff9c4 });
@@ -274,6 +284,76 @@ export class BeachScene extends SceneBase {
     this.scene.add(glow);
 
     return this.scene;
+  }
+
+  _createShark() {
+    const sharkGroup = new THREE.Group();
+    const sharkMat = new THREE.MeshStandardMaterial({ color: 0x607d8b, roughness: 0.4 });
+    const bellyMat = new THREE.MeshStandardMaterial({ color: 0xcddce5, roughness: 0.4 });
+
+    // Body (elongated sphere)
+    const bodyGeo = new THREE.SphereGeometry(0.5, 16, 16);
+    const body = new THREE.Mesh(bodyGeo, sharkMat);
+    body.scale.set(2.2, 0.7, 0.65);
+    sharkGroup.add(body);
+
+    // Belly (lighter underside)
+    const bellyGeo = new THREE.SphereGeometry(0.45, 16, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
+    const belly = new THREE.Mesh(bellyGeo, bellyMat);
+    belly.scale.set(2.0, 0.6, 0.6);
+    belly.position.y = -0.05;
+    sharkGroup.add(belly);
+
+    // Head (pointed snout)
+    const headGeo = new THREE.ConeGeometry(0.35, 0.8, 16);
+    const head = new THREE.Mesh(headGeo, sharkMat);
+    head.rotation.z = -Math.PI / 2;
+    head.position.set(1.4, 0, 0);
+    sharkGroup.add(head);
+
+    // Dorsal fin
+    const dorsalGeo = new THREE.ConeGeometry(0.25, 0.6, 8);
+    const dorsal = new THREE.Mesh(dorsalGeo, sharkMat);
+    dorsal.position.set(0.2, 0.5, 0);
+    dorsal.rotation.x = 0.2;
+    sharkGroup.add(dorsal);
+
+    // Tail (two lobes)
+    const tailGeo = new THREE.ConeGeometry(0.2, 0.7, 8);
+    const tailUpper = new THREE.Mesh(tailGeo, sharkMat);
+    tailUpper.position.set(-1.6, 0.15, 0);
+    tailUpper.rotation.z = Math.PI / 2 + 0.3;
+    sharkGroup.add(tailUpper);
+
+    const tailLower = new THREE.Mesh(tailGeo, sharkMat);
+    tailLower.position.set(-1.6, -0.1, 0);
+    tailLower.rotation.z = Math.PI / 2 - 0.3;
+    tailLower.scale.set(0.7, 0.7, 0.7);
+    sharkGroup.add(tailLower);
+
+    // Pectoral fins
+    const finGeo = new THREE.ConeGeometry(0.12, 0.5, 8);
+    const leftFin = new THREE.Mesh(finGeo, sharkMat);
+    leftFin.position.set(0.3, -0.1, 0.4);
+    leftFin.rotation.set(0.5, 0.3, 0.8);
+    sharkGroup.add(leftFin);
+
+    const rightFin = new THREE.Mesh(finGeo, sharkMat);
+    rightFin.position.set(0.3, -0.1, -0.4);
+    rightFin.rotation.set(-0.5, -0.3, 0.8);
+    sharkGroup.add(rightFin);
+
+    // Eyes
+    const eyeGeo = new THREE.SphereGeometry(0.04, 8, 8);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+    const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+    leftEye.position.set(0.9, 0.1, 0.2);
+    sharkGroup.add(leftEye);
+    const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+    rightEye.position.set(0.9, 0.1, -0.2);
+    sharkGroup.add(rightEye);
+
+    return sharkGroup;
   }
 
   update(time, delta) {
@@ -302,6 +382,39 @@ export class BeachScene extends SceneBase {
       if (cloud.group.position.x > 50) {
         cloud.group.position.x = -50;
       }
+    }
+
+    // Animate shark - hidden until triggered, then chases Nobita
+    if (this.shark && this.sharkAppeared) {
+      // Find Nobita to chase
+      let targetX = 0;
+      let targetZ = -8;
+      for (const char of this.characters) {
+        if (char.name === 'Nobita') {
+          targetX = char.mesh.position.x;
+          targetZ = char.mesh.position.z;
+          break;
+        }
+      }
+      // Move shark toward Nobita
+      const dx = targetX - this.shark.position.x;
+      const dz = targetZ - this.shark.position.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist > 0.5) {
+        this.shark.position.x += (dx / dist) * this.sharkSpeed * delta;
+        this.shark.position.z += (dz / dist) * this.sharkSpeed * delta;
+      }
+      // Face target
+      this.shark.rotation.y = Math.atan2(dx, dz);
+      // Body roll
+      this.shark.rotation.z = Math.sin(time * 3) * 0.1;
+    }
+  }
+
+  showShark() {
+    if (this.shark) {
+      this.shark.visible = true;
+      this.sharkAppeared = true;
     }
   }
 
