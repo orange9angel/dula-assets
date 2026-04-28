@@ -18,7 +18,7 @@ export class LowAngle extends CameraMoveBase {
     // End position: low, looking up toward target
     this.endPos = new THREE.Vector3(
       this.targetPos.x + (Math.random() - 0.5) * 0.5,
-      this.targetPos.y - 1.0,
+      this.targetPos.y - 2.5,
       this.targetPos.z + this.distance
     );
   }
