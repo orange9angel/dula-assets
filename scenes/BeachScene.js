@@ -36,17 +36,17 @@ export class BeachScene extends SceneBase {
     this.scene.add(sand);
 
     // ---- Ocean (water plane) ----
-    const oceanGeo = new THREE.PlaneGeometry(100, 40, 32, 16);
+    const oceanGeo = new THREE.PlaneGeometry(100, 35, 32, 16);
     const oceanMat = new THREE.MeshStandardMaterial({
       color: 0x2196f3,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.65,
       roughness: 0.1,
       metalness: 0.1,
     });
     const ocean = new THREE.Mesh(oceanGeo, oceanMat);
     ocean.rotation.x = -Math.PI / 2;
-    ocean.position.set(0, 0.05, -25);
+    ocean.position.set(0, 0.05, -22);
     this.scene.add(ocean);
 
     // ---- Waves (white foam lines near shore) ----
@@ -268,6 +268,16 @@ export class BeachScene extends SceneBase {
     this.sharkBaseZ = -18;
     this.sharkSpeed = 2.5;
     this.sharkAppeared = false;
+    this.sharkOrbitMode = false;
+    this.sharkOrbitAngle = 0;
+    this.sharkOrbitRadius = 4;
+    this.sharkOrbitCenter = new THREE.Vector3(0, 0, -8);
+    this.sharkOrbitSpeed = 1.8;
+
+    // ---- Splash particles (for panic paddling) ----
+    this.splashParticles = this._createSplashParticles();
+    this.splashActive = false;
+    this.splashTarget = null;
 
     // ---- Sun (bright glow in sky) ----
     const sunGeo = new THREE.SphereGeometry(3, 16, 16);
@@ -384,30 +394,74 @@ export class BeachScene extends SceneBase {
       }
     }
 
-    // Animate shark - hidden until triggered, then chases Nobita
-    if (this.shark && this.sharkAppeared) {
-      // Find Nobita to chase
-      let targetX = 0;
-      let targetZ = -8;
-      for (const char of this.characters) {
-        if (char.name === 'Nobita') {
-          targetX = char.mesh.position.x;
-          targetZ = char.mesh.position.z;
-          break;
+    // Animate shark - hidden until triggered
+    if (this.shark) {
+      if (this.sharkSwimAway) {
+        // Shark swims away into the distance
+        this.shark.position.x += this.sharkSpeed * delta * 2;
+        this.shark.position.z -= this.sharkSpeed * delta * 0.5;
+        this.shark.rotation.y = Math.atan2(2, -0.5);
+        if (this.shark.position.x > 40) {
+          this.shark.visible = false;
+          this.sharkSwimAway = false;
+        }
+      } else if (this.sharkAppeared) {
+        // Find Nobita to chase
+        let targetX = 0;
+        let targetZ = -8;
+        for (const char of this.characters) {
+          if (char.name === 'Nobita') {
+            targetX = char.mesh.position.x;
+            targetZ = char.mesh.position.z;
+            break;
+          }
+        }
+
+        if (this.sharkOrbitMode) {
+          // Orbit around target in tightening circles
+          this.sharkOrbitAngle += this.sharkOrbitSpeed * delta;
+          const radius = Math.max(1.5, this.sharkOrbitRadius - time * 0.15);
+          this.shark.position.x = this.sharkOrbitCenter.x + Math.sin(this.sharkOrbitAngle) * radius;
+          this.shark.position.z = this.sharkOrbitCenter.z + Math.cos(this.sharkOrbitAngle) * radius;
+          // Face toward center (looking at victim)
+          const dx = targetX - this.shark.position.x;
+          const dz = targetZ - this.shark.position.z;
+          this.shark.rotation.y = Math.atan2(dx, dz);
+          // Aggressive body roll
+          this.shark.rotation.z = Math.sin(time * 5) * 0.2;
+        } else {
+          // Direct chase
+          const dx = targetX - this.shark.position.x;
+          const dz = targetZ - this.shark.position.z;
+          const dist = Math.sqrt(dx * dx + dz * dz);
+          if (dist > 0.5) {
+            this.shark.position.x += (dx / dist) * this.sharkSpeed * delta;
+            this.shark.position.z += (dz / dist) * this.sharkSpeed * delta;
+          }
+          this.shark.rotation.y = Math.atan2(dx, dz);
+          this.shark.rotation.z = Math.sin(time * 3) * 0.1;
         }
       }
-      // Move shark toward Nobita
-      const dx = targetX - this.shark.position.x;
-      const dz = targetZ - this.shark.position.z;
-      const dist = Math.sqrt(dx * dx + dz * dz);
-      if (dist > 0.5) {
-        this.shark.position.x += (dx / dist) * this.sharkSpeed * delta;
-        this.shark.position.z += (dz / dist) * this.sharkSpeed * delta;
+    }
+
+    // Update splash particles
+    this._updateSplashParticles(time, delta);
+
+    // Update rescued character (fly away with takecopter)
+    for (const char of this.characters) {
+      if (char.mesh.userData.isRescued) {
+        // Use a per-character rescue timer based on delta
+        char.mesh.userData.rescueElapsed = (char.mesh.userData.rescueElapsed || 0) + delta;
+        const elapsed = char.mesh.userData.rescueElapsed;
+        if (elapsed < 3) {
+          // Rise up
+          char.mesh.position.y = (char.mesh.userData.rescueStartY || 0) + elapsed * 2.5;
+          // Fly toward shore (positive Z is toward beach)
+          char.mesh.position.z += delta * 4;
+          // Tilt forward
+          char.mesh.rotation.x = 0.2;
+        }
       }
-      // Face target
-      this.shark.rotation.y = Math.atan2(dx, dz);
-      // Body roll
-      this.shark.rotation.z = Math.sin(time * 3) * 0.1;
     }
   }
 
@@ -415,6 +469,127 @@ export class BeachScene extends SceneBase {
     if (this.shark) {
       this.shark.visible = true;
       this.sharkAppeared = true;
+      this.sharkOrbitMode = false;
+    }
+  }
+
+  setSharkOrbitMode(centerX, centerZ, radius) {
+    this.sharkOrbitMode = true;
+    this.sharkOrbitCenter.set(centerX, 0.3, centerZ);
+    this.sharkOrbitRadius = radius || 4;
+    // Place shark behind and to the right of target for dramatic effect
+    this.sharkOrbitAngle = Math.PI * 0.8; // start at ~144 degrees (behind-right)
+    this.shark.position.x = centerX + Math.sin(this.sharkOrbitAngle) * this.sharkOrbitRadius;
+    this.shark.position.z = centerZ + Math.cos(this.sharkOrbitAngle) * this.sharkOrbitRadius;
+    this.shark.position.y = 0.3;
+    // Ensure shark is visible
+    if (this.shark) {
+      this.shark.visible = true;
+      this.sharkAppeared = true;
+      // Shark positioned for orbit
+    }
+  }
+
+  setSplashTarget(characterMesh) {
+    this.splashTarget = characterMesh;
+    this.splashActive = true;
+  }
+
+  stopSplash() {
+    this.splashActive = false;
+    if (this.splashParticles) {
+      this.splashParticles.visible = false;
+    }
+  }
+
+  rescueWithTakecopter(characterName) {
+    // Stop shark chasing
+    this.sharkOrbitMode = false;
+    this.sharkAppeared = false;
+    if (this.shark) {
+      // Immediately move shark far away for still-shot visibility
+      this.shark.position.x += 15;
+      this.shark.position.z -= 8;
+      this.sharkSwimAway = true;
+    }
+    this.stopSplash();
+
+    // Find character and attach takecopter
+    for (const char of this.characters) {
+      if (char.name === characterName && char.attachTakeCopter) {
+        char.attachTakeCopter();
+        // Immediately lift character up for visibility in still shots
+        char.mesh.position.y = 2.0;
+        char.mesh.position.z += 2.0; // toward shore
+        char.mesh.rotation.x = 0.2; // tilt forward
+        char.mesh.userData.isRescued = true;
+        char.mesh.userData.rescueStartY = char.mesh.position.y;
+        // Character rescued and lifted
+        break;
+      }
+    }
+  }
+
+  _createSplashParticles() {
+    const group = new THREE.Group();
+    // Larger, flatter particles for foot splash effect
+    const particleGeo = new THREE.SphereGeometry(0.08, 6, 6);
+    const particleMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.8,
+    });
+
+    for (let i = 0; i < 50; i++) {
+      const p = new THREE.Mesh(particleGeo, particleMat.clone());
+      p.userData = {
+        baseX: (Math.random() - 0.5) * 0.8,
+        baseZ: (Math.random() - 0.5) * 0.8,
+        speedY: 1.5 + Math.random() * 2.5,
+        speedX: (Math.random() - 0.5) * 1.5,
+        speedZ: (Math.random() - 0.5) * 1.5,
+        phase: Math.random() * Math.PI * 2,
+        life: Math.random(),
+        isFootSplash: i < 30, // First 30 particles are foot splash, rest are body bubbles
+      };
+      p.visible = false;
+      group.add(p);
+    }
+    group.visible = false;
+    this.scene.add(group);
+    return group;
+  }
+
+  _updateSplashParticles(time, delta) {
+    if (!this.splashActive || !this.splashTarget || !this.splashParticles) return;
+
+    this.splashParticles.visible = true;
+    const targetPos = this.splashTarget.position;
+
+    for (const p of this.splashParticles.children) {
+      const ud = p.userData;
+      ud.life += delta * 4;
+      if (ud.life > 1) ud.life = 0;
+
+      const t = ud.life;
+      
+      if (ud.isFootSplash) {
+        // Foot splash: burst upward from feet position with horizontal spread
+        p.position.x = targetPos.x + ud.baseX + ud.speedX * t * 0.5;
+        p.position.z = targetPos.z + ud.baseZ + ud.speedZ * t * 0.5;
+        // Start at water surface level, burst upward then fall
+        p.position.y = 0.05 + t * ud.speedY * 0.4 - t * t * 0.8;
+        p.scale.setScalar(1.8 * (1 - t * 0.3));
+        p.material.opacity = 0.9 * (1 - t);
+      } else {
+        // Body bubbles: smaller bubbles around upper body
+        p.position.x = targetPos.x + ud.baseX * 0.6 + Math.sin(time * 8 + ud.phase) * 0.15;
+        p.position.z = targetPos.z + ud.baseZ * 0.6 + Math.cos(time * 6 + ud.phase) * 0.15;
+        p.position.y = targetPos.y - 0.2 + t * ud.speedY * 0.3;
+        p.scale.setScalar(1.0 * (1 - t * 0.5));
+        p.material.opacity = 0.6 * (1 - t);
+      }
+      p.visible = true;
     }
   }
 

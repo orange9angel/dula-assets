@@ -152,16 +152,15 @@ export class Shizuka extends CharacterBase {
     const smile = new THREE.Mesh(smileGeo, lipMat);
     headGroup.add(smile);
 
-    // Invisible sphere for speaking animation (scales without deforming visible geometry)
-    const mouthProxy = new THREE.Mesh(new THREE.SphereGeometry(0.02), lipMat);
-    mouthProxy.position.set(0, -0.11, 0.3);
-    mouthProxy.scale.set(0.1, 0.1, 0.1);
-    mouthProxy.visible = false;
+    // Visible mouth for speaking animation (scales to simulate opening/closing)
+    const mouthProxy = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 16), lipMat);
+    mouthProxy.position.set(0, -0.105, 0.33);
+    mouthProxy.scale.set(1.5, 0.4, 0.8);
     headGroup.add(mouthProxy);
     this.mouth = mouthProxy;
-    this.mouthBaseScaleX = 0.1;
-    this.mouthBaseScaleY = 0.1;
-    this.mouthBaseScaleZ = 0.1;
+    this.mouthBaseScaleX = 1.5;
+    this.mouthBaseScaleY = 0.4;
+    this.mouthBaseScaleZ = 0.8;
 
     // ========== BLUSH (cheeks) ==========
     const blushGeo = new THREE.SphereGeometry(0.032, 16, 16);

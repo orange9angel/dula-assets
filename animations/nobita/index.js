@@ -7,6 +7,7 @@ export { Grovel } from './Grovel.js';
 export { StudyDespair } from './StudyDespair.js';
 export { TriumphPose } from './TriumphPose.js';
 export { RunAway } from './RunAway.js';
+export { SwimPanic } from './SwimPanic.js';
 
 import { CrashLand } from './CrashLand.js';
 import { Cry } from './Cry.js';
@@ -17,6 +18,7 @@ import { Grovel } from './Grovel.js';
 import { StudyDespair } from './StudyDespair.js';
 import { TriumphPose } from './TriumphPose.js';
 import { RunAway } from './RunAway.js';
+import { SwimPanic } from './SwimPanic.js';
 
 export const NobitaAnimations = {
   CrashLand,
@@ -28,4 +30,5 @@ export const NobitaAnimations = {
   StudyDespair,
   TriumphPose,
   RunAway,
+  SwimPanic,
 };

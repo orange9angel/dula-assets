@@ -6,6 +6,7 @@ export { NoseBlink } from './NoseBlink.js';
 export { Float } from './Float.js';
 export { WaddleWalk } from './WaddleWalk.js';
 export { TakeOutFromPocket } from './TakeOutFromPocket.js';
+export { SearchPocket } from './SearchPocket.js';
 
 import { PullOutRacket } from './PullOutRacket.js';
 import { ReachHand } from './ReachHand.js';
@@ -15,6 +16,7 @@ import { NoseBlink } from './NoseBlink.js';
 import { Float } from './Float.js';
 import { WaddleWalk } from './WaddleWalk.js';
 import { TakeOutFromPocket } from './TakeOutFromPocket.js';
+import { SearchPocket } from './SearchPocket.js';
 
 export const DoraemonAnimations = {
   PullOutRacket,
@@ -25,4 +27,5 @@ export const DoraemonAnimations = {
   Float,
   WaddleWalk,
   TakeOutFromPocket,
+  SearchPocket,
 };

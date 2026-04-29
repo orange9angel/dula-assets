@@ -41,6 +41,7 @@ import { Tremble } from './animations/common/Tremble.js';
 import { TurnToCamera } from './animations/common/TurnToCamera.js';
 import { Walk } from './animations/common/Walk.js';
 import { Swim } from './animations/common/Swim.js';
+import { SplashPaddle } from './animations/common/SplashPaddle.js';
 import { WaveHand } from './animations/common/WaveHand.js';
 // Animations - doraemon
 import { Float } from './animations/doraemon/Float.js';
@@ -49,6 +50,7 @@ import { PanicSpin } from './animations/doraemon/PanicSpin.js';
 import { ReachHand } from './animations/doraemon/ReachHand.js';
 import { PullOutRacket } from './animations/doraemon/PullOutRacket.js';
 import { Spin } from './animations/doraemon/Spin.js';
+import { SearchPocket } from './animations/doraemon/SearchPocket.js';
 import { TakeOutFromPocket } from './animations/doraemon/TakeOutFromPocket.js';
 import { WaddleWalk } from './animations/doraemon/WaddleWalk.js';
 // Animations - nobita
@@ -60,6 +62,7 @@ import { Grovel } from './animations/nobita/Grovel.js';
 import { LazyStretch } from './animations/nobita/LazyStretch.js';
 import { RunAway } from './animations/nobita/RunAway.js';
 import { StudyDespair } from './animations/nobita/StudyDespair.js';
+import { SwimPanic } from './animations/nobita/SwimPanic.js';
 import { TriumphPose } from './animations/nobita/TriumphPose.js';
 // Animations - shizuka
 import { Baking } from './animations/shizuka/Baking.js';
@@ -164,6 +167,7 @@ export function registerAll() {
   registerAnimation('TurnToCamera', TurnToCamera);
   registerAnimation('Walk', Walk);
   registerAnimation('Swim', Swim);
+  registerAnimation('SplashPaddle', SplashPaddle);
   registerAnimation('WaveHand', WaveHand);
   // Animations - doraemon
   registerAnimation('Float', Float);
@@ -173,6 +177,7 @@ export function registerAll() {
   registerAnimation('ReachHand', ReachHand);
   registerAnimation('ReachOut', ReachOut);
   registerAnimation('Spin', Spin);
+  registerAnimation('SearchPocket', SearchPocket);
   registerAnimation('TakeOutFromPocket', TakeOutFromPocket);
   registerAnimation('WaddleWalk', WaddleWalk);
   // Animations - nobita
@@ -181,6 +186,7 @@ export function registerAll() {
   registerAnimation('LazyStretch', LazyStretch);
   registerAnimation('RunAway', RunAway);
   registerAnimation('StudyDespair', StudyDespair);
+  registerAnimation('SwimPanic', SwimPanic);
   registerAnimation('TriumphPose', TriumphPose);
   // Animations - shizuka
   registerAnimation('Baking', Baking);

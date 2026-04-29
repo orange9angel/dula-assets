@@ -5,6 +5,7 @@ export { WaveHand } from './WaveHand.js';
 export { StompFoot } from './StompFoot.js';
 export { Walk } from './Walk.js';
 export { Swim } from './Swim.js';
+export { SplashPaddle } from './SplashPaddle.js';
 export { TurnToCamera } from './TurnToCamera.js';
 export { SwingRacket } from './SwingRacket.js';
 export { Run } from './Run.js';
@@ -62,6 +63,8 @@ export const CommonAnimations = {
   WaveHand,
   StompFoot,
   Walk,
+  Swim,
+  SplashPaddle,
   TurnToCamera,
   SwingRacket,
   Run,
