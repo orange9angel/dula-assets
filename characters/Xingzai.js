@@ -3,7 +3,8 @@ import { CharacterBase } from 'dula-engine';
 
 /**
  * Xingzai (星仔) — 星际快递员
- * 圆滚滚的蓝色身体，星星形状的眼睛，头上有信号天线
+ * 全新设计：瘦高的萤火虫星人，透明翅膀，发光尾巴，大触角
+ * 完全区别于哆啦A梦的圆滚滚造型
  */
 export class Xingzai extends CharacterBase {
   constructor() {
@@ -24,324 +25,321 @@ export class Xingzai extends CharacterBase {
       return tex;
     })();
 
-    const bodyMat = new THREE.MeshToonMaterial({ color: 0x4a90d9, gradientMap: toonGradient });
-    const bellyMat = new THREE.MeshToonMaterial({ color: 0xe8f4f8, gradientMap: toonGradient });
+    // 全新配色：亮紫+荧光绿，昆虫感（调亮以便在暗场景中可见）
+    const shellMat = new THREE.MeshToonMaterial({ color: 0x6b3fa0, gradientMap: toonGradient });
+    const glowMat = new THREE.MeshToonMaterial({ color: 0x39ff14, gradientMap: toonGradient });
+    const darkMat = new THREE.MeshToonMaterial({ color: 0x4a2b6e, gradientMap: toonGradient });
     const eyeMat = new THREE.MeshToonMaterial({ color: 0xffd700, gradientMap: toonGradient });
-    const pupilMat = new THREE.MeshToonMaterial({ color: 0x1a1a3a, gradientMap: toonGradient });
-    const antennaMat = new THREE.MeshToonMaterial({ color: 0xff6b6b, gradientMap: toonGradient });
-    const whiteMat = new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: toonGradient });
+    const pupilMat = new THREE.MeshToonMaterial({ color: 0x0a0a0a, gradientMap: toonGradient });
+    const wingMat = new THREE.MeshBasicMaterial({ 
+      color: 0xaaffaa, 
+      transparent: true, 
+      opacity: 0.25,
+      side: THREE.DoubleSide
+    });
 
-    // Head group
+    // ========== HEAD GROUP ==========
     const headGroup = new THREE.Group();
-    headGroup.position.y = 1.5;
+    headGroup.position.y = 2.2;
 
-    // Main head (slightly squashed sphere)
-    const headGeo = new THREE.SphereGeometry(0.65, 32, 32);
-    const head = new THREE.Mesh(headGeo, bodyMat);
-    head.scale.y = 0.9;
+    // 头部：椭圆形的昆虫头，不是圆球
+    const headGeo = new THREE.SphereGeometry(0.35, 32, 32);
+    const head = new THREE.Mesh(headGeo, shellMat);
+    head.scale.set(1.0, 1.3, 0.9);
     head.castShadow = true;
     headGroup.add(head);
 
-    // Star-shaped eyes (5-pointed star geometry)
-    const createStar = (outerR, innerR, points) => {
-      const shape = new THREE.Shape();
-      for (let i = 0; i < points * 2; i++) {
-        const r = i % 2 === 0 ? outerR : innerR;
-        const a = (i / (points * 2)) * Math.PI * 2 - Math.PI / 2;
-        if (i === 0) shape.moveTo(Math.cos(a) * r, Math.sin(a) * r);
-        else shape.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+    // 巨大的复眼（昆虫特征），不是星星眼
+    const createCompoundEye = () => {
+      const eyeGroup = new THREE.Group();
+      // 主眼球
+      const mainEyeGeo = new THREE.SphereGeometry(0.18, 16, 16);
+      const mainEye = new THREE.Mesh(mainEyeGeo, eyeMat);
+      mainEye.scale.set(1, 1.2, 0.6);
+      eyeGroup.add(mainEye);
+      // 复眼小点阵
+      for (let i = 0; i < 12; i++) {
+        const dotGeo = new THREE.SphereGeometry(0.025, 8, 8);
+        const dot = new THREE.Mesh(dotGeo, glowMat);
+        const angle = (i / 12) * Math.PI * 2;
+        dot.position.set(Math.cos(angle) * 0.12, Math.sin(angle) * 0.14, 0.08);
+        eyeGroup.add(dot);
       }
-      shape.closePath();
-      const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.02, bevelEnabled: false });
-      return geo;
+      // 瞳孔
+      const pupilGeo = new THREE.SphereGeometry(0.08, 16, 16);
+      const pupil = new THREE.Mesh(pupilGeo, pupilMat);
+      pupil.position.z = 0.12;
+      pupil.scale.set(1, 1.3, 0.5);
+      eyeGroup.add(pupil);
+      return eyeGroup;
     };
 
-    const starGeo = createStar(0.12, 0.05, 5);
-
-    // Left star eye
-    const leftEye = new THREE.Mesh(starGeo, eyeMat);
-    leftEye.position.set(-0.22, 0.15, 0.55);
-    leftEye.rotation.x = -0.1;
+    const leftEye = createCompoundEye();
+    leftEye.position.set(-0.2, 0.1, 0.28);
     headGroup.add(leftEye);
+    this.leftEye = leftEye;
 
-    // Right star eye
-    const rightEye = new THREE.Mesh(starGeo, eyeMat);
-    rightEye.position.set(0.22, 0.15, 0.55);
-    rightEye.rotation.x = -0.1;
+    const rightEye = createCompoundEye();
+    rightEye.position.set(0.2, 0.1, 0.28);
     headGroup.add(rightEye);
+    this.rightEye = rightEye;
 
-    // Pupils (small dark dots in center of stars)
-    const pupilGeo = new THREE.SphereGeometry(0.04, 16, 16);
-    const leftPupil = new THREE.Mesh(pupilGeo, pupilMat);
-    leftPupil.position.set(-0.22, 0.15, 0.6);
-    leftPupil.userData.baseX = leftPupil.position.x;
-    headGroup.add(leftPupil);
-    this.leftPupil = leftPupil;
-
-    const rightPupil = new THREE.Mesh(pupilGeo, pupilMat);
-    rightPupil.position.set(0.22, 0.15, 0.6);
-    rightPupil.userData.baseX = rightPupil.position.x;
-    headGroup.add(rightPupil);
-    this.rightPupil = rightPupil;
-
-    // Mouth (small smile)
-    const smileCurve = new THREE.QuadraticBezierCurve3(
-      new THREE.Vector3(-0.08, -0.15, 0.55),
-      new THREE.Vector3(0, -0.2, 0.58),
-      new THREE.Vector3(0.08, -0.15, 0.55)
-    );
-    const smileGeo = new THREE.TubeGeometry(smileCurve, 8, 0.008, 8, false);
-    const smile = new THREE.Mesh(smileGeo, pupilMat);
-    headGroup.add(smile);
-    this.mouth = smile;
+    // 嘴巴：小小的下颚
+    const jawGeo = new THREE.ConeGeometry(0.04, 0.1, 4);
+    const jaw = new THREE.Mesh(jawGeo, darkMat);
+    jaw.position.set(0, -0.25, 0.25);
+    jaw.rotation.x = Math.PI;
+    headGroup.add(jaw);
+    this.mouth = jaw;
     this.mouthBaseScaleX = 1;
     this.mouthBaseScaleY = 1;
     this.mouthBaseScaleZ = 1;
+    this.mouthBaseRotationX = Math.PI;
 
-    // Antenna (on top of head)
-    const antennaGroup = new THREE.Group();
-    antennaGroup.position.y = 0.6;
+    // 两根巨大的触角（昆虫特征），不是天线
+    const createAntenna = () => {
+      const group = new THREE.Group();
+      // 多段触角，可以弯曲
+      const segments = 5;
+      let currentY = 0;
+      for (let i = 0; i < segments; i++) {
+        const segGeo = new THREE.CylinderGeometry(0.015 - i * 0.002, 0.02 - i * 0.002, 0.15, 8);
+        const seg = new THREE.Mesh(segGeo, darkMat);
+        seg.position.y = currentY + 0.075;
+        seg.rotation.z = i * 0.15;
+        group.add(seg);
+        currentY += 0.15;
+      }
+      // 触角末端发光球
+      const tipGeo = new THREE.SphereGeometry(0.05, 16, 16);
+      const tip = new THREE.Mesh(tipGeo, new THREE.MeshBasicMaterial({ color: 0x39ff14 }));
+      tip.position.set(currentY * 0.15, currentY, 0);
+      group.add(tip);
+      return { group, tip };
+    };
 
-    const stemGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.3, 8);
-    const stem = new THREE.Mesh(stemGeo, antennaMat);
-    stem.position.y = 0.15;
-    antennaGroup.add(stem);
+    const leftAntenna = createAntenna();
+    leftAntenna.group.position.set(-0.15, 0.4, 0);
+    leftAntenna.group.rotation.z = 0.3;
+    headGroup.add(leftAntenna.group);
+    this.leftAntennaTip = leftAntenna.tip;
 
-    // Glowing ball on antenna tip
-    const ballGeo = new THREE.SphereGeometry(0.06, 16, 16);
-    const ball = new THREE.Mesh(ballGeo, new THREE.MeshBasicMaterial({ color: 0xff6b6b }));
-    ball.position.y = 0.32;
-    antennaGroup.add(ball);
-
-    // Glow ring around ball
-    const glowGeo = new THREE.SphereGeometry(0.1, 16, 16);
-    const glow = new THREE.Mesh(glowGeo, new THREE.MeshBasicMaterial({
-      color: 0xff9999, transparent: true, opacity: 0.3
-    }));
-    glow.position.y = 0.32;
-    antennaGroup.add(glow);
-
-    headGroup.add(antennaGroup);
-    this.antennaBall = ball;
-    this.antennaGlow = glow;
+    const rightAntenna = createAntenna();
+    rightAntenna.group.position.set(0.15, 0.4, 0);
+    rightAntenna.group.rotation.z = -0.3;
+    headGroup.add(rightAntenna.group);
+    this.rightAntennaTip = rightAntenna.tip;
 
     this.headGroup = headGroup;
     this.mesh.add(headGroup);
 
-    // Body (round)
-    const bodyGeo = new THREE.SphereGeometry(0.6, 32, 32);
-    const body = new THREE.Mesh(bodyGeo, bodyMat);
-    body.position.y = 0.65;
-    body.scale.y = 1.05;
-    body.castShadow = true;
-    this.mesh.add(body);
+    // ========== BODY ==========
+    // 瘦长的昆虫身体，不是圆球！
+    const bodyGroup = new THREE.Group();
+    bodyGroup.position.y = 1.4;
 
-    // Belly (lighter patch)
-    const bellyGeo = new THREE.SphereGeometry(0.45, 32, 32);
-    const belly = new THREE.Mesh(bellyGeo, bellyMat);
-    belly.position.set(0, 0.6, 0.35);
-    belly.scale.set(1, 0.9, 0.5);
-    this.mesh.add(belly);
+    // 胸部（三段式昆虫身体的第一段）
+    const thoraxGeo = new THREE.SphereGeometry(0.3, 32, 32);
+    const thorax = new THREE.Mesh(thoraxGeo, shellMat);
+    thorax.scale.set(0.9, 1.0, 0.8);
+    thorax.castShadow = true;
+    bodyGroup.add(thorax);
 
-    // Package badge on belly (small box icon)
-    const badgeGeo = new THREE.BoxGeometry(0.15, 0.12, 0.02);
-    const badge = new THREE.Mesh(badgeGeo, new THREE.MeshToonMaterial({ color: 0xffd700, gradientMap: toonGradient }));
-    badge.position.set(0, 0.65, 0.52);
-    this.mesh.add(badge);
+    // 腹部（第二段，更大一些）
+    const abdomenGeo = new THREE.SphereGeometry(0.35, 32, 32);
+    const abdomen = new THREE.Mesh(abdomenGeo, shellMat);
+    abdomen.position.y = -0.5;
+    abdomen.scale.set(1.0, 1.3, 0.9);
+    abdomen.castShadow = true;
+    bodyGroup.add(abdomen);
 
-    // Arms
-    const handGeo = new THREE.SphereGeometry(0.12, 16, 16);
+    // 腹部发光条纹（萤火虫特征）
+    for (let i = 0; i < 3; i++) {
+      const stripeGeo = new THREE.TorusGeometry(0.32 - i * 0.02, 0.02, 8, 32);
+      const stripe = new THREE.Mesh(stripeGeo, glowMat);
+      stripe.position.y = -0.3 - i * 0.2;
+      stripe.rotation.x = Math.PI / 2;
+      bodyGroup.add(stripe);
+    }
 
-    const addArm = (sx, sy, sz, hx, hy, hz, isRight) => {
-      const group = new THREE.Group();
-      group.position.set(sx, sy, sz);
-      group.lookAt(hx, hy, hz);
-      group.rotateX(-Math.PI / 2);
+    // 尾巴发光器（萤火虫屁股发光）
+    const tailGlowGeo = new THREE.SphereGeometry(0.12, 16, 16);
+    const tailGlow = new THREE.Mesh(tailGlowGeo, new THREE.MeshBasicMaterial({ 
+      color: 0x39ff14, 
+      transparent: true, 
+      opacity: 0.8 
+    }));
+    tailGlow.position.y = -1.0;
+    bodyGroup.add(tailGlow);
+    this.tailGlow = tailGlow;
 
-      const len = Math.sqrt((hx - sx) ** 2 + (hy - sy) ** 2 + (hz - sz) ** 2);
-      const capLen = Math.max(0.01, len - 0.2);
-      const armMesh = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, capLen, 4, 16), bodyMat);
-      armMesh.position.y = -len / 2;
-      group.add(armMesh);
+    // 尾巴光晕
+    const tailHaloGeo = new THREE.SphereGeometry(0.2, 16, 16);
+    const tailHalo = new THREE.Mesh(tailHaloGeo, new THREE.MeshBasicMaterial({ 
+      color: 0x66ff66, 
+      transparent: true, 
+      opacity: 0.2 
+    }));
+    tailHalo.position.y = -1.0;
+    bodyGroup.add(tailHalo);
+    this.tailHalo = tailHalo;
 
-      const handMesh = new THREE.Mesh(handGeo, whiteMat);
-      handMesh.position.y = -len;
-      group.add(handMesh);
+    this.mesh.add(bodyGroup);
+    this.bodyGroup = bodyGroup;
 
-      this.mesh.add(group);
-      if (isRight) {
-        this.rightArm = group;
-        this.rightArmLength = len;
-        this.rightArmBaseZ = group.rotation.z;
-      } else {
-        this.leftArm = group;
-        this.leftArmBaseZ = group.rotation.z;
-      }
+    // ========== WINGS ==========
+    // 两对透明的昆虫翅膀（蜻蜓/萤火虫风格）
+    const createWing = (scaleX, scaleY, offsetX) => {
+      const wingShape = new THREE.Shape();
+      wingShape.moveTo(0, 0);
+      wingShape.bezierCurveTo(0.3 * scaleX, 0.8 * scaleY, 0.8 * scaleX, 1.2 * scaleY, 0.2 * scaleX, 1.5 * scaleY);
+      wingShape.bezierCurveTo(-0.2 * scaleX, 1.3 * scaleY, -0.3 * scaleX, 0.6 * scaleY, 0, 0);
+      
+      const wingGeo = new THREE.ShapeGeometry(wingShape);
+      const wing = new THREE.Mesh(wingGeo, wingMat);
+      wing.position.x = offsetX;
+      return wing;
     };
 
-    addArm(-0.4, 1.0, 0, -0.75, 0.65, 0, false);
-    addArm(0.4, 1.0, 0, 0.75, 0.65, 0, true);
+    // 上翅（大）
+    this.leftUpperWing = createWing(1.2, 1.0, -0.1);
+    this.leftUpperWing.rotation.z = 0.3;
+    this.leftUpperWing.rotation.y = 0.2;
+    bodyGroup.add(this.leftUpperWing);
 
-    // Legs + Feet
-    const legGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.4, 16);
-    const footGeo = new THREE.SphereGeometry(0.18, 32, 32);
+    this.rightUpperWing = createWing(1.2, 1.0, 0.1);
+    this.rightUpperWing.rotation.z = -0.3;
+    this.rightUpperWing.rotation.y = -0.2;
+    this.rightUpperWing.scale.x = -1;
+    bodyGroup.add(this.rightUpperWing);
 
-    const leftLegGroup = new THREE.Group();
-    leftLegGroup.position.set(-0.22, 0.5, 0);
-    const leftLegMesh = new THREE.Mesh(legGeo, bodyMat);
-    leftLegMesh.position.y = -0.2;
-    leftLegGroup.add(leftLegMesh);
-    const leftFoot = new THREE.Mesh(footGeo, whiteMat);
-    leftFoot.position.set(0, -0.4, 0.05);
-    leftFoot.scale.set(1, 0.6, 1.3);
-    leftLegGroup.add(leftFoot);
-    this.mesh.add(leftLegGroup);
-    this.leftLeg = leftLegGroup;
+    // 下翅（小）
+    this.leftLowerWing = createWing(0.8, 0.7, -0.1);
+    this.leftLowerWing.position.y = -0.15;
+    this.leftLowerWing.rotation.z = 0.5;
+    bodyGroup.add(this.leftLowerWing);
 
-    const rightLegGroup = new THREE.Group();
-    rightLegGroup.position.set(0.22, 0.5, 0);
-    const rightLegMesh = new THREE.Mesh(legGeo, bodyMat);
-    rightLegMesh.position.y = -0.2;
-    rightLegGroup.add(rightLegMesh);
-    const rightFoot = new THREE.Mesh(footGeo, whiteMat);
-    rightFoot.position.set(0, -0.4, 0.05);
-    rightFoot.scale.set(1, 0.6, 1.3);
-    rightLegGroup.add(rightFoot);
-    this.mesh.add(rightLegGroup);
-    this.rightLeg = rightLegGroup;
+    this.rightLowerWing = createWing(0.8, 0.7, 0.1);
+    this.rightLowerWing.position.y = -0.15;
+    this.rightLowerWing.rotation.z = -0.5;
+    this.rightLowerWing.scale.x = -1;
+    bodyGroup.add(this.rightLowerWing);
 
-    // Jet pack (hidden by default, for flying scenes)
-    this.jetPack = this.createJetPack();
-    this.jetPack.visible = false;
-    this.mesh.add(this.jetPack);
+    // ========== ARMS ==========
+    // 细长的昆虫手臂，带关节
+    const createArm = (isRight) => {
+      const group = new THREE.Group();
+      const side = isRight ? 1 : -1;
+      group.position.set(side * 0.35, 1.6, 0);
 
-    // TakeCopter (bamboo propeller, hidden by default)
+      // 上臂
+      const upperArmGeo = new THREE.CylinderGeometry(0.04, 0.05, 0.35, 8);
+      const upperArm = new THREE.Mesh(upperArmGeo, shellMat);
+      upperArm.position.y = -0.175;
+      group.add(upperArm);
+
+      // 关节
+      const jointGeo = new THREE.SphereGeometry(0.05, 8, 8);
+      const joint = new THREE.Mesh(jointGeo, darkMat);
+      joint.position.y = -0.35;
+      group.add(joint);
+
+      // 前臂
+      const lowerArmGeo = new THREE.CylinderGeometry(0.03, 0.04, 0.3, 8);
+      const lowerArm = new THREE.Mesh(lowerArmGeo, shellMat);
+      lowerArm.position.y = -0.5;
+      group.add(lowerArm);
+
+      // 手（小爪子）
+      const handGeo = new THREE.ConeGeometry(0.04, 0.1, 4);
+      const hand = new THREE.Mesh(handGeo, glowMat);
+      hand.position.y = -0.68;
+      hand.rotation.x = Math.PI;
+      group.add(hand);
+
+      this.mesh.add(group);
+      return group;
+    };
+
+    this.leftArm = createArm(false);
+    this.rightArm = createArm(true);
+
+    // ========== LEGS ==========
+    // 细长的昆虫腿
+    const createLeg = (side, front) => {
+      const group = new THREE.Group();
+      const xOffset = side * 0.25;
+      const zOffset = front ? 0.15 : -0.15;
+      group.position.set(xOffset, 1.0, zOffset);
+
+      // 大腿
+      const thighGeo = new THREE.CylinderGeometry(0.04, 0.05, 0.4, 8);
+      const thigh = new THREE.Mesh(thighGeo, shellMat);
+      thigh.position.y = -0.2;
+      thigh.rotation.z = side * 0.3;
+      group.add(thigh);
+
+      // 小腿
+      const shinGeo = new THREE.CylinderGeometry(0.03, 0.04, 0.4, 8);
+      const shin = new THREE.Mesh(shinGeo, shellMat);
+      shin.position.set(side * 0.1, -0.5, 0);
+      shin.rotation.z = side * -0.2;
+      group.add(shin);
+
+      // 脚（尖爪）
+      const footGeo = new THREE.ConeGeometry(0.03, 0.08, 4);
+      const foot = new THREE.Mesh(footGeo, glowMat);
+      foot.position.set(side * 0.15, -0.72, 0);
+      group.add(foot);
+
+      this.mesh.add(group);
+      return group;
+    };
+
+    this.leftFrontLeg = createLeg(-1, true);
+    this.rightFrontLeg = createLeg(1, true);
+    this.leftBackLeg = createLeg(-1, false);
+    this.rightBackLeg = createLeg(1, false);
+
+    // ========== PROPS ==========
+    // 快递包（挂在腹部下方）
+    const packGeo = new THREE.BoxGeometry(0.3, 0.25, 0.15);
+    const pack = new THREE.Mesh(packGeo, new THREE.MeshToonMaterial({ color: 0x8B4513, gradientMap: toonGradient }));
+    pack.position.set(0, 0.8, 0.3);
+    pack.rotation.x = -0.2;
+    this.mesh.add(pack);
+    this.pack = pack;
+
+    // 竹蜻蜓（备用道具，隐藏在头顶）
     this.takeCopter = this.createTakeCopter();
     this.takeCopter.visible = false;
     this.mesh.add(this.takeCopter);
   }
 
-  createJetPack() {
-    const group = new THREE.Group();
-    group.position.set(0, 0.8, -0.45);
-
-    const packMat = new THREE.MeshToonMaterial({ color: 0x666688 });
-    const metalMat = new THREE.MeshToonMaterial({ color: 0x9999aa });
-
-    // Main pack body (aerodynamic, rounded)
-    const pack = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.4, 0.25), packMat);
-    group.add(pack);
-
-    // Pack detail lines
-    const detail = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.05, 0.26), metalMat);
-    detail.position.y = 0.1;
-    group.add(detail);
-
-    // Two thrusters with flame cones
-    for (let side of [-1, 1]) {
-      // Thruster body
-      const thruster = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.07, 0.09, 0.25, 12),
-        metalMat
-      );
-      thruster.position.set(side * 0.16, -0.28, 0);
-      group.add(thruster);
-
-      // Nozzle ring
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(0.09, 0.02, 8, 16),
-        new THREE.MeshToonMaterial({ color: 0x444466 })
-      );
-      ring.position.set(side * 0.16, -0.42, 0);
-      ring.rotation.x = Math.PI / 2;
-      group.add(ring);
-
-      // Flame cone (hidden by default, shown when flying)
-      const flameGeo = new THREE.ConeGeometry(0.08, 0.4, 8);
-      flameGeo.translate(0, -0.2, 0);
-      const flameMat = new THREE.MeshBasicMaterial({
-        color: 0x00ddff,
-        transparent: true,
-        opacity: 0.7,
-      });
-      const flame = new THREE.Mesh(flameGeo, flameMat);
-      flame.position.set(side * 0.16, -0.42, 0);
-      flame.name = 'flame';
-      group.add(flame);
-
-      // Inner flame (hotter, whiter)
-      const innerFlameGeo = new THREE.ConeGeometry(0.04, 0.25, 8);
-      innerFlameGeo.translate(0, -0.125, 0);
-      const innerFlameMat = new THREE.MeshBasicMaterial({
-        color: 0xaaddff,
-        transparent: true,
-        opacity: 0.9,
-      });
-      const innerFlame = new THREE.Mesh(innerFlameGeo, innerFlameMat);
-      innerFlame.position.set(side * 0.16, -0.42, 0);
-      innerFlame.name = 'innerFlame';
-      group.add(innerFlame);
-    }
-
-    return group;
-  }
-
-  attachJetPack() {
-    if (this.jetPack) this.jetPack.visible = true;
-  }
-
-  detachJetPack() {
-    if (this.jetPack) this.jetPack.visible = false;
-  }
-
-  setJetPackFlames(active) {
-    if (!this.jetPack) return;
-    this.jetPack.traverse((child) => {
-      if (child.name === 'flame' || child.name === 'innerFlame') {
-        child.visible = active;
-      }
-    });
-  }
-
   createTakeCopter() {
     const group = new THREE.Group();
-    group.position.set(0, 2.05, 0.15); // Slightly above and in front of head, clear of antenna
+    group.position.set(0, 2.8, 0);
 
     const shaftMat = new THREE.MeshToonMaterial({ color: 0x8B4513 });
     const bladeMat = new THREE.MeshToonMaterial({ color: 0xFFD700 });
 
-    // Central shaft (thicker, taller)
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.2, 8), shaftMat);
-    shaft.position.y = 0.1;
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.15, 8), shaftMat);
+    shaft.position.y = 0.075;
     group.add(shaft);
 
-    // Propeller hub
-    const hub = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), shaftMat);
-    hub.position.y = 0.22;
+    const hub = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), shaftMat);
+    hub.position.y = 0.15;
     group.add(hub);
 
-    // Two blades (cross shape, larger and thicker)
-    const bladeGeo = new THREE.BoxGeometry(0.9, 0.03, 0.12);
+    const bladeGeo = new THREE.BoxGeometry(0.8, 0.02, 0.1);
     const blade1 = new THREE.Mesh(bladeGeo, bladeMat);
-    blade1.position.y = 0.22;
+    blade1.position.y = 0.15;
     group.add(blade1);
 
     const blade2 = new THREE.Mesh(bladeGeo, bladeMat);
-    blade2.position.y = 0.22;
+    blade2.position.y = 0.15;
     blade2.rotation.y = Math.PI / 2;
     group.add(blade2);
-
-    // Blade tips (glowing yellow spheres for visibility)
-    const tipMat = new THREE.MeshBasicMaterial({ color: 0xFFFF00 });
-    for (const side of [-1, 1]) {
-      const tip1 = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), tipMat);
-      tip1.position.set(side * 0.45, 0.22, 0);
-      group.add(tip1);
-
-      const tip2 = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), tipMat);
-      tip2.position.set(0, 0.22, side * 0.45);
-      group.add(tip2);
-    }
 
     return group;
   }
@@ -356,24 +354,48 @@ export class Xingzai extends CharacterBase {
 
   update(time, delta) {
     super.update(time, delta);
-    // Antenna glow pulse
-    if (this.antennaGlow) {
-      this.antennaGlow.scale.setScalar(1 + Math.sin(time * 3) * 0.2);
-      this.antennaGlow.material.opacity = 0.2 + Math.sin(time * 3) * 0.15;
+
+    // 触角摆动
+    if (this.leftAntennaTip && this.rightAntennaTip) {
+      const parent1 = this.leftAntennaTip.parent;
+      const parent2 = this.rightAntennaTip.parent;
+      if (parent1) parent1.rotation.z = 0.3 + Math.sin(time * 2) * 0.1;
+      if (parent2) parent2.rotation.z = -0.3 + Math.sin(time * 2 + 1) * 0.1;
     }
-    // TakeCopter spin
+
+    // 尾巴发光脉冲（萤火虫闪烁）
+    if (this.tailGlow && this.tailHalo) {
+      const pulse = 0.5 + Math.sin(time * 4) * 0.3 + Math.sin(time * 7) * 0.2;
+      this.tailGlow.material.opacity = pulse;
+      this.tailHalo.scale.setScalar(1 + pulse * 0.5);
+      this.tailHalo.material.opacity = pulse * 0.3;
+    }
+
+    // 翅膀微动（待机时）
+    if (this.leftUpperWing && this.rightUpperWing) {
+      const flutter = Math.sin(time * 8) * 0.05;
+      this.leftUpperWing.rotation.z = 0.3 + flutter;
+      this.rightUpperWing.rotation.z = -0.3 - flutter;
+    }
+
+    // 竹蜻蜓旋转
     if (this.takeCopter?.visible) {
       this.takeCopter.rotation.y += 15 * delta;
     }
-    // Jet pack flame flicker
-    if (this.jetPack?.visible) {
-      this.jetPack.traverse((child) => {
-        if (child.name === 'flame') {
-          child.scale.y = 1 + Math.sin(time * 20) * 0.3 + Math.random() * 0.2;
-          child.material.opacity = 0.5 + Math.sin(time * 15) * 0.2;
+
+    // 复眼小点发光
+    if (this.leftEye && this.rightEye) {
+      const pulseEmissive = 0.3 + Math.sin(time * 3) * 0.2;
+      this.leftEye.traverse((child) => {
+        if (child.material && child.material.emissiveIntensity !== undefined) {
+          child.material.emissive = new THREE.Color(0x39ff14);
+          child.material.emissiveIntensity = pulseEmissive;
         }
-        if (child.name === 'innerFlame') {
-          child.scale.y = 1 + Math.sin(time * 25) * 0.2 + Math.random() * 0.15;
+      });
+      this.rightEye.traverse((child) => {
+        if (child.material && child.material.emissiveIntensity !== undefined) {
+          child.material.emissive = new THREE.Color(0x39ff14);
+          child.material.emissiveIntensity = pulseEmissive;
         }
       });
     }

@@ -43,6 +43,8 @@ import { Walk } from './animations/common/Walk.js';
 import { Swim } from './animations/common/Swim.js';
 import { SplashPaddle } from './animations/common/SplashPaddle.js';
 import { WaveHand } from './animations/common/WaveHand.js';
+import { PullOpenDrawer } from './animations/common/PullOpenDrawer.js';
+import { JumpIntoDrawer } from './animations/common/JumpIntoDrawer.js';
 // Animations - doraemon
 import { Float } from './animations/doraemon/Float.js';
 import { NoseBlink } from './animations/doraemon/NoseBlink.js';
@@ -197,6 +199,8 @@ export function registerAll() {
   registerAnimation('PlayViolin', PlayViolin);
   registerAnimation('Scold', Scold);
   registerAnimation('WaveUp', WaveUp);
+  registerAnimation('PullOpenDrawer', PullOpenDrawer);
+  registerAnimation('JumpIntoDrawer', JumpIntoDrawer);
   // Animations - xingzai
   registerAnimation('XingzaiFloat', XingzaiFloat);
   registerAnimation('TandemFlight', TandemFlight);

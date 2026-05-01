@@ -35,7 +35,7 @@ export class TrackingCloseUp extends CameraMoveBase {
     const side = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
     const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle)).add(side.multiplyScalar(Math.sin(this.sideAngle)));
 
-    const camPos = lookAt.clone().sub(camDir.multiplyScalar(this.distance));
+    const camPos = lookAt.clone().add(camDir.multiplyScalar(this.distance));
     camPos.y = lookAt.y + 0.02;
 
     camera.position.copy(camPos);

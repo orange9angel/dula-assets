@@ -51,28 +51,46 @@ export class Xiaoyue extends CharacterBase {
     chin.scale.set(1.1, 0.7, 0.9);
     headGroup.add(chin);
 
-    // Hair (short silver, covers top and back)
-    const hairGeo = new THREE.SphereGeometry(0.32, 32, 32, 0, Math.PI * 2, 0, Math.PI / 1.6);
+    // Hair (continuous full-coverage sphere, no gaps)
+    // Main hair dome - covers entire top and back seamlessly
+    const hairGeo = new THREE.SphereGeometry(0.34, 32, 32, 0, Math.PI * 2, 0, Math.PI * 0.85);
     const hair = new THREE.Mesh(hairGeo, hairMat);
-    hair.position.set(0, 0.04, -0.04);
+    hair.position.set(0, 0.06, -0.02);
     headGroup.add(hair);
 
-    // Back hair volume
-    const backHairGeo = new THREE.SphereGeometry(0.3, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+    // Lower back hair (fills the gap between head and cloak hood)
+    const backHairGeo = new THREE.SphereGeometry(0.3, 32, 32, 0, Math.PI * 2, Math.PI * 0.5, Math.PI * 0.5);
     const backHair = new THREE.Mesh(backHairGeo, hairMat);
-    backHair.position.set(0, 0.02, -0.08);
-    backHair.rotation.x = Math.PI * 0.85;
+    backHair.position.set(0, -0.05, -0.12);
+    backHair.rotation.x = Math.PI * 0.3;
     headGroup.add(backHair);
 
-    // Bangs (swept to side)
-    const bangGeo = new THREE.BoxGeometry(0.08, 0.14, 0.015);
+    // Side hair panels (cover temples/ears area to prevent gaps)
+    for (const side of [-1, 1]) {
+      const sideHairGeo = new THREE.SphereGeometry(0.22, 16, 16, 0, Math.PI, 0, Math.PI * 0.6);
+      const sideHair = new THREE.Mesh(sideHairGeo, hairMat);
+      sideHair.position.set(side * 0.22, 0.02, -0.05);
+      sideHair.rotation.z = side * Math.PI * 0.35;
+      sideHair.rotation.y = side * Math.PI * 0.3;
+      headGroup.add(sideHair);
+    }
+
+    // Bangs (swept to side, extended down to cover forehead transition)
+    const bangGeo = new THREE.BoxGeometry(0.08, 0.18, 0.015);
     for (let i = -2; i <= 2; i++) {
       const bang = new THREE.Mesh(bangGeo, hairMat);
-      bang.position.set(i * 0.06, 0.18, 0.28);
-      bang.rotation.x = -0.25;
-      bang.rotation.z = i * 0.1 - 0.15;
+      bang.position.set(i * 0.065, 0.16, 0.29);
+      bang.rotation.x = -0.3;
+      bang.rotation.z = i * 0.12 - 0.15;
       headGroup.add(bang);
     }
+
+    // Additional hair strands at the hairline (cover any remaining gap)
+    const hairlineGeo = new THREE.CylinderGeometry(0.28, 0.32, 0.08, 32, 1, true);
+    const hairline = new THREE.Mesh(hairlineGeo, hairMat);
+    hairline.position.set(0, 0.18, -0.02);
+    hairline.rotation.x = -0.2;
+    headGroup.add(hairline);
 
     // ========== CRESCENT MOON EYES ==========
     const createCrescent = (radius, thickness) => {

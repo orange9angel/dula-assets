@@ -48,7 +48,7 @@ export class CloseUp extends CameraMoveBase {
     const side = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
     const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle)).add(side.multiplyScalar(Math.sin(this.sideAngle)));
 
-    this.endPos = this.lookAtPos.clone().sub(camDir.multiplyScalar(this.distance));
+    this.endPos = this.lookAtPos.clone().add(camDir.multiplyScalar(this.distance));
     this.endPos.y = this.lookAtPos.y + 0.05;
 
     if (!this.startPos) {

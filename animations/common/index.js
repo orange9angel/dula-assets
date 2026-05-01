@@ -27,6 +27,8 @@ export { FlailArms } from './FlailArms.js';
 export { LookUp } from './LookUp.js';
 export { ReachOut } from './ReachOut.js';
 export { WaveUp } from './WaveUp.js';
+export { PullOpenDrawer } from './PullOpenDrawer.js';
+export { JumpIntoDrawer } from './JumpIntoDrawer.js';
 
 import { Nod } from './Nod.js';
 import { Jump } from './Jump.js';
@@ -55,6 +57,8 @@ import { FlailArms } from './FlailArms.js';
 import { LookUp } from './LookUp.js';
 import { ReachOut } from './ReachOut.js';
 import { WaveUp } from './WaveUp.js';
+import { PullOpenDrawer } from './PullOpenDrawer.js';
+import { JumpIntoDrawer } from './JumpIntoDrawer.js';
 
 export const CommonAnimations = {
   Nod,
@@ -86,4 +90,6 @@ export const CommonAnimations = {
   LookUp,
   ReachOut,
   WaveUp,
+  PullOpenDrawer,
+  JumpIntoDrawer,
 };
