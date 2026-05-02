@@ -5,6 +5,10 @@ import { Shizuka } from './characters/Shizuka.js';
 import { RockLee } from './characters/RockLee.js';
 import { Xingzai } from './characters/Xingzai.js';
 import { Xiaoyue } from './characters/Xiaoyue.js';
+import { SheRa } from './characters/SheRa.js';
+import { Adora } from './characters/Adora.js';
+import { Catra } from './characters/Catra.js';
+import { Hordak } from './characters/Hordak.js';
 
 // Transitions
 import { Fade } from './transitions/Fade.js';
@@ -83,6 +87,13 @@ import { RidingPose } from './animations/xiaoyue/RidingPose.js';
 // Animations - rocklee
 import { DynamicEntry } from './animations/rocklee/DynamicEntry.js';
 import { ThumbUp } from './animations/rocklee/ThumbUp.js';
+// Animations - shera
+import { DrawSword } from './animations/shera/DrawSword.js';
+import { BattleStance } from './animations/shera/BattleStance.js';
+import { SwordSlash } from './animations/shera/SwordSlash.js';
+import { ShieldBlock } from './animations/shera/ShieldBlock.js';
+import { Transform } from './animations/shera/Transform.js';
+import { PowerGlow } from './animations/shera/PowerGlow.js';
 
 // Scenes
 import { ParkScene } from './scenes/ParkScene.js';
@@ -94,6 +105,9 @@ import { NightStreetScene } from './scenes/NightStreetScene.js';
 import { NightRoomScene } from './scenes/NightRoomScene.js';
 import { StarSkyScene } from './scenes/StarSkyScene.js';
 import { BeachScene } from './scenes/BeachScene.js';
+import { BrightMoonScene } from './scenes/BrightMoonScene.js';
+import { FrightZoneScene } from './scenes/FrightZoneScene.js';
+import { WhisperingWoodsScene } from './scenes/WhisperingWoodsScene.js';
 
 // Camera moves
 import { CloseUp } from './camera/common/CloseUp.js';
@@ -139,6 +153,10 @@ export function registerAll() {
   registerCharacter('RockLee', RockLee);
   registerCharacter('Xingzai', Xingzai);
   registerCharacter('Xiaoyue', Xiaoyue);
+  registerCharacter('SheRa', SheRa);
+  registerCharacter('Adora', Adora);
+  registerCharacter('Catra', Catra);
+  registerCharacter('Hordak', Hordak);
   // Animations - common
   registerAnimation('Bow', Bow);
   registerAnimation('Celebrate', Celebrate);
@@ -209,6 +227,13 @@ export function registerAll() {
   // Animations - rocklee
   registerAnimation('DynamicEntry', DynamicEntry);
   registerAnimation('ThumbUp', ThumbUp);
+  // Animations - shera
+  registerAnimation('DrawSword', DrawSword);
+  registerAnimation('BattleStance', BattleStance);
+  registerAnimation('SwordSlash', SwordSlash);
+  registerAnimation('ShieldBlock', ShieldBlock);
+  registerAnimation('Transform', Transform);
+  registerAnimation('PowerGlow', PowerGlow);
   // Scenes
   registerScene('ParkScene', ParkScene);
   registerScene('RoomScene', RoomScene);
@@ -219,6 +244,9 @@ export function registerAll() {
   registerScene('NightRoomScene', NightRoomScene);
   registerScene('StarSkyScene', StarSkyScene);
   registerScene('BeachScene', BeachScene);
+  registerScene('BrightMoonScene', BrightMoonScene);
+  registerScene('FrightZoneScene', FrightZoneScene);
+  registerScene('WhisperingWoodsScene', WhisperingWoodsScene);
   // Camera moves
   registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);

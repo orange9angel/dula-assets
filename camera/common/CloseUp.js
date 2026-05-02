@@ -3,7 +3,7 @@ import { CameraMoveBase } from 'dula-engine';
 
 /**
  * Close-up shot on a character's face.
- * Places camera near the character's head height, looking at the face.
+ * Locks target position at start() — no per-frame recomputation to avoid jitter.
  */
 export class CloseUp extends CameraMoveBase {
   constructor(options = {}) {
@@ -17,12 +17,17 @@ export class CloseUp extends CameraMoveBase {
   start(camera, context) {
     super.start(camera, context);
     this._computeTarget(camera, context);
+    this._targetComputed = true;
   }
 
   update(t, camera, context) {
-    this._computeTarget(camera, context);
+    if (!this._targetComputed) {
+      this._computeTarget(camera, context);
+      this._targetComputed = true;
+    }
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    camera.position.lerpVectors(this.startPos, this.endPos, eased);
+    const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this.endPos, eased);
+    camera.position.copy(desiredPos);
     camera.lookAt(this.lookAtPos);
   }
 
@@ -44,9 +49,10 @@ export class CloseUp extends CameraMoveBase {
     forward.y = 0;
     if (forward.lengthSq() < 0.001) forward.set(0, 0, 1);
     forward.normalize();
-    // side offset
+    
     const side = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
-    const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle)).add(side.multiplyScalar(Math.sin(this.sideAngle)));
+    const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle))
+      .add(side.multiplyScalar(Math.sin(this.sideAngle)));
 
     this.endPos = this.lookAtPos.clone().add(camDir.multiplyScalar(this.distance));
     this.endPos.y = this.lookAtPos.y + 0.05;

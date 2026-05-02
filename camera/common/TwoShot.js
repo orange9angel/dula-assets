@@ -18,9 +18,18 @@ export class TwoShot extends CameraMoveBase {
   start(camera, context) {
     super.start(camera, context);
     this.startPos = camera.position.clone();
+    this._computeTarget(camera, context);
   }
 
   update(t, camera, context) {
+    // Only interpolate - target was locked at start()
+    const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this.endPos, eased);
+    camera.position.copy(desiredPos);
+    camera.lookAt(this.lookAtPos);
+  }
+
+  _computeTarget(camera, context) {
     const charA = context.characters.get(this.characterA);
     const charB = context.characters.get(this.characterB);
     if (!charA || !charB) return;
@@ -35,15 +44,11 @@ export class TwoShot extends CameraMoveBase {
     const line = new THREE.Vector3().subVectors(posB, posA);
     const perp = new THREE.Vector3(-line.z, 0, line.x).normalize();
 
-    // Camera position
+    // Camera position - computed once at start
     this.endPos = mid.clone()
       .add(perp.multiplyScalar(this.distance))
       .add(new THREE.Vector3(this.bias, this.height, 0));
 
-    const lookAt = mid.clone().add(new THREE.Vector3(0, 1.5, 0));
-
-    const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    camera.position.lerpVectors(this.startPos, this.endPos, eased);
-    camera.lookAt(lookAt);
+    this.lookAtPos = mid.clone().add(new THREE.Vector3(0, 1.5, 0));
   }
 }
