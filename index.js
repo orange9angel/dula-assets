@@ -9,6 +9,7 @@ import { SheRa } from './characters/SheRa.js';
 import { Adora } from './characters/Adora.js';
 import { Catra } from './characters/Catra.js';
 import { Hordak } from './characters/Hordak.js';
+import { ShadowWeaver } from './characters/ShadowWeaver.js';
 
 // Transitions
 import { Fade } from './transitions/Fade.js';
@@ -94,6 +95,7 @@ import { SwordSlash } from './animations/shera/SwordSlash.js';
 import { ShieldBlock } from './animations/shera/ShieldBlock.js';
 import { Transform } from './animations/shera/Transform.js';
 import { PowerGlow } from './animations/shera/PowerGlow.js';
+import { ShadowSpell } from './animations/shera/ShadowSpell.js';
 
 // Scenes
 import { ParkScene } from './scenes/ParkScene.js';
@@ -157,6 +159,7 @@ export function registerAll() {
   registerCharacter('Adora', Adora);
   registerCharacter('Catra', Catra);
   registerCharacter('Hordak', Hordak);
+  registerCharacter('ShadowWeaver', ShadowWeaver);
   // Animations - common
   registerAnimation('Bow', Bow);
   registerAnimation('Celebrate', Celebrate);
@@ -234,6 +237,7 @@ export function registerAll() {
   registerAnimation('ShieldBlock', ShieldBlock);
   registerAnimation('Transform', Transform);
   registerAnimation('PowerGlow', PowerGlow);
+  registerAnimation('ShadowSpell', ShadowSpell);
   // Scenes
   registerScene('ParkScene', ParkScene);
   registerScene('RoomScene', RoomScene);
