@@ -3,6 +3,12 @@ import { Doraemon } from './characters/Doraemon.js';
 import { Nobita } from './characters/Nobita.js';
 import { Shizuka } from './characters/Shizuka.js';
 import { RockLee } from './characters/RockLee.js';
+import { Seiya } from './characters/Seiya.js';
+import { Shiryu } from './characters/Shiryu.js';
+import { Hyoga } from './characters/Hyoga.js';
+import { Shun } from './characters/Shun.js';
+import { Ikki } from './characters/Ikki.js';
+import { Aiolos } from './characters/Aiolos.js';
 import { Xingzai } from './characters/Xingzai.js';
 import { Xiaoyue } from './characters/Xiaoyue.js';
 import { SheRa } from './characters/SheRa.js';
@@ -10,6 +16,11 @@ import { Adora } from './characters/Adora.js';
 import { Catra } from './characters/Catra.js';
 import { Hordak } from './characters/Hordak.js';
 import { ShadowWeaver } from './characters/ShadowWeaver.js';
+
+// Characters - Ultraman
+import { Ultraman } from './characters/Ultraman.js';
+import { Gabura } from './characters/Gabura.js';
+import { Shota } from './characters/Shota.js';
 
 // Transitions
 import { Fade } from './transitions/Fade.js';
@@ -97,6 +108,12 @@ import { Transform } from './animations/shera/Transform.js';
 import { PowerGlow } from './animations/shera/PowerGlow.js';
 import { ShadowSpell } from './animations/shera/ShadowSpell.js';
 
+// Animations - ultraman
+import { UltraBeam } from './animations/ultraman/UltraBeam.js';
+import { HeroLanding } from './animations/ultraman/HeroLanding.js';
+import { FightingStance } from './animations/ultraman/FightingStance.js';
+import { FlyAway } from './animations/ultraman/FlyAway.js';
+
 // Scenes
 import { ParkScene } from './scenes/ParkScene.js';
 import { RoomScene } from './scenes/RoomScene.js';
@@ -110,6 +127,8 @@ import { BeachScene } from './scenes/BeachScene.js';
 import { BrightMoonScene } from './scenes/BrightMoonScene.js';
 import { FrightZoneScene } from './scenes/FrightZoneScene.js';
 import { WhisperingWoodsScene } from './scenes/WhisperingWoodsScene.js';
+import { CityScene } from './scenes/CityScene.js';
+import { DestroyedCityScene } from './scenes/DestroyedCityScene.js';
 
 // Camera moves
 import { CloseUp } from './camera/common/CloseUp.js';
@@ -127,6 +146,11 @@ import { WhipPan } from './camera/common/WhipPan.js';
 import { ZoomIn } from './camera/common/ZoomIn.js';
 import { ZoomOut } from './camera/common/ZoomOut.js';
 import { OrbitCharacter } from './camera/common/OrbitCharacter.js';
+
+// Camera moves - ultraman
+import { HeroReveal } from './camera/ultraman/HeroReveal.js';
+import { MonsterStomp } from './camera/ultraman/MonsterStomp.js';
+import { BeamFollow } from './camera/ultraman/BeamFollow.js';
 
 // Voices
 import { default as DoraemonVoice } from './voices/DoraemonVoice.js';
@@ -153,6 +177,12 @@ export function registerAll() {
   registerCharacter('Nobita', Nobita);
   registerCharacter('Shizuka', Shizuka);
   registerCharacter('RockLee', RockLee);
+  registerCharacter('Seiya', Seiya);
+  registerCharacter('Shiryu', Shiryu);
+  registerCharacter('Hyoga', Hyoga);
+  registerCharacter('Shun', Shun);
+  registerCharacter('Ikki', Ikki);
+  registerCharacter('Aiolos', Aiolos);
   registerCharacter('Xingzai', Xingzai);
   registerCharacter('Xiaoyue', Xiaoyue);
   registerCharacter('SheRa', SheRa);
@@ -160,6 +190,10 @@ export function registerAll() {
   registerCharacter('Catra', Catra);
   registerCharacter('Hordak', Hordak);
   registerCharacter('ShadowWeaver', ShadowWeaver);
+  // Characters - ultraman
+  registerCharacter('Ultraman', Ultraman);
+  registerCharacter('Gabura', Gabura);
+  registerCharacter('Shota', Shota);
   // Animations - common
   registerAnimation('Bow', Bow);
   registerAnimation('Celebrate', Celebrate);
@@ -238,6 +272,11 @@ export function registerAll() {
   registerAnimation('Transform', Transform);
   registerAnimation('PowerGlow', PowerGlow);
   registerAnimation('ShadowSpell', ShadowSpell);
+  // Animations - ultraman
+  registerAnimation('UltraBeam', UltraBeam);
+  registerAnimation('HeroLanding', HeroLanding);
+  registerAnimation('FightingStance', FightingStance);
+  registerAnimation('FlyAway', FlyAway);
   // Scenes
   registerScene('ParkScene', ParkScene);
   registerScene('RoomScene', RoomScene);
@@ -251,6 +290,8 @@ export function registerAll() {
   registerScene('BrightMoonScene', BrightMoonScene);
   registerScene('FrightZoneScene', FrightZoneScene);
   registerScene('WhisperingWoodsScene', WhisperingWoodsScene);
+  registerScene('CityScene', CityScene);
+  registerScene('DestroyedCityScene', DestroyedCityScene);
   // Camera moves
   registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);
@@ -267,6 +308,10 @@ export function registerAll() {
   registerCameraMove('ZoomIn', ZoomIn);
   registerCameraMove('ZoomOut', ZoomOut);
   registerCameraMove('OrbitCharacter', OrbitCharacter);
+  // Camera moves - ultraman
+  registerCameraMove('HeroReveal', HeroReveal);
+  registerCameraMove('MonsterStomp', MonsterStomp);
+  registerCameraMove('BeamFollow', BeamFollow);
   // Voices
   registerVoice('Doraemon', DoraemonVoice);
   registerVoice('Nobita', NobitaVoice);
