@@ -22,6 +22,10 @@ import { Ultraman } from './characters/Ultraman.js';
 import { Gabura } from './characters/Gabura.js';
 import { Shota } from './characters/Shota.js';
 
+// Characters - Yu Yu Hakusho
+import { Yusuke } from './characters/Yusuke.js';
+import { Kuwabara } from './characters/Kuwabara.js';
+
 // Transitions
 import { Fade } from './transitions/Fade.js';
 import { Iris } from './transitions/Iris.js';
@@ -114,6 +118,12 @@ import { HeroLanding } from './animations/ultraman/HeroLanding.js';
 import { FightingStance } from './animations/ultraman/FightingStance.js';
 import { FlyAway } from './animations/ultraman/FlyAway.js';
 
+// Animations - yuyuhakusho
+import { SpiritGunCharge } from './animations/yuyuhakusho/SpiritGunCharge.js';
+import { SpiritGunFire } from './animations/yuyuhakusho/SpiritGunFire.js';
+import { SpiritSwordDraw } from './animations/yuyuhakusho/SpiritSwordDraw.js';
+import { SpiritSwordSwing } from './animations/yuyuhakusho/SpiritSwordSwing.js';
+
 // Scenes
 import { ParkScene } from './scenes/ParkScene.js';
 import { RoomScene } from './scenes/RoomScene.js';
@@ -129,6 +139,7 @@ import { FrightZoneScene } from './scenes/FrightZoneScene.js';
 import { WhisperingWoodsScene } from './scenes/WhisperingWoodsScene.js';
 import { CityScene } from './scenes/CityScene.js';
 import { DestroyedCityScene } from './scenes/DestroyedCityScene.js';
+import { SarayashikiRoofScene } from './scenes/SarayashikiRoofScene.js';
 
 // Camera moves
 import { CloseUp } from './camera/common/CloseUp.js';
@@ -152,11 +163,17 @@ import { HeroReveal } from './camera/ultraman/HeroReveal.js';
 import { MonsterStomp } from './camera/ultraman/MonsterStomp.js';
 import { BeamFollow } from './camera/ultraman/BeamFollow.js';
 
+// Camera moves - yuyuhakusho
+import { SpiritGunCloseUp } from './camera/yuyuhakusho/SpiritGunCloseUp.js';
+import { BackToBack } from './camera/yuyuhakusho/BackToBack.js';
+
 // Voices
 import { default as DoraemonVoice } from './voices/DoraemonVoice.js';
 import { default as NobitaVoice } from './voices/NobitaVoice.js';
 import { default as ShizukaVoice } from './voices/ShizukaVoice.js';
 import { default as RockLeeVoice } from './voices/RockLeeVoice.js';
+import { default as YusukeVoice } from './voices/YusukeVoice.js';
+import { default as KuwabaraVoice } from './voices/KuwabaraVoice.js';
 
 import {
   registerCharacter,
@@ -194,6 +211,9 @@ export function registerAll() {
   registerCharacter('Ultraman', Ultraman);
   registerCharacter('Gabura', Gabura);
   registerCharacter('Shota', Shota);
+  // Characters - yuyuhakusho
+  registerCharacter('Yusuke', Yusuke);
+  registerCharacter('Kuwabara', Kuwabara);
   // Animations - common
   registerAnimation('Bow', Bow);
   registerAnimation('Celebrate', Celebrate);
@@ -277,6 +297,11 @@ export function registerAll() {
   registerAnimation('HeroLanding', HeroLanding);
   registerAnimation('FightingStance', FightingStance);
   registerAnimation('FlyAway', FlyAway);
+  // Animations - yuyuhakusho
+  registerAnimation('SpiritGunCharge', SpiritGunCharge);
+  registerAnimation('SpiritGunFire', SpiritGunFire);
+  registerAnimation('SpiritSwordDraw', SpiritSwordDraw);
+  registerAnimation('SpiritSwordSwing', SpiritSwordSwing);
   // Scenes
   registerScene('ParkScene', ParkScene);
   registerScene('RoomScene', RoomScene);
@@ -292,6 +317,7 @@ export function registerAll() {
   registerScene('WhisperingWoodsScene', WhisperingWoodsScene);
   registerScene('CityScene', CityScene);
   registerScene('DestroyedCityScene', DestroyedCityScene);
+  registerScene('SarayashikiRoofScene', SarayashikiRoofScene);
   // Camera moves
   registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);
@@ -312,11 +338,16 @@ export function registerAll() {
   registerCameraMove('HeroReveal', HeroReveal);
   registerCameraMove('MonsterStomp', MonsterStomp);
   registerCameraMove('BeamFollow', BeamFollow);
+  // Camera moves - yuyuhakusho
+  registerCameraMove('SpiritGunCloseUp', SpiritGunCloseUp);
+  registerCameraMove('BackToBack', BackToBack);
   // Voices
   registerVoice('Doraemon', DoraemonVoice);
   registerVoice('Nobita', NobitaVoice);
   registerVoice('Shizuka', ShizukaVoice);
   registerVoice('RockLee', RockLeeVoice);
+  registerVoice('Yusuke', YusukeVoice);
+  registerVoice('Kuwabara', KuwabaraVoice);
 
   // Directors
   registerDirector('CourtDirector', CourtDirector);
