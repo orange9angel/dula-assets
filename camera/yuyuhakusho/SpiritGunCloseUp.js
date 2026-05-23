@@ -46,10 +46,10 @@ export class SpiritGunCloseUp extends CameraMoveBase {
     const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle))
       .add(side.clone().multiplyScalar(Math.sin(this.sideAngle)));
 
-    this.startPos = this.lookAtPos.clone().add(camDir.multiplyScalar(this.startDistance));
+    this.startPos = this.lookAtPos.clone().add(camDir.clone().multiplyScalar(this.startDistance));
     this.startPos.y = this.lookAtPos.y - 0.15;
 
-    this.endPos = this.lookAtPos.clone().add(camDir.normalize().multiplyScalar(this.endDistance));
+    this.endPos = this.lookAtPos.clone().add(camDir.clone().normalize().multiplyScalar(this.endDistance));
     this.endPos.y = this.lookAtPos.y + 0.05;
   }
 }
