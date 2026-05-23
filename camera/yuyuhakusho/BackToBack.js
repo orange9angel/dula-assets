@@ -3,55 +3,51 @@ import { CameraMoveBase } from 'dula-engine';
 
 /**
  * BackToBack — wide shot showing Yusuke and Kuwabara standing back-to-back.
- * Camera at medium height, slightly low angle for a hero shot.
- * Both characters visible, ready for battle.
- * Slight orbit for dramatic framing.
+ * Camera at medium height, slightly low angle for hero shot.
  */
 export class BackToBack extends CameraMoveBase {
   constructor(options = {}) {
     super({ duration: options.duration ?? 2.0 });
+    this.characterA = options.characterA ?? 'Yusuke';
+    this.characterB = options.characterB ?? 'Kuwabara';
     this.distance = options.distance ?? 6.0;
     this.height = options.height ?? 1.8;
-    this.orbitAngle = (options.orbitAngle ?? 15) * (Math.PI / 180);
   }
 
-  start(camera, target) {
-    super.start(camera, target);
-    this._lockTarget(target);
-    this._computePositions();
-    camera.position.copy(this.startPos);
+  start(camera, context) {
+    super.start(camera, context);
+    this._computeTarget(context);
+    this._targetComputed = true;
   }
 
-  update(camera, target, progress) {
-    if (!this.lookAtPos) {
-      this._lockTarget(target);
-      this._computePositions();
+  update(t, camera, context) {
+    if (!this._targetComputed) {
+      this._computeTarget(context);
+      this._targetComputed = true;
     }
-    const t = progress;
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this.endPos, eased);
     camera.position.copy(desiredPos);
     camera.lookAt(this.lookAtPos);
   }
 
-  _lockTarget(target) {
-    this.lookAtPos = target.position.clone();
-  }
+  _computeTarget(context) {
+    const charA = context.characters.get(this.characterA);
+    const charB = context.characters.get(this.characterB);
 
-  _computePositions() {
-    const startAngle = -this.orbitAngle * 0.5;
-    const endAngle = this.orbitAngle * 0.5;
+    const posA = charA ? charA.mesh.position.clone() : new THREE.Vector3(-1.5, 0, 0);
+    const posB = charB ? charB.mesh.position.clone() : new THREE.Vector3(1.5, 0, 0);
 
-    this.startPos = new THREE.Vector3(
-      this.lookAtPos.x + this.distance * Math.sin(startAngle),
-      this.lookAtPos.y + this.height,
-      this.lookAtPos.z + this.distance * Math.cos(startAngle)
-    );
+    this.lookAtPos = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
+    this.lookAtPos.y = 1.2;
 
-    this.endPos = new THREE.Vector3(
-      this.lookAtPos.x + this.distance * Math.sin(endAngle),
-      this.lookAtPos.y + this.height,
-      this.lookAtPos.z + this.distance * Math.cos(endAngle)
-    );
+    const centerDir = new THREE.Vector3().subVectors(posB, posA).normalize();
+    const side = new THREE.Vector3().crossVectors(centerDir, new THREE.Vector3(0, 1, 0)).normalize();
+
+    this.startPos = this.lookAtPos.clone().add(side.clone().multiplyScalar(this.distance));
+    this.startPos.y = this.height;
+
+    this.endPos = this.lookAtPos.clone().add(side.clone().multiplyScalar(this.distance * 0.9));
+    this.endPos.y = this.height + 0.2;
   }
 }

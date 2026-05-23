@@ -5,7 +5,6 @@ import { CameraMoveBase } from 'dula-engine';
  * SpiritGunCloseUp — close-up of Yusuke's face and hand as he charges the Spirit Gun.
  * Camera starts slightly below eye level and slowly pushes in.
  * Slight side angle to show the finger pointing forward.
- * Focus on the character's right hand.
  */
 export class SpiritGunCloseUp extends CameraMoveBase {
   constructor(options = {}) {
@@ -17,39 +16,49 @@ export class SpiritGunCloseUp extends CameraMoveBase {
     this.sideAngle = (options.sideAngle ?? 25) * (Math.PI / 180);
   }
 
-  start(camera, target) {
-    super.start(camera, target);
-    this._lockTarget(target);
-    this._computePositions();
-    camera.position.copy(this.startPos);
+  start(camera, context) {
+    super.start(camera, context);
+    this._computeTarget(camera, context);
+    this._targetComputed = true;
   }
 
-  update(camera, target, progress) {
-    if (!this.lookAtPos) {
-      this._lockTarget(target);
-      this._computePositions();
+  update(t, camera, context) {
+    if (!this._targetComputed) {
+      this._computeTarget(camera, context);
+      this._targetComputed = true;
     }
-    const t = progress;
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this.endPos, eased);
     camera.position.copy(desiredPos);
     camera.lookAt(this.lookAtPos);
   }
 
-  _lockTarget(target) {
-    this.lookAtPos = target.position.clone().add(new THREE.Vector3(0, this.heightOffset, 0));
-  }
+  _computeTarget(camera, context) {
+    const char = context.characters.get(this.characterName);
+    if (!char) return;
 
-  _computePositions() {
-    const forward = new THREE.Vector3(0, 0, 1);
+    const headPos = new THREE.Vector3();
+    if (char.headGroup) {
+      char.headGroup.getWorldPosition(headPos);
+    } else {
+      headPos.copy(char.mesh.position).add(new THREE.Vector3(0, 1.9, 0));
+    }
+
+    this.lookAtPos = headPos.clone().add(new THREE.Vector3(0, this.heightOffset, 0));
+
+    const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(char.mesh.quaternion);
+    forward.y = 0;
+    if (forward.lengthSq() < 0.001) forward.set(0, 0, 1);
+    forward.normalize();
+
     const side = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
     const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle))
-      .add(side.clone().multiplyScalar(Math.sin(this.sideAngle)));
+      .add(side.multiplyScalar(Math.sin(this.sideAngle)));
+
+    this.endPos = this.lookAtPos.clone().add(camDir.clone().multiplyScalar(this.endDistance));
+    this.endPos.y = this.lookAtPos.y + 0.05;
 
     this.startPos = this.lookAtPos.clone().add(camDir.clone().multiplyScalar(this.startDistance));
     this.startPos.y = this.lookAtPos.y - 0.15;
-
-    this.endPos = this.lookAtPos.clone().add(camDir.clone().normalize().multiplyScalar(this.endDistance));
-    this.endPos.y = this.lookAtPos.y + 0.05;
   }
 }
