@@ -1,20 +1,10 @@
 import { AnimationBase } from 'dula-engine';
 
 /**
- * Knockdown — 击倒
+ * Knockdown — 击倒（战斗轴线版）
  * Getting knocked down (KOF style knockdown)
- * Body falls backward, then lies flat
+ * 沿战斗轴线向后倒下，不覆盖基础朝向
  * Duration: 0.8s
- */
-/**
- * Knockdown — 击倒
- * Getting knocked down (KOF style knockdown)
- *
- * Tags:
- *   requires: [rightArm, leftArm, rightLeg, leftLeg]
- *   suits: [humanoid, fighter, athletic, monster]
- *   notSuits: [tiny, floating]
- *   note: Requires full body rig for fall animation
  */
 export class Knockdown extends AnimationBase {
   constructor() {
@@ -38,12 +28,16 @@ export class Knockdown extends AnimationBase {
     const rBaseZ = character.rightArmBaseZ || 0;
     const lBaseZ = character.leftArmBaseZ || 0;
 
+    // 击倒方向与面向相反
+    const dir = character.userData?.facingDir || 1;
+    const fallDir = -dir;
+
     // Phase 1: Impact flinch (0-0.15)
     if (t < 0.15) {
       const p = t / 0.15;
       const ease = p * p;
       character.mesh.rotation.x = -ease * 0.3;
-      character.mesh.position.z = -ease * 0.1;
+      character.mesh.position.x += fallDir * ease * 0.1;
       if (rArm) {
         rArm.rotation.z = rBaseZ + ease * 0.3;
         rArm.rotation.x = ease * 0.3;
@@ -58,10 +52,10 @@ export class Knockdown extends AnimationBase {
       const p = (t - 0.15) / 0.45;
       const ease = 1 - Math.pow(1 - p, 2);
       // Body falls backward (rotate X negative = lean back)
-      character.mesh.rotation.x = -0.3 - ease * 1.4; // ends at ~-1.7 (near flat)
+      character.mesh.rotation.x = -0.3 - ease * 1.4;
       // Arc trajectory: up then down
       const arc = Math.sin(p * Math.PI) * 0.15;
-      character.mesh.position.z = -0.1 - ease * 0.4;
+      character.mesh.position.x += fallDir * (0.1 + ease * 0.4);
       if (character.baseY !== undefined) {
         character.mesh.position.y = character.baseY + arc - ease * 0.3;
       }
@@ -86,7 +80,7 @@ export class Knockdown extends AnimationBase {
       if (character.baseY !== undefined) {
         character.mesh.position.y = character.baseY - 0.3 + bounce;
       }
-      character.mesh.position.z = -0.5;
+      character.mesh.position.x += fallDir * 0.5;
       if (rArm) rArm.rotation.z = rBaseZ + 1.1;
       if (lArm) lArm.rotation.z = lBaseZ - 1.1;
     }
@@ -96,7 +90,7 @@ export class Knockdown extends AnimationBase {
       if (character.baseY !== undefined) {
         character.mesh.position.y = character.baseY - 0.3;
       }
-      character.mesh.position.z = -0.5;
+      character.mesh.position.x += fallDir * 0.5;
       if (rArm) rArm.rotation.z = rBaseZ + 1.1;
       if (lArm) lArm.rotation.z = lBaseZ - 1.1;
     }

@@ -199,6 +199,17 @@ import { HeroReveal } from './camera/ultraman/HeroReveal.js';
 import { MonsterStomp } from './camera/ultraman/MonsterStomp.js';
 import { BeamFollow } from './camera/ultraman/BeamFollow.js';
 
+// Camera moves - fighting game
+import { FightSide } from './camera/common/FightSide.js';
+import { FightImpact } from './camera/common/FightImpact.js';
+import { FightWide } from './camera/common/FightWide.js';
+import { FightDramatic } from './camera/common/FightDramatic.js';
+import { FightFollow } from './camera/common/FightFollow.js';
+// Camera moves - cinematic combat
+import { FightEmotionCloseUp } from '../dula-engine/camera/FightEmotionCloseUp.js';
+import { FightBulletTimeTrack } from '../dula-engine/camera/FightBulletTimeTrack.js';
+import { FightDramaticReveal } from '../dula-engine/camera/FightDramaticReveal.js';
+import { FightOverhead } from '../dula-engine/camera/FightOverhead.js';
 // Camera moves - yuyuhakusho
 import { SpiritGunCloseUp } from './camera/yuyuhakusho/SpiritGunCloseUp.js';
 import { BackToBack } from './camera/yuyuhakusho/BackToBack.js';
@@ -223,6 +234,8 @@ import {
 
 import { CourtDirector } from './lib/CourtDirector.js';
 import { DunkDirector } from './lib/DunkDirector.js';
+import { CombatDirector } from './lib/CombatDirector.js';
+import { CinematicCombatAdapter } from './lib/CinematicCombatAdapter.js';
 
 export function registerAll() {
   // Characters
@@ -410,6 +423,17 @@ export function registerAll() {
   registerCameraMove('HeroReveal', HeroReveal);
   registerCameraMove('MonsterStomp', MonsterStomp);
   registerCameraMove('BeamFollow', BeamFollow);
+  // Camera moves - fighting game
+  registerCameraMove('FightSide', FightSide);
+  registerCameraMove('FightImpact', FightImpact);
+  registerCameraMove('FightWide', FightWide);
+  registerCameraMove('FightDramatic', FightDramatic);
+  registerCameraMove('FightFollow', FightFollow);
+  // Camera moves - cinematic combat
+  registerCameraMove('FightEmotionCloseUp', FightEmotionCloseUp);
+  registerCameraMove('FightBulletTimeTrack', FightBulletTimeTrack);
+  registerCameraMove('FightDramaticReveal', FightDramaticReveal);
+  registerCameraMove('FightOverhead', FightOverhead);
   // Camera moves - yuyuhakusho
   registerCameraMove('SpiritGunCloseUp', SpiritGunCloseUp);
   registerCameraMove('BackToBack', BackToBack);
@@ -424,6 +448,8 @@ export function registerAll() {
   // Directors
   registerDirector('CourtDirector', CourtDirector);
   registerDirector('DunkDirector', DunkDirector);
+  registerDirector('CombatDirector', CombatDirector);
+  registerDirector('CinematicCombatAdapter', CinematicCombatAdapter);
 
   // Transitions
   registerTransition('Fade', Fade);

@@ -1,15 +1,10 @@
 import { AnimationBase } from 'dula-engine';
 
 /**
- * Block — 格挡（增强版）
+ * Block — 格挡（战斗轴线版）
  * Defensive guard pose with leg bend (KOF style blocking)
- * Arms cross in front, body braces for impact, knees bend
- * Duration: 0.8s to full guard, holds if extended
- *
- * Tags:
- *   requires: [rightArm, leftArm, rightLeg, leftLeg]
- *   suits: [humanoid, fighter, athletic, defensive]
- *   notSuits: [round, tiny, quadruped]
+ * 不覆盖角色朝向，保持侧向对敌
+ * Duration: 0.8s
  */
 export class Block extends AnimationBase {
   constructor() {
@@ -46,8 +41,7 @@ export class Block extends AnimationBase {
     lArm.rotation.z = lBaseZ + ease * 1.0;
     lArm.rotation.x = lBaseX - ease * 0.8;
 
-    // Body braces - lean into block
-    character.mesh.rotation.y = ease * 0.15;
+    // Body braces - 微向前倾（沿战斗轴线）
     if (character.baseY !== undefined) {
       character.mesh.position.y = character.baseY - ease * 0.08;
     }
@@ -57,7 +51,7 @@ export class Block extends AnimationBase {
 
     // LEGS: bend knees for stable defensive stance
     if (rLeg) {
-      rLeg.rotation.x = ease * 0.35; // knee bends forward
+      rLeg.rotation.x = ease * 0.35;
     }
     if (lLeg) {
       lLeg.rotation.x = ease * 0.3;

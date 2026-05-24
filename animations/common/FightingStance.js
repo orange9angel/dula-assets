@@ -1,15 +1,11 @@
 import { AnimationBase } from 'dula-engine';
 
 /**
- * FightingStance — 战斗待机姿态
+ * FightingStance — 战斗待机姿态（战斗轴线版）
  * 通用格斗游戏起手式，作为攻击之间的衔接姿态
  * 双臂一前一后，身体微蹲，重心下沉
+ * 不覆盖角色朝向
  * Duration: 0.5s (快速进入，可循环保持)
- *
- * Tags:
- *   requires: [rightArm, leftArm]
- *   suits: [humanoid, fighter, athletic]
- *   notSuits: [round, tiny, quadruped]
  */
 export class FightingStance extends AnimationBase {
   constructor() {
@@ -52,8 +48,8 @@ export class FightingStance extends AnimationBase {
       character.mesh.position.y = character.baseY - ease * 0.06;
     }
 
-    // Body angled ~30° (side-facing combat stance)
-    character.mesh.rotation.y = ease * 0.35;
+    // 不覆盖 rotation.y，保持侧向对敌
+    // 身体角度由初始化时的 setupBattleLine 决定
 
     // Slight forward lean
     character.mesh.rotation.x = ease * 0.08;

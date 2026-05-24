@@ -1,11 +1,10 @@
 import { AnimationBase } from 'dula-engine';
 
 /**
- * SpiritGunFire — 霊丸発射（极速版）
- * Firing the Spirit Gun - FAST
- * Arm thrusts forward sharply, energy blast shoots out
- * Quick recoil
- * Duration: 0.6s for explosive fighting game feel
+ * SpiritGunFire — 霊丸発射（战斗轴线版）
+ * Firing the Spirit Gun
+ * 沿战斗轴线发射，不覆盖角色朝向
+ * Duration: 0.6s
  */
 export class SpiritGunFire extends AnimationBase {
   constructor() {
@@ -19,6 +18,8 @@ export class SpiritGunFire extends AnimationBase {
 
     const rBaseZ = character.rightArmBaseZ || 0;
     const rBaseX = character.rightArmBaseX || 0;
+
+    const dir = character.userData?.facingDir || 1;
 
     // Reset at t=0 - start from charged position
     if (t === 0) {
@@ -39,6 +40,8 @@ export class SpiritGunFire extends AnimationBase {
       rArm.rotation.z = (rBaseZ - 1.3) + ease * 0.5;
       rArm.rotation.x = (rBaseX - 0.2) - ease * 1.3;
       if (character.setSpiritGunIntensity) character.setSpiritGunIntensity(1.0);
+      // 发射时微后坐
+      character.mesh.position.x -= dir * ease * 0.05;
     }
     // Phase 2: FIRE! - hide orb, show beam shooting out (0.1-0.25)
     else if (t < 0.25) {
@@ -72,14 +75,15 @@ export class SpiritGunFire extends AnimationBase {
       const p = (t - 0.5) / 0.5;
       const easeRecover = p * p;
       // Fighting stance: right arm back guard, left forward
-      rArm.rotation.z = (rBaseZ - 0.4) - easeRecover * 0.5;  // → rBaseZ - 0.9
-      rArm.rotation.x = (rBaseX - 0.4) - easeRecover * 0.3;  // → rBaseX - 0.7
+      rArm.rotation.z = (rBaseZ - 0.4) - easeRecover * 0.5;
+      rArm.rotation.x = (rBaseX - 0.4) - easeRecover * 0.3;
       if (character.hideSpiritGunBeam) character.hideSpiritGunBeam();
       if (character.setSpiritGunBeamExtend) character.setSpiritGunBeamExtend(0);
       if (character.baseY !== undefined) {
         character.mesh.position.y = character.baseY - easeRecover * 0.06;
       }
-      character.mesh.rotation.y = easeRecover * 0.35;
+      // 后坐恢复
+      character.mesh.position.x += dir * (1 - easeRecover) * 0.05;
     }
 
     // Head follows the action

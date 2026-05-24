@@ -1,15 +1,10 @@
 import { AnimationBase } from 'dula-engine';
 
 /**
- * HitStagger — 受击踉跄（增强版）
+ * HitStagger — 受击踉跄（战斗轴线版）
  * Reaction to taking a hit (KOF style hitstun)
- * Body flinches back with larger knockback, head snaps, then recovers
+ * 沿战斗轴线被击退，不覆盖角色朝向
  * Duration: 0.6s
- *
- * Tags:
- *   requires: [rightArm, leftArm]
- *   suits: [humanoid, fighter, athletic, monster]
- *   notSuits: [tiny]
  */
 export class HitStagger extends AnimationBase {
   constructor() {
@@ -32,14 +27,17 @@ export class HitStagger extends AnimationBase {
     const rBaseZ = character.rightArmBaseZ || 0;
     const lBaseZ = character.leftArmBaseZ || 0;
 
+    // 受击方向与面向相反（被对手打退）
+    const dir = character.userData?.facingDir || 1;
+    const knockbackDir = -dir;
+
     // Phase 1: IMPACT (0-0.15) - violent flinch with large knockback
     if (t < 0.15) {
       const p = t / 0.15;
       const ease = 1 - Math.pow(1 - p, 3);
-      // BIGGER knock back
-      character.mesh.position.z = -ease * 0.5;
-      // Body reels with more rotation
-      character.mesh.rotation.y = ease * 0.4;
+      // 沿战斗轴线被击退
+      character.mesh.position.x += knockbackDir * ease * 0.5;
+      // Body reels
       character.mesh.rotation.z = ease * 0.15;
       // Arms flail from impact
       rArm.rotation.z = rBaseZ + ease * 0.6;
@@ -54,8 +52,8 @@ export class HitStagger extends AnimationBase {
     else if (t < 0.35) {
       const p = (t - 0.15) / 0.2;
       // Slight wobble while stunned
-      character.mesh.position.z = -0.5 + Math.sin(p * Math.PI * 4) * 0.03;
-      character.mesh.rotation.y = 0.4 + Math.sin(p * Math.PI * 3) * 0.06;
+      character.mesh.position.x += knockbackDir * (0.5 + Math.sin(p * Math.PI * 4) * 0.03);
+      character.mesh.rotation.z = 0.15 + Math.sin(p * Math.PI * 3) * 0.06;
       rArm.rotation.z = rBaseZ + 0.6 + Math.sin(p * Math.PI * 5) * 0.06;
       lArm.rotation.z = lBaseZ - 0.6 + Math.sin(p * Math.PI * 5 + 1) * 0.06;
     }
@@ -63,16 +61,16 @@ export class HitStagger extends AnimationBase {
     else {
       const p = (t - 0.35) / 0.65;
       const ease = p * p;
-      character.mesh.position.z = -0.5 + ease * 0.5;   // → 0
-      character.mesh.rotation.z = 0.15 - ease * 0.15;  // → 0
-      // End in fighting stance: right back guard, left forward, body angled
-      rArm.rotation.z = (rBaseZ + 0.6) - ease * 1.5;   // → rBaseZ - 0.9
-      rArm.rotation.x = 0.5 - ease * 0.5;              // → 0 (near -0.7)
-      lArm.rotation.z = (lBaseZ - 0.6) + ease * 1.1;   // → lBaseZ + 0.5
-      lArm.rotation.x = 0.4 - ease * 0.4;              // → 0 (near -0.4)
-      character.mesh.rotation.y = 0.4 - ease * 0.05;   // → 0.35
+      // 回到原位
+      character.mesh.position.x -= knockbackDir * (1 - ease) * 0.5;
+      character.mesh.rotation.z = 0.15 - ease * 0.15;
+      // End in fighting stance: right back guard, left forward
+      rArm.rotation.z = (rBaseZ + 0.6) - ease * 1.5;
+      rArm.rotation.x = 0.5 - ease * 0.5;
+      lArm.rotation.z = (lBaseZ - 0.6) + ease * 1.1;
+      lArm.rotation.x = 0.4 - ease * 0.4;
       if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY + 0.05) - ease * 0.11; // → baseY - 0.06
+        character.mesh.position.y = (character.baseY + 0.05) - ease * 0.11;
       }
     }
 

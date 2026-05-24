@@ -1,19 +1,10 @@
 import { AnimationBase } from 'dula-engine';
 
 /**
- * Dodge — 闪避
+ * Dodge — 闪避（战斗轴线版）
  * Quick evasive maneuver (KOF style backdash / sidestep)
- * Body leans back sharply then snaps back to stance
- * Duration: 0.4s for snappy evasion feel
- */
-/**
- * Dodge — 闪避
- * Quick evasive maneuver (KOF style backdash / sidestep)
- *
- * Tags:
- *   requires: [rightArm, leftArm]
- *   suits: [humanoid, fighter, athletic, agile]
- *   notSuits: [round, tiny, slow]
+ * 沿战斗轴线后撤，不覆盖角色朝向
+ * Duration: 0.4s
  */
 export class Dodge extends AnimationBase {
   constructor() {
@@ -36,14 +27,16 @@ export class Dodge extends AnimationBase {
     const rBaseZ = character.rightArmBaseZ || 0;
     const lBaseZ = character.leftArmBaseZ || 0;
 
+    const dir = character.userData?.facingDir || 1;
+
     // Phase 1: Lean back (0-0.3) - quick evasive lean
     if (t < 0.3) {
       const p = t / 0.3;
       const ease = 1 - Math.pow(1 - p, 2);
-      // Lean back (rotate around X)
+      // 沿战斗轴线后撤（与面向相反）
+      character.mesh.position.x -= dir * ease * 0.4;
+      // 身体后仰（局部X轴旋转）
       character.mesh.rotation.x = -ease * 0.35;
-      // Step back slightly
-      character.mesh.position.z = -ease * 0.25;
       // Arms guard up
       rArm.rotation.z = rBaseZ - ease * 0.7;
       rArm.rotation.x = -ease * 0.5;
@@ -58,18 +51,17 @@ export class Dodge extends AnimationBase {
     else {
       const p = (t - 0.3) / 0.7;
       const ease = p * p;
-      character.mesh.rotation.x = -0.35 + ease * 0.43;  // → 0.08
-      character.mesh.position.z = -0.25 + ease * 0.25;  // → 0
+      // 回到原位
+      character.mesh.position.x += dir * (1 - ease) * 0.4;
+      character.mesh.rotation.x = -0.35 + ease * 0.35;
       // End in fighting stance: right back guard, left forward
-      rArm.rotation.z = (rBaseZ - 0.7) - ease * 0.2;    // → rBaseZ - 0.9
-      rArm.rotation.x = -0.5 + ease * 0.5;              // → 0 (near -0.7)
-      lArm.rotation.z = (lBaseZ + 0.7) - ease * 0.2;    // → lBaseZ + 0.5
-      lArm.rotation.x = -0.5 + ease * 0.5;              // → 0 (near -0.4)
+      rArm.rotation.z = (rBaseZ - 0.7) - ease * 0.2;
+      rArm.rotation.x = -0.5 + ease * 0.5;
+      lArm.rotation.z = (lBaseZ + 0.7) - ease * 0.2;
+      lArm.rotation.x = -0.5 + ease * 0.5;
       if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY - 0.08) + ease * 0.02; // → baseY - 0.06
+        character.mesh.position.y = (character.baseY - 0.08) + ease * 0.02;
       }
-      // Body angle to fighting stance
-      character.mesh.rotation.y = ease * 0.35;
     }
 
     // Head stays level during dodge
