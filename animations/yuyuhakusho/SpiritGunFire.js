@@ -67,14 +67,19 @@ export class SpiritGunFire extends AnimationBase {
       if (character.showSpiritGunBeam) character.showSpiritGunBeam();
       if (character.setSpiritGunBeamExtend) character.setSpiritGunBeamExtend(1.0 - easeRecoil);
     }
-    // Phase 5: Recover (0.5-1.0)
+    // Phase 5: Recover (0.5-1.0) - return to fighting stance
     else {
       const p = (t - 0.5) / 0.5;
       const easeRecover = p * p;
-      rArm.rotation.z = (rBaseZ - 0.4) - easeRecover * 0.4;
-      rArm.rotation.x = (rBaseX - 0.4) - easeRecover * 0.2;
+      // Fighting stance: right arm back guard, left forward
+      rArm.rotation.z = (rBaseZ - 0.4) - easeRecover * 0.5;  // → rBaseZ - 0.9
+      rArm.rotation.x = (rBaseX - 0.4) - easeRecover * 0.3;  // → rBaseX - 0.7
       if (character.hideSpiritGunBeam) character.hideSpiritGunBeam();
       if (character.setSpiritGunBeamExtend) character.setSpiritGunBeamExtend(0);
+      if (character.baseY !== undefined) {
+        character.mesh.position.y = character.baseY - easeRecover * 0.06;
+      }
+      character.mesh.rotation.y = easeRecover * 0.35;
     }
 
     // Head follows the action

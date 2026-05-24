@@ -106,23 +106,24 @@ export class SpinKick extends AnimationBase {
         character.mesh.position.y = (character.baseY + 0.03) - ease * 0.03;
       }
     }
-    // Phase 4: Recover (0.75-1.0)
+    // Phase 4: Recover (0.75-1.0) - return to fighting stance
     else {
       const p = (t - 0.75) / 0.25;
       const ease = p * p;
-      character.mesh.rotation.y = (-0.8 + Math.PI * 2 - 0.2) + ease * 0.2;
-      rLeg.rotation.x = rLegBaseX;
-      lLeg.rotation.x = lLegBaseX;
+      // Normalize rotation to fighting stance angle
+      character.mesh.rotation.y = (-0.8 + Math.PI * 2 - 0.2) + ease * 0.15; // → ~0.35
+      rLeg.rotation.x = rLegBaseX + ease * 0.25;
+      lLeg.rotation.x = lLegBaseX + ease * 0.2;
       if (rArm) {
-        rArm.rotation.z = rBaseZ;
-        rArm.rotation.x = 0;
+        rArm.rotation.z = rBaseZ - ease * 0.9;
+        rArm.rotation.x = -ease * 0.7;
       }
       if (lArm) {
-        lArm.rotation.z = lBaseZ;
-        lArm.rotation.x = 0;
+        lArm.rotation.z = lBaseZ + ease * 0.5;
+        lArm.rotation.x = -ease * 0.4;
       }
       if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY;
+        character.mesh.position.y = character.baseY - ease * 0.06;
       }
     }
   }

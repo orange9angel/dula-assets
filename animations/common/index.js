@@ -43,6 +43,7 @@ export { GetUp } from './GetUp.js';
 export { ComboPunch } from './ComboPunch.js';
 export { SpinKick } from './SpinKick.js';
 export { JumpAttack } from './JumpAttack.js';
+export { FightingStance } from './FightingStance.js';
 
 // === Facial Expression Library ===
 export { FaceAngry } from './FaceAngry.js';
@@ -111,6 +112,7 @@ import { GetUp } from './GetUp.js';
 import { ComboPunch } from './ComboPunch.js';
 import { SpinKick } from './SpinKick.js';
 import { JumpAttack } from './JumpAttack.js';
+import { FightingStance } from './FightingStance.js';
 
 // === Facial Expression Library ===
 import { FaceAngry } from './FaceAngry.js';
@@ -181,6 +183,7 @@ export const CommonAnimations = {
   ComboPunch,
   SpinKick,
   JumpAttack,
+  FightingStance,
   // === Facial Expressions ===
   FaceAngry,
   FaceHappy,

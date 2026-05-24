@@ -59,14 +59,20 @@ export class SpiritSwordSwing extends AnimationBase {
       if (lArm) lArm.rotation.z = (lBaseZ + 0.1) - ease * 0.1;
       if (character.setSpiritSwordGlow) character.setSpiritSwordGlow(1.2 - ease * 0.4);
     }
-    // Phase 4: Recover (0.6-1.0)
+    // Phase 4: Recover (0.6-1.0) - return to fighting stance
     else {
       const p = (t - 0.6) / 0.4;
       const ease = p * p;
-      rArm.rotation.z = (rBaseZ + 0.8) - ease * 0.8;
-      rArm.rotation.x = (rBaseX + 0.1) - ease * 0.1;
-      if (lArm) lArm.rotation.z = lBaseZ;
-      if (character.setSpiritSwordGlow) character.setSpiritSwordGlow(0.8);
+      // Fighting stance: right arm back guard, left forward
+      rArm.rotation.z = (rBaseZ + 0.8) - ease * 1.7;   // → rBaseZ - 0.9
+      rArm.rotation.x = (rBaseX + 0.1) - ease * 0.8;   // → rBaseX - 0.7
+      if (lArm) lArm.rotation.z = lBaseZ + ease * 0.5; // → lBaseZ + 0.5
+      if (character.setSpiritSwordGlow) character.setSpiritSwordGlow(0.8 - ease * 0.8);
+      // Body angle to fighting stance
+      character.mesh.rotation.y = 0.2 - ease * 0.15;   // → 0.05 (near 0.35)
+      if (character.baseY !== undefined) {
+        character.mesh.position.y = character.baseY - ease * 0.06;
+      }
     }
 
     // Body rotation follows the slash

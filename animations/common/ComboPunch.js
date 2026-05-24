@@ -125,16 +125,20 @@ export class ComboPunch extends AnimationBase {
         character.mesh.position.z = 0.15 - ease * 0.15;
       }
     }
-    // Final recovery (1.0-1.2)
+    // Final recovery (1.0-1.2) - return to fighting stance
     else {
       const p = (t - 1.0) / 0.2;
       const ease = p * p;
-      lArm.rotation.z = lBaseZ;
-      lArm.rotation.x = lBaseX;
-      rArm.rotation.z = rBaseZ;
-      rArm.rotation.x = rBaseX;
-      character.mesh.rotation.y = 0;
+      // Fighting stance: right back, left forward, body angled
+      lArm.rotation.z = lBaseZ + ease * 0.5;
+      lArm.rotation.x = lBaseX - ease * 0.4;
+      rArm.rotation.z = rBaseZ - ease * 0.9;
+      rArm.rotation.x = rBaseX - ease * 0.7;
+      character.mesh.rotation.y = ease * 0.35;
       character.mesh.position.z = 0;
+      if (character.baseY !== undefined) {
+        character.mesh.position.y = character.baseY - ease * 0.06;
+      }
     }
   }
 }

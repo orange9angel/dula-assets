@@ -101,23 +101,24 @@ export class Kick extends AnimationBase {
       character.mesh.rotation.x = -0.1 + ease * 0.1;
       character.mesh.position.z = 0.2 - ease * 0.2;
     }
-    // Phase 4: Recover (0.7-1.0)
+    // Phase 4: Recover (0.7-1.0) - return to fighting stance
     else {
       const p = (t - 0.7) / 0.3;
       const ease = p * p;
-      rLeg.rotation.x = rLegBaseX;
-      lLeg.rotation.x = lLegBaseX;
+      rLeg.rotation.x = rLegBaseX + ease * 0.25;
+      lLeg.rotation.x = lLegBaseX + ease * 0.2;
       if (rArm) {
-        rArm.rotation.z = rBaseZ;
-        rArm.rotation.x = 0;
+        rArm.rotation.z = rBaseZ - ease * 0.9;
+        rArm.rotation.x = -ease * 0.7;
       }
       if (lArm) {
-        lArm.rotation.z = lBaseZ;
-        lArm.rotation.x = 0;
+        lArm.rotation.z = lBaseZ + ease * 0.5;
+        lArm.rotation.x = -ease * 0.4;
       }
-      character.mesh.rotation.x = 0;
+      character.mesh.rotation.x = ease * 0.08;
+      character.mesh.rotation.y = ease * 0.35;
       if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY;
+        character.mesh.position.y = character.baseY - ease * 0.06;
       }
     }
   }

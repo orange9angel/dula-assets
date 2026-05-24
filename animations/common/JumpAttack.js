@@ -121,22 +121,24 @@ export class JumpAttack extends AnimationBase {
       if (lLeg) lLeg.rotation.x = 0.0 + ease * 0.2;
       character.mesh.rotation.x = 0.6 - ease * 0.5;
     }
-    // Phase 5: Recover (0.8-1.0)
+    // Phase 5: Recover (0.8-1.0) - return to fighting stance
     else {
       const p = (t - 0.8) / 0.2;
       const ease = p * p;
       if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY - 0.02) + ease * 0.02;
+        character.mesh.position.y = (character.baseY - 0.02) - ease * 0.04; // → baseY - 0.06
       }
-      rArm.rotation.z = (rBaseZ - 0.3) + ease * 0.3;
-      rArm.rotation.x = (rBaseX - 0.5) + ease * 0.5;
+      // Fighting stance: right back guard, left forward
+      rArm.rotation.z = (rBaseZ - 0.3) - ease * 0.6;   // → rBaseZ - 0.9
+      rArm.rotation.x = (rBaseX - 0.5) - ease * 0.2;   // → rBaseX - 0.7
       if (lArm) {
-        lArm.rotation.z = (lBaseZ + 0.2) - ease * 0.2;
-        lArm.rotation.x = -0.2 + ease * 0.2;
+        lArm.rotation.z = (lBaseZ + 0.2) + ease * 0.3; // → lBaseZ + 0.5
+        lArm.rotation.x = -0.2 - ease * 0.2;           // → -0.4
       }
-      if (rLeg) rLeg.rotation.x = 0.3 - ease * 0.3;
-      if (lLeg) lLeg.rotation.x = 0.2 - ease * 0.2;
-      character.mesh.rotation.x = 0.1 - ease * 0.1;
+      if (rLeg) rLeg.rotation.x = 0.3 - ease * 0.05;   // → 0.25
+      if (lLeg) lLeg.rotation.x = 0.2 - ease * 0.0;    // → 0.2
+      character.mesh.rotation.x = 0.1 - ease * 0.02;   // → 0.08
+      character.mesh.rotation.y = ease * 0.35;
     }
   }
 }

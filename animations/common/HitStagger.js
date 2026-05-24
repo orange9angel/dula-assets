@@ -59,19 +59,20 @@ export class HitStagger extends AnimationBase {
       rArm.rotation.z = rBaseZ + 0.6 + Math.sin(p * Math.PI * 5) * 0.06;
       lArm.rotation.z = lBaseZ - 0.6 + Math.sin(p * Math.PI * 5 + 1) * 0.06;
     }
-    // Phase 3: Recover (0.35-1.0) - shake it off
+    // Phase 3: Recover (0.35-1.0) - recover to fighting stance
     else {
       const p = (t - 0.35) / 0.65;
       const ease = p * p;
-      character.mesh.position.z = -0.5 + ease * 0.5;
-      character.mesh.rotation.y = 0.4 - ease * 0.4;
-      character.mesh.rotation.z = 0.15 - ease * 0.15;
-      rArm.rotation.z = (rBaseZ + 0.6) - ease * 0.6;
-      rArm.rotation.x = 0.5 - ease * 0.5;
-      lArm.rotation.z = (lBaseZ - 0.6) + ease * 0.6;
-      lArm.rotation.x = 0.4 - ease * 0.4;
+      character.mesh.position.z = -0.5 + ease * 0.5;   // → 0
+      character.mesh.rotation.z = 0.15 - ease * 0.15;  // → 0
+      // End in fighting stance: right back guard, left forward, body angled
+      rArm.rotation.z = (rBaseZ + 0.6) - ease * 1.5;   // → rBaseZ - 0.9
+      rArm.rotation.x = 0.5 - ease * 0.5;              // → 0 (near -0.7)
+      lArm.rotation.z = (lBaseZ - 0.6) + ease * 1.1;   // → lBaseZ + 0.5
+      lArm.rotation.x = 0.4 - ease * 0.4;              // → 0 (near -0.4)
+      character.mesh.rotation.y = 0.4 - ease * 0.05;   // → 0.35
       if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY + 0.05) - ease * 0.05;
+        character.mesh.position.y = (character.baseY + 0.05) - ease * 0.11; // → baseY - 0.06
       }
     }
 

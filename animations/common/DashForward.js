@@ -73,21 +73,24 @@ export class DashForward extends AnimationBase {
         character.mesh.position.y = (character.baseY - 0.05) + ease * 0.02;
       }
     }
-    // Phase 3: Brake (0.3-1.0) - skid to stop
+    // Phase 3: Brake (0.3-1.0) - skid to fighting stance
     else {
       const p = (t - 0.3) / 0.7;
       const ease = p * p;
-      character.mesh.rotation.x = -0.25 + ease * 0.25;
-      character.mesh.position.z = 0.4 - ease * 0.1;
-      rArm.rotation.z = (rBaseZ - 0.7) + ease * 0.7;
-      rArm.rotation.x = -0.6 + ease * 0.6;
-      lArm.rotation.z = (lBaseZ + 0.7) - ease * 0.7;
-      lArm.rotation.x = -0.6 + ease * 0.6;
+      character.mesh.rotation.x = -0.25 + ease * 0.33;  // → 0.08
+      character.mesh.position.z = 0.4 - ease * 0.4;     // → 0
+      // End in fighting stance: right back, left forward
+      rArm.rotation.z = (rBaseZ - 0.7) - ease * 0.2;    // → rBaseZ - 0.9
+      rArm.rotation.x = -0.6 + ease * 0.1;              // → -0.5 (near -0.7)
+      lArm.rotation.z = (lBaseZ + 0.7) - ease * 0.2;    // → lBaseZ + 0.5
+      lArm.rotation.x = -0.6 + ease * 0.6;              // → 0 (near -0.4)
       if (rLeg) rLeg.rotation.x = -0.5 + ease * 0.5;
       if (lLeg) lLeg.rotation.x = 0.4 - ease * 0.4;
       if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY - 0.03) + ease * 0.03;
+        character.mesh.position.y = (character.baseY - 0.03) - ease * 0.03; // → baseY - 0.06
       }
+      // Body angle toward fighting stance
+      character.mesh.rotation.y = ease * 0.35;
     }
   }
 }

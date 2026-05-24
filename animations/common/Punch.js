@@ -69,20 +69,21 @@ export class Punch extends AnimationBase {
         character.mesh.position.y = character.baseY - 0.06 + ease * 0.06;
       }
     }
-    // Phase 3: Recovery (0.35-1.0) - snap back to guard
+    // Phase 3: Recovery (0.35-1.0) - recover to fighting stance
     else {
       const p = (t - 0.35) / 0.65;
       const ease = p * p; // ease-in
-      rArm.rotation.z = (rBaseZ + 0.6) - ease * 0.6;
-      rArm.rotation.x = (rBaseX - 2.0) + ease * 2.0;
+      // End at fighting stance: right arm back guard, left arm forward
+      rArm.rotation.z = (rBaseZ + 0.6) - ease * 1.5;   // → rBaseZ - 0.9
+      rArm.rotation.x = (rBaseX - 2.0) + ease * 1.3;   // → rBaseX - 0.7
       if (lArm) {
-        lArm.rotation.z = (lBaseZ + 0.3) - ease * 0.3;
-        lArm.rotation.x = -0.2 + ease * 0.2;
+        lArm.rotation.z = (lBaseZ + 0.3) - ease * 0.2; // → lBaseZ + 0.1 (near +0.5)
+        lArm.rotation.x = -0.2 + ease * 0.2;           // → 0 (near -0.4)
       }
-      character.mesh.rotation.y = 0.3 - ease * 0.3;
-      character.mesh.position.z = 0.35 - ease * 0.35;
+      character.mesh.rotation.y = 0.3 - ease * 0.05;   // → 0.25 (near 0.35)
+      character.mesh.position.z = 0.35 - ease * 0.35;  // → 0
       if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY;
+        character.mesh.position.y = character.baseY - ease * 0.06; // → baseY - 0.06
       }
     }
 

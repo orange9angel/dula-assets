@@ -98,25 +98,27 @@ export class GetUp extends AnimationBase {
       if (rLeg) rLeg.rotation.x = ease * 0.4;
       if (lLeg) lLeg.rotation.x = ease * 0.3;
     }
-    // Phase 4: Stand (0.7-1.0) - return to full height
+    // Phase 4: Stand (0.7-1.0) - return to fighting stance
     else {
       const p = (t - 0.7) / 0.3;
       const ease = p * p;
-      character.mesh.rotation.x = 0.05 - ease * 0.05;
+      character.mesh.rotation.x = 0.05 + ease * 0.03;  // → 0.08
       if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY - 0.03) + ease * 0.03;
+        character.mesh.position.y = (character.baseY - 0.03) - ease * 0.03; // → baseY - 0.06
       }
-      character.mesh.position.z = -0.1 + ease * 0.1;
+      character.mesh.position.z = -0.1 + ease * 0.1;   // → 0
+      // Fighting stance: right back guard, left forward
       if (rArm) {
-        rArm.rotation.z = (rBaseZ + 0.2) - ease * 0.2;
-        rArm.rotation.x = -0.2 + ease * 0.2;
+        rArm.rotation.z = (rBaseZ + 0.2) - ease * 1.1; // → rBaseZ - 0.9
+        rArm.rotation.x = -0.2 - ease * 0.5;           // → -0.7
       }
       if (lArm) {
-        lArm.rotation.z = (lBaseZ - 0.2) + ease * 0.2;
-        lArm.rotation.x = -0.2 + ease * 0.2;
+        lArm.rotation.z = (lBaseZ - 0.2) + ease * 0.7; // → lBaseZ + 0.5
+        lArm.rotation.x = -0.2 - ease * 0.2;           // → -0.4
       }
-      if (rLeg) rLeg.rotation.x = 0.4 - ease * 0.4;
-      if (lLeg) lLeg.rotation.x = 0.3 - ease * 0.3;
+      if (rLeg) rLeg.rotation.x = 0.4 - ease * 0.15;   // → 0.25
+      if (lLeg) lLeg.rotation.x = 0.3 - ease * 0.1;    // → 0.2
+      character.mesh.rotation.y = ease * 0.35;
     }
   }
 }
