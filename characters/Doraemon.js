@@ -4,6 +4,7 @@ import { CharacterBase } from 'dula-engine';
 export class Doraemon extends CharacterBase {
   constructor() {
     super('Doraemon');
+    this.archetypes = ['round', 'tiny', 'robot'];
   }
 
   build() {

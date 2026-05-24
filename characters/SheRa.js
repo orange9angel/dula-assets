@@ -10,6 +10,7 @@ export class SheRa extends CharacterBase {
   constructor() {
     super('SheRa');
     this.boundingRadius = 0.6;
+    this.archetypes = ['humanoid', 'fighter', 'athletic', 'agile'];
   }
 
   build() {

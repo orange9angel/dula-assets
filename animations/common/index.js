@@ -30,6 +30,44 @@ export { WaveUp } from './WaveUp.js';
 export { PullOpenDrawer } from './PullOpenDrawer.js';
 export { JumpIntoDrawer } from './JumpIntoDrawer.js';
 
+// === KOF97 Style Fighting Game Actions ===
+export { Punch } from './Punch.js';
+export { Kick } from './Kick.js';
+export { Uppercut } from './Uppercut.js';
+export { Dodge } from './Dodge.js';
+export { DashForward } from './DashForward.js';
+export { Block } from './Block.js';
+export { HitStagger } from './HitStagger.js';
+export { Knockdown } from './Knockdown.js';
+export { GetUp } from './GetUp.js';
+export { ComboPunch } from './ComboPunch.js';
+export { SpinKick } from './SpinKick.js';
+export { JumpAttack } from './JumpAttack.js';
+
+// === Facial Expression Library ===
+export { FaceAngry } from './FaceAngry.js';
+export { FaceHappy } from './FaceHappy.js';
+export { FaceSad } from './FaceSad.js';
+export { FaceSurprised } from './FaceSurprised.js';
+export { FaceDetermined } from './FaceDetermined.js';
+export { FacePain } from './FacePain.js';
+export { FaceSmirk } from './FaceSmirk.js';
+export { FaceBlink } from './FaceBlink.js';
+export { FaceConfused } from './FaceConfused.js';
+export { FaceReset } from './FaceReset.js';
+
+// === Visual Effects Library ===
+export { FXHitSpark } from './FXHitSpark.js';
+export { FXDustKick } from './FXDustKick.js';
+export { FXEnergyAura } from './FXEnergyAura.js';
+export { FXShockwave } from './FXShockwave.js';
+export { FXSpeedLines } from './FXSpeedLines.js';
+export { FXScreenShake } from './FXScreenShake.js';
+export { FXChargeGlow } from './FXChargeGlow.js';
+export { FXAfterImage } from './FXAfterImage.js';
+export { FXTrailSwipe } from './FXTrailSwipe.js';
+export { FXBloodSpurt } from './FXBloodSpurt.js';
+
 import { Nod } from './Nod.js';
 import { Jump } from './Jump.js';
 import { SwayBody } from './SwayBody.js';
@@ -59,6 +97,44 @@ import { ReachOut } from './ReachOut.js';
 import { WaveUp } from './WaveUp.js';
 import { PullOpenDrawer } from './PullOpenDrawer.js';
 import { JumpIntoDrawer } from './JumpIntoDrawer.js';
+
+// === KOF97 Style Fighting Game Actions ===
+import { Punch } from './Punch.js';
+import { Kick } from './Kick.js';
+import { Uppercut } from './Uppercut.js';
+import { Dodge } from './Dodge.js';
+import { DashForward } from './DashForward.js';
+import { Block } from './Block.js';
+import { HitStagger } from './HitStagger.js';
+import { Knockdown } from './Knockdown.js';
+import { GetUp } from './GetUp.js';
+import { ComboPunch } from './ComboPunch.js';
+import { SpinKick } from './SpinKick.js';
+import { JumpAttack } from './JumpAttack.js';
+
+// === Facial Expression Library ===
+import { FaceAngry } from './FaceAngry.js';
+import { FaceHappy } from './FaceHappy.js';
+import { FaceSad } from './FaceSad.js';
+import { FaceSurprised } from './FaceSurprised.js';
+import { FaceDetermined } from './FaceDetermined.js';
+import { FacePain } from './FacePain.js';
+import { FaceSmirk } from './FaceSmirk.js';
+import { FaceBlink } from './FaceBlink.js';
+import { FaceConfused } from './FaceConfused.js';
+import { FaceReset } from './FaceReset.js';
+
+// === Visual Effects Library ===
+import { FXHitSpark } from './FXHitSpark.js';
+import { FXDustKick } from './FXDustKick.js';
+import { FXEnergyAura } from './FXEnergyAura.js';
+import { FXShockwave } from './FXShockwave.js';
+import { FXSpeedLines } from './FXSpeedLines.js';
+import { FXScreenShake } from './FXScreenShake.js';
+import { FXChargeGlow } from './FXChargeGlow.js';
+import { FXAfterImage } from './FXAfterImage.js';
+import { FXTrailSwipe } from './FXTrailSwipe.js';
+import { FXBloodSpurt } from './FXBloodSpurt.js';
 
 export const CommonAnimations = {
   Nod,
@@ -92,4 +168,39 @@ export const CommonAnimations = {
   WaveUp,
   PullOpenDrawer,
   JumpIntoDrawer,
+  // === Fighting Game Actions ===
+  Punch,
+  Kick,
+  Uppercut,
+  Dodge,
+  DashForward,
+  Block,
+  HitStagger,
+  Knockdown,
+  GetUp,
+  ComboPunch,
+  SpinKick,
+  JumpAttack,
+  // === Facial Expressions ===
+  FaceAngry,
+  FaceHappy,
+  FaceSad,
+  FaceSurprised,
+  FaceDetermined,
+  FacePain,
+  FaceSmirk,
+  FaceBlink,
+  FaceConfused,
+  FaceReset,
+  // === Visual Effects ===
+  FXHitSpark,
+  FXDustKick,
+  FXEnergyAura,
+  FXShockwave,
+  FXSpeedLines,
+  FXScreenShake,
+  FXChargeGlow,
+  FXAfterImage,
+  FXTrailSwipe,
+  FXBloodSpurt,
 };

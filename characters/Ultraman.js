@@ -11,6 +11,7 @@ export class Ultraman extends CharacterBase {
   constructor() {
     super('Ultraman');
     this.boundingRadius = 2.0;
+    this.archetypes = ['humanoid', 'fighter', 'athletic', 'giant'];
   }
 
   build() {

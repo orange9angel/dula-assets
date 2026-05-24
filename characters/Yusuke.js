@@ -12,6 +12,7 @@ export class Yusuke extends CharacterBase {
     super('Yusuke');
     this.boundingRadius = 0.55;
     this._spiritActive = true;
+    this.archetypes = ['humanoid', 'fighter', 'athletic', 'delinquent'];
   }
 
   build() {
@@ -135,6 +136,19 @@ export class Yusuke extends CharacterBase {
       brow.position.set(side * 0.1, 0.13, 0.26);
       brow.rotation.z = side * -0.2;
       headGroup.add(brow);
+      if (side === -1) this.leftEyebrow = brow;
+      else this.rightEyebrow = brow;
+    }
+
+    // Eyelids - thin boxes above each eye
+    const eyelidGeo = new THREE.BoxGeometry(0.08, 0.008, 0.015);
+    const eyelidMat = new THREE.MeshBasicMaterial({ color: 0x2c170d, transparent: true, opacity: 0.35 });
+    for (const side of [-1, 1]) {
+      const eyelid = new THREE.Mesh(eyelidGeo, eyelidMat);
+      eyelid.position.set(side * 0.095, 0.075, 0.265);
+      headGroup.add(eyelid);
+      if (side === -1) this.leftEyelid = eyelid;
+      else this.rightEyelid = eyelid;
     }
 
     // Nose
@@ -216,6 +230,117 @@ export class Yusuke extends CharacterBase {
     this.addLegs(uniformMat, uniformDarkMat, shoeMat, shoeDarkMat);
     this.addArmband(armbandMat);
     this.addSpiritAura();
+    this.addSpiritGunEffects();
+    this._captureFaceBaseState();
+  }
+
+  addSpiritGunEffects() {
+    // Spirit Gun Orb — blue/white glowing energy ball at right hand fingertip
+    this.spiritGunOrb = new THREE.Group();
+
+    // Core: small bright blue emissive sphere
+    const coreMat = new THREE.MeshBasicMaterial({ color: 0xaaddff });
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), coreMat);
+    this.spiritGunOrb.add(core);
+    this.spiritGunOrbCore = core;
+
+    // Glow: larger transparent blue sphere
+    const glowMat = new THREE.MeshBasicMaterial({
+      color: 0x4488ff, transparent: true, opacity: 0.45, depthWrite: false,
+    });
+    const glow = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), glowMat);
+    this.spiritGunOrb.add(glow);
+    this.spiritGunOrbGlow = glow;
+
+    // Outer ring: rotating torus
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x88ccff, transparent: true, opacity: 0.25, depthWrite: false, side: THREE.DoubleSide,
+    });
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.012, 8, 24), ringMat);
+    ring.rotation.x = Math.PI / 2;
+    this.spiritGunOrb.add(ring);
+    this.spiritGunOrbRing = ring;
+
+    this.spiritGunOrb.visible = false;
+    // Attach orb to right hand so it follows arm movement
+    if (this.rightArm) {
+      this.spiritGunOrb.position.set(0, -this.rightArmLength, 0);
+      this.rightArm.add(this.spiritGunOrb);
+    } else {
+      this._pendingOrbAttach = true;
+    }
+
+    // Spirit Gun Beam — long thin cylindrical beam
+    this.spiritGunBeam = new THREE.Group();
+
+    const beamMat = new THREE.MeshBasicMaterial({
+      color: 0x88ccff, transparent: true, opacity: 0.6, depthWrite: false,
+    });
+    // Cylinder along Y axis (arm direction), extending forward from hand
+    const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.12, 20, 12), beamMat);
+    beam.position.y = -10; // extend in -Y direction (away from hand)
+    this.spiritGunBeam.add(beam);
+    this.spiritGunBeamMesh = beam;
+
+    // Beam core (brighter inner cylinder)
+    const beamCoreMat = new THREE.MeshBasicMaterial({
+      color: 0xaaddff, transparent: true, opacity: 0.8, depthWrite: false,
+    });
+    const beamCore = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.06, 20, 12), beamCoreMat);
+    beamCore.position.y = -10;
+    this.spiritGunBeam.add(beamCore);
+    this.spiritGunBeamCore = beamCore;
+
+    this.spiritGunBeam.visible = false;
+    // Attach beam to right hand so it follows arm rotation naturally
+    if (this.rightArm) {
+      this.spiritGunBeam.position.set(0, -this.rightArmLength, 0);
+      this.rightArm.add(this.spiritGunBeam);
+    } else {
+      this._pendingBeamAttach = true;
+    }
+
+    this._spiritGunOrbVisible = false;
+    this._spiritGunBeamVisible = false;
+    this._spiritGunIntensity = 0;
+  }
+
+  showSpiritGunOrb() {
+    this._spiritGunOrbVisible = true;
+    if (this.spiritGunOrb) this.spiritGunOrb.visible = true;
+  }
+
+  hideSpiritGunOrb() {
+    this._spiritGunOrbVisible = false;
+    if (this.spiritGunOrb) this.spiritGunOrb.visible = false;
+  }
+
+  showSpiritGunBeam() {
+    this._spiritGunBeamVisible = true;
+    if (this.spiritGunBeam) this.spiritGunBeam.visible = true;
+  }
+
+  hideSpiritGunBeam() {
+    this._spiritGunBeamVisible = false;
+    if (this.spiritGunBeam) this.spiritGunBeam.visible = false;
+  }
+
+  setSpiritGunIntensity(t) {
+    this._spiritGunIntensity = Math.max(0, Math.min(1, t));
+    if (this.spiritGunOrb) {
+      const s = 0.5 + this._spiritGunIntensity * 1.5;
+      this.spiritGunOrb.scale.setScalar(s);
+      if (this.spiritGunOrbGlow) {
+        this.spiritGunOrbGlow.material.opacity = 0.2 + this._spiritGunIntensity * 0.4;
+      }
+      if (this.spiritGunOrbRing) {
+        this.spiritGunOrbRing.material.opacity = 0.15 + this._spiritGunIntensity * 0.4;
+      }
+    }
+  }
+
+  setSpiritGunBeamExtend(t) {
+    this._spiritGunBeamExtend = Math.max(0, Math.min(1, t));
   }
 
   createToonGradient() {
@@ -511,6 +636,47 @@ export class Yusuke extends CharacterBase {
         const star = this.spiritStars[i];
         star.material.opacity = this._spiritActive ? 0.22 + Math.abs(Math.sin(time * 4 + i)) * 0.5 : 0;
         star.position.y = star.userData.baseY + Math.sin(time * 1.7 + i) * 0.008;
+      }
+    }
+
+    // Late attach Spirit Gun orb if rightArm wasn't ready during build
+    if (this._pendingOrbAttach && this.rightArm) {
+      this.spiritGunOrb.position.set(0, -this.rightArmLength, 0);
+      this.rightArm.add(this.spiritGunOrb);
+      this._pendingOrbAttach = false;
+    }
+
+    // Late attach Spirit Gun beam if rightArm wasn't ready during build
+    if (this._pendingBeamAttach && this.rightArm) {
+      this.spiritGunBeam.position.set(0, -this.rightArmLength, 0);
+      this.rightArm.add(this.spiritGunBeam);
+      this._pendingBeamAttach = false;
+    }
+
+    // Animate Spirit Gun orb rotation and pulse when visible
+    if (this._spiritGunOrbVisible && this.spiritGunOrb) {
+      if (this.spiritGunOrbRing) {
+        this.spiritGunOrbRing.rotation.z += dt * 3;
+        this.spiritGunOrbRing.rotation.x = Math.PI / 2 + Math.sin(time * 2) * 0.2;
+      }
+      if (this.spiritGunOrbGlow) {
+        const pulse = 0.9 + Math.sin(time * 6) * 0.1;
+        this.spiritGunOrbGlow.scale.setScalar(pulse);
+      }
+    }
+
+    // Animate Spirit Gun beam: flicker + extend animation
+    if (this._spiritGunBeamVisible && this.spiritGunBeam) {
+      const flicker = 0.85 + Math.sin(time * 20) * 0.1 + Math.sin(time * 47) * 0.05;
+      // Beam extends from 0 to full length over time (scale Y since beam extends along Y axis)
+      const extendProgress = this._spiritGunBeamExtend || 1.0;
+      if (this.spiritGunBeamMesh) {
+        this.spiritGunBeamMesh.material.opacity = 0.5 * flicker;
+        this.spiritGunBeamMesh.scale.set(flicker, extendProgress, flicker);
+      }
+      if (this.spiritGunBeamCore) {
+        this.spiritGunBeamCore.material.opacity = 0.7 * flicker;
+        this.spiritGunBeamCore.scale.set(1, extendProgress, 1);
       }
     }
   }

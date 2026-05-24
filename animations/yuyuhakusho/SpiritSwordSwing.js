@@ -1,14 +1,15 @@
 import { AnimationBase } from 'dula-engine';
 
 /**
- * SpiritSwordSwing — 霊剣斬り
- * Kuwabara swinging the Spirit Sword
+ * SpiritSwordSwing — 霊剣斬り（极速版）
+ * Kuwabara swinging the Spirit Sword - FAST
  * Wide horizontal slash motion
- * Arm follows through
+ * Arm follows through with glowing trail
+ * Duration: 0.7s for snappy fighting game feel
  */
 export class SpiritSwordSwing extends AnimationBase {
   constructor() {
-    super('SpiritSwordSwing', 1.2);
+    super('SpiritSwordSwing', 0.7);
   }
 
   update(t, character) {
@@ -25,60 +26,59 @@ export class SpiritSwordSwing extends AnimationBase {
       rArm.rotation.z = rBaseZ - 1.1;
       rArm.rotation.x = rBaseX - 0.3;
       if (lArm) lArm.rotation.z = lBaseZ + 0.2;
-      if (character.spiritSword) {
-        character.spiritSword.visible = true;
-        character.spiritSword.scale.set(1, 1, 2.6);
-      }
+      if (character.showSpiritSword) character.showSpiritSword();
+      if (character.setSpiritSwordGlow) character.setSpiritSwordGlow(1.0);
+      if (character.setSpiritSwordLength) character.setSpiritSwordLength(1.0);
       return;
     }
 
-    // Phase 1: Wind up (0-0.2)
-    if (t < 0.2) {
-      const p = t / 0.2;
+    // Phase 1: Wind up (0-0.15) - quick pull back
+    if (t < 0.15) {
+      const p = t / 0.15;
       const ease = p * p;
-      rArm.rotation.z = (rBaseZ - 1.1) - ease * 0.4; // pull back
-      rArm.rotation.x = (rBaseX - 0.3) - ease * 0.3;
-      if (lArm) lArm.rotation.z = (lBaseZ + 0.2) + ease * 0.2;
+      rArm.rotation.z = (rBaseZ - 1.1) - ease * 0.5;
+      rArm.rotation.x = (rBaseX - 0.3) - ease * 0.4;
+      if (lArm) lArm.rotation.z = (lBaseZ + 0.2) + ease * 0.3;
+      if (character.setSpiritSwordGlow) character.setSpiritSwordGlow(1.0 + ease * 0.5);
     }
-    // Phase 2: Slash forward (0.2-0.5)
-    else if (t < 0.5) {
-      const p = (t - 0.2) / 0.3;
+    // Phase 2: SLASH! (0.15-0.4) - explosive horizontal slash
+    else if (t < 0.4) {
+      const p = (t - 0.15) / 0.25;
       const ease = 1 - Math.pow(1 - p, 2);
-      rArm.rotation.z = (rBaseZ - 1.5) + ease * 2.0; // wide horizontal slash
-      rArm.rotation.x = (rBaseX - 0.6) + ease * 0.5;
-      if (lArm) lArm.rotation.z = (lBaseZ + 0.4) - ease * 0.3;
-      // Sword trail effect
-      if (character.spiritSword && character.spiritSword.material) {
-        character.spiritSword.material.opacity = 0.9 + Math.sin(p * Math.PI) * 0.1;
-      }
+      rArm.rotation.z = (rBaseZ - 1.6) + ease * 2.2;
+      rArm.rotation.x = (rBaseX - 0.7) + ease * 0.6;
+      if (lArm) lArm.rotation.z = (lBaseZ + 0.5) - ease * 0.4;
+      if (character.setSpiritSwordGlow) character.setSpiritSwordGlow(1.5);
     }
-    // Phase 3: Follow through (0.5-0.8)
-    else if (t < 0.8) {
-      const p = (t - 0.5) / 0.3;
+    // Phase 3: Follow through (0.4-0.6)
+    else if (t < 0.6) {
+      const p = (t - 0.4) / 0.2;
       const ease = 1 - Math.pow(1 - p, 3);
-      rArm.rotation.z = (rBaseZ + 0.5) + ease * 0.3;
+      rArm.rotation.z = (rBaseZ + 0.6) + ease * 0.2;
       rArm.rotation.x = (rBaseX - 0.1) + ease * 0.2;
       if (lArm) lArm.rotation.z = (lBaseZ + 0.1) - ease * 0.1;
+      if (character.setSpiritSwordGlow) character.setSpiritSwordGlow(1.2 - ease * 0.4);
     }
-    // Phase 4: Recover (0.8-1.0)
+    // Phase 4: Recover (0.6-1.0)
     else {
-      const p = (t - 0.8) / 0.2;
+      const p = (t - 0.6) / 0.4;
       const ease = p * p;
       rArm.rotation.z = (rBaseZ + 0.8) - ease * 0.8;
       rArm.rotation.x = (rBaseX + 0.1) - ease * 0.1;
       if (lArm) lArm.rotation.z = lBaseZ;
+      if (character.setSpiritSwordGlow) character.setSpiritSwordGlow(0.8);
     }
 
     // Body rotation follows the slash
     if (character.mesh) {
-      if (t < 0.2) {
-        character.mesh.rotation.y = 0.1 - (t / 0.2) * 0.1;
-      } else if (t < 0.5) {
-        character.mesh.rotation.y = (t - 0.2) / 0.3 * 0.4;
-      } else if (t < 0.8) {
-        character.mesh.rotation.y = 0.4 - (t - 0.5) / 0.3 * 0.2;
+      if (t < 0.15) {
+        character.mesh.rotation.y = 0.1 - (t / 0.15) * 0.15;
+      } else if (t < 0.4) {
+        character.mesh.rotation.y = -0.05 + (t - 0.15) / 0.25 * 0.5;
+      } else if (t < 0.6) {
+        character.mesh.rotation.y = 0.45 - (t - 0.4) / 0.2 * 0.25;
       } else {
-        character.mesh.rotation.y = 0.2 - (t - 0.8) / 0.2 * 0.2;
+        character.mesh.rotation.y = 0.2 - (t - 0.6) / 0.4 * 0.2;
       }
     }
   }

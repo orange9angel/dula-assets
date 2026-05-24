@@ -11,6 +11,7 @@ export class Seiya extends CharacterBase {
     super('Seiya');
     this.boundingRadius = 0.55;
     this._cosmosActive = true;
+    this.archetypes = ['humanoid', 'fighter', 'athletic'];
   }
 
   build() {

@@ -20,6 +20,7 @@ export class Kuwabara extends CharacterBase {
   constructor() {
     super('Kuwabara');
     this.boundingRadius = 0.58;
+    this.archetypes = ['humanoid', 'fighter', 'athletic', 'delinquent'];
   }
 
   build() {
@@ -194,6 +195,19 @@ export class Kuwabara extends CharacterBase {
       brow.position.set(side * 0.11, 0.16, 0.28);
       brow.rotation.z = side * -0.08; // very slight tilt
       headGroup.add(brow);
+      if (side === -1) this.leftEyebrow = brow;
+      else this.rightEyebrow = brow;
+    }
+
+    // Eyelids — thin boxes above each eye
+    const eyelidGeo = new THREE.BoxGeometry(0.09, 0.008, 0.015);
+    const eyelidMat = new THREE.MeshBasicMaterial({ color: 0x2c170d, transparent: true, opacity: 0.3 });
+    for (const side of [-1, 1]) {
+      const eyelid = new THREE.Mesh(eyelidGeo, eyelidMat);
+      eyelid.position.set(side * 0.11, 0.09, 0.285);
+      headGroup.add(eyelid);
+      if (side === -1) this.leftEyelid = eyelid;
+      else this.rightEyelid = eyelid;
     }
 
     // Nose — straightforward, slightly broad
@@ -288,6 +302,7 @@ export class Kuwabara extends CharacterBase {
 
     // ========== SPIRIT SWORD ==========
     this.addSpiritSword();
+    this._captureFaceBaseState();
   }
 
   createToonGradient() {
@@ -424,48 +439,56 @@ export class Kuwabara extends CharacterBase {
 
   addSpiritSword() {
     // Spirit Sword — glowing orange energy blade extending from right hand
+    // Multi-layer energy effect for pure energy look
     this.spiritSwordGroup = new THREE.Group();
+    this.spiritSwordGlowIntensity = 1.0;
 
-    // Core blade — bright orange elongated shape
-    const bladeMat = new THREE.MeshBasicMaterial({
-      color: 0xff8800,
+    // === CORE BLADE ===
+    // Bright orange/yellow cylinder with emissive look — the hottest center
+    const coreMat = new THREE.MeshBasicMaterial({
+      color: 0xffaa44,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.95,
       depthWrite: false,
     });
     const bladeCore = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.025, 0.04, 1.2, 8),
-      bladeMat
+      new THREE.CylinderGeometry(0.018, 0.032, 1.15, 10),
+      coreMat
     );
     bladeCore.rotation.x = Math.PI / 2;
     bladeCore.position.z = 0.6;
     this.spiritSwordGroup.add(bladeCore);
+    this.spiritSwordCore = bladeCore;
 
-    // Inner bright core
-    const innerMat = new THREE.MeshBasicMaterial({
-      color: 0xffcc44,
+    // === INNER GLOW ===
+    // Slightly larger transparent orange cylinder — the main energy body
+    const innerGlowMat = new THREE.MeshBasicMaterial({
+      color: 0xff8800,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.55,
       depthWrite: false,
+      side: THREE.DoubleSide,
     });
-    const innerBlade = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.012, 0.02, 1.0, 6),
-      innerMat
+    const innerGlow = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.038, 0.055, 1.25, 10),
+      innerGlowMat
     );
-    innerBlade.rotation.x = Math.PI / 2;
-    innerBlade.position.z = 0.6;
-    this.spiritSwordGroup.add(innerBlade);
+    innerGlow.rotation.x = Math.PI / 2;
+    innerGlow.position.z = 0.6;
+    this.spiritSwordGroup.add(innerGlow);
+    this.spiritSwordInnerGlow = innerGlow;
 
-    // Outer glow aura
+    // === OUTER AURA ===
+    // Even larger transparent cylinder that pulses — the energy radiance
     const auraMat = new THREE.MeshBasicMaterial({
-      color: 0xff5500,
+      color: 0xff6600,
       transparent: true,
-      opacity: 0.25,
+      opacity: 0.22,
       depthWrite: false,
       side: THREE.DoubleSide,
     });
     const aura = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.06, 0.08, 1.3, 8),
+      new THREE.CylinderGeometry(0.075, 0.095, 1.4, 10),
       auraMat
     );
     aura.rotation.x = Math.PI / 2;
@@ -473,29 +496,79 @@ export class Kuwabara extends CharacterBase {
     this.spiritSwordGroup.add(aura);
     this.spiritSwordAura = aura;
 
-    // Energy particles along the blade
+    // === TIP FLARE ===
+    // Bright tip to show energy concentration at the sword point
+    const tipMat = new THREE.MeshBasicMaterial({
+      color: 0xffcc66,
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false,
+    });
+    const tipFlare = new THREE.Mesh(
+      new THREE.SphereGeometry(0.055, 10, 10),
+      tipMat
+    );
+    tipFlare.position.z = 1.25;
+    this.spiritSwordGroup.add(tipFlare);
+    this.spiritSwordTip = tipFlare;
+
+    // === ENERGY PARTICLES ===
+    // Small spheres along the blade that float upward
     this.spiritSwordParticles = [];
-    for (let i = 0; i < 6; i++) {
+    const particleColors = [0xff6600, 0xff8800, 0xffaa44, 0xffcc66];
+    for (let i = 0; i < 14; i++) {
+      const color = particleColors[i % particleColors.length];
       const particleMat = new THREE.MeshBasicMaterial({
-        color: 0xffaa33,
+        color: color,
         transparent: true,
-        opacity: 0.5,
+        opacity: 0.6,
         depthWrite: false,
       });
+      const size = 0.012 + Math.random() * 0.018;
       const particle = new THREE.Mesh(
-        new THREE.SphereGeometry(0.015 + (i % 3) * 0.005, 6, 6),
+        new THREE.SphereGeometry(size, 6, 6),
         particleMat
       );
+      // Distribute along blade length with some randomness
+      const zBase = 0.15 + (i / 13) * 1.05;
       particle.position.set(
-        (Math.random() - 0.5) * 0.06,
-        (Math.random() - 0.5) * 0.06,
-        0.2 + i * 0.15
+        (Math.random() - 0.5) * 0.07,
+        (Math.random() - 0.5) * 0.07,
+        zBase
       );
-      particle.userData.basePos = particle.position.clone();
-      particle.userData.speed = 2 + Math.random() * 3;
+      particle.userData.baseZ = zBase;
+      particle.userData.speed = 1.5 + Math.random() * 2.5;
       particle.userData.offset = Math.random() * Math.PI * 2;
+      particle.userData.driftX = (Math.random() - 0.5) * 0.015;
+      particle.userData.driftY = (Math.random() - 0.5) * 0.015;
+      particle.userData.size = size;
       this.spiritSwordGroup.add(particle);
       this.spiritSwordParticles.push(particle);
+    }
+
+    // === ENERGY SPARKS ===
+    // Tiny fast-moving sparks near the hilt
+    this.spiritSwordSparks = [];
+    for (let i = 0; i < 6; i++) {
+      const sparkMat = new THREE.MeshBasicMaterial({
+        color: 0xffdd88,
+        transparent: true,
+        opacity: 0.8,
+        depthWrite: false,
+      });
+      const spark = new THREE.Mesh(
+        new THREE.SphereGeometry(0.008 + Math.random() * 0.008, 4, 4),
+        sparkMat
+      );
+      spark.position.set(
+        (Math.random() - 0.5) * 0.05,
+        (Math.random() - 0.5) * 0.05,
+        0.05 + Math.random() * 0.15
+      );
+      spark.userData.offset = Math.random() * Math.PI * 2;
+      spark.userData.speed = 4 + Math.random() * 4;
+      this.spiritSwordGroup.add(spark);
+      this.spiritSwordSparks.push(spark);
     }
 
     // Attach to right hand
@@ -519,6 +592,52 @@ export class Kuwabara extends CharacterBase {
     if (this.spiritSwordGroup) {
       this.spiritSwordGroup.visible = false;
     }
+  }
+
+  setSpiritSwordGlow(intensity) {
+    // Clamp intensity to 0-1 range
+    this.spiritSwordGlowIntensity = Math.max(0, Math.min(1, intensity));
+    if (!this.spiritSwordGroup) return;
+
+    const g = this.spiritSwordGlowIntensity;
+
+    // Core blade opacity
+    if (this.spiritSwordCore) {
+      this.spiritSwordCore.material.opacity = 0.3 + g * 0.65;
+    }
+    // Inner glow opacity
+    if (this.spiritSwordInnerGlow) {
+      this.spiritSwordInnerGlow.material.opacity = g * 0.6;
+      this.spiritSwordInnerGlow.visible = g > 0.05;
+    }
+    // Outer aura opacity
+    if (this.spiritSwordAura) {
+      this.spiritSwordAura.material.opacity = g * 0.3;
+      this.spiritSwordAura.visible = g > 0.05;
+    }
+    // Tip flare
+    if (this.spiritSwordTip) {
+      this.spiritSwordTip.material.opacity = g * 0.5;
+      this.spiritSwordTip.visible = g > 0.05;
+    }
+    // Particles
+    for (const p of this.spiritSwordParticles || []) {
+      p.material.opacity = g * 0.7;
+      p.visible = g > 0.05;
+    }
+    // Sparks
+    for (const s of this.spiritSwordSparks || []) {
+      s.material.opacity = g * 0.9;
+      s.visible = g > 0.05;
+    }
+  }
+
+  setSpiritSwordLength(t) {
+    // t from 0 to 1: sword grows from nothing to full length
+    const scale = Math.max(0.01, Math.min(1, t));
+    if (!this.spiritSwordGroup) return;
+    // Scale the entire sword group along Z (blade direction)
+    this.spiritSwordGroup.scale.set(1, 1, scale);
   }
 
   setBattleStance(active = true) {
@@ -568,24 +687,83 @@ export class Kuwabara extends CharacterBase {
 
     // Spirit Sword energy animation
     if (this.spiritSwordGroup && this.spiritSwordGroup.visible) {
-      // Pulse the aura
-      if (this.spiritSwordAura) {
-        const pulse = 0.2 + Math.sin(time * 4) * 0.08;
-        this.spiritSwordAura.material.opacity = pulse;
-        this.spiritSwordAura.scale.set(
-          1 + Math.sin(time * 3) * 0.1,
+      const g = this.spiritSwordGlowIntensity || 1;
+      const flicker = 0.9 + Math.random() * 0.2; // subtle energy flicker
+
+      // === CORE BLADE FLICKER ===
+      // Slight opacity and scale jitter for raw energy feel
+      if (this.spiritSwordCore) {
+        this.spiritSwordCore.material.opacity = (0.85 + Math.sin(time * 8) * 0.08) * g * flicker;
+        this.spiritSwordCore.scale.set(
+          1 + Math.sin(time * 12) * 0.03,
           1,
-          1 + Math.cos(time * 2.5) * 0.05
+          1 + Math.cos(time * 10) * 0.02
         );
       }
 
-      // Animate particles
+      // === INNER GLOW PULSE ===
+      if (this.spiritSwordInnerGlow) {
+        this.spiritSwordInnerGlow.material.opacity = (0.45 + Math.sin(time * 5) * 0.1) * g;
+        this.spiritSwordInnerGlow.scale.set(
+          1 + Math.sin(time * 4) * 0.06,
+          1,
+          1 + Math.cos(time * 3.5) * 0.04
+        );
+      }
+
+      // === OUTER AURA PULSE ===
+      // Stronger, slower pulse for the radiance
+      if (this.spiritSwordAura) {
+        const auraPulse = 0.18 + Math.sin(time * 3) * 0.1;
+        this.spiritSwordAura.material.opacity = auraPulse * g;
+        this.spiritSwordAura.scale.set(
+          1 + Math.sin(time * 2.5) * 0.15,
+          1,
+          1 + Math.cos(time * 2) * 0.08
+        );
+      }
+
+      // === TIP FLARE PULSE ===
+      if (this.spiritSwordTip) {
+        this.spiritSwordTip.material.opacity = (0.35 + Math.sin(time * 6) * 0.12) * g;
+        const tipScale = 1 + Math.sin(time * 5) * 0.2;
+        this.spiritSwordTip.scale.set(tipScale, tipScale, tipScale);
+      }
+
+      // === ENERGY PARTICLES FLOATING UPWARD ===
+      // Particles drift up the blade, reset when they reach the tip
       if (this.spiritSwordParticles) {
         for (const p of this.spiritSwordParticles) {
           const t = time * p.userData.speed + p.userData.offset;
-          p.position.x = p.userData.basePos.x + Math.sin(t) * 0.02;
-          p.position.y = p.userData.basePos.y + Math.cos(t * 0.7) * 0.02;
-          p.material.opacity = 0.3 + Math.abs(Math.sin(t * 2)) * 0.4;
+          // Float upward along Z (blade direction)
+          const floatZ = ((t * 0.08) % 1.1);
+          p.position.z = 0.12 + floatZ * 1.1;
+          // Spiral drift around the blade
+          const spiralAngle = t * 2 + p.userData.offset;
+          const radius = 0.025 + Math.sin(t * 3) * 0.015;
+          p.position.x = Math.cos(spiralAngle) * radius + p.userData.driftX;
+          p.position.y = Math.sin(spiralAngle) * radius + p.userData.driftY;
+          // Fade near tip and base
+          const normalizedPos = floatZ;
+          const fade = Math.sin(normalizedPos * Math.PI); // brightest in middle
+          p.material.opacity = (0.2 + fade * 0.6) * g;
+          // Scale pulse
+          const scalePulse = 1 + Math.sin(t * 4) * 0.3;
+          p.scale.setScalar(scalePulse);
+        }
+      }
+
+      // === ENERGY SPARKS ===
+      // Fast flickering sparks near the hilt
+      if (this.spiritSwordSparks) {
+        for (const s of this.spiritSwordSparks) {
+          const t = time * s.userData.speed + s.userData.offset;
+          s.position.x = Math.sin(t * 3) * 0.04;
+          s.position.y = Math.cos(t * 2.5) * 0.04;
+          s.position.z = 0.05 + Math.abs(Math.sin(t * 2)) * 0.12;
+          s.material.opacity = (0.4 + Math.sin(t * 8) * 0.4) * g;
+          const sparkScale = 0.7 + Math.sin(t * 10) * 0.5;
+          s.scale.setScalar(Math.max(0.1, sparkScale));
         }
       }
     }

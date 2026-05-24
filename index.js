@@ -25,6 +25,7 @@ import { Shota } from './characters/Shota.js';
 // Characters - Yu Yu Hakusho
 import { Yusuke } from './characters/Yusuke.js';
 import { Kuwabara } from './characters/Kuwabara.js';
+import { Yokai } from './characters/Yokai.js';
 
 // Transitions
 import { Fade } from './transitions/Fade.js';
@@ -65,6 +66,41 @@ import { SplashPaddle } from './animations/common/SplashPaddle.js';
 import { WaveHand } from './animations/common/WaveHand.js';
 import { PullOpenDrawer } from './animations/common/PullOpenDrawer.js';
 import { JumpIntoDrawer } from './animations/common/JumpIntoDrawer.js';
+// === KOF97 Style Fighting Game Actions ===
+import { Punch } from './animations/common/Punch.js';
+import { Kick } from './animations/common/Kick.js';
+import { Uppercut } from './animations/common/Uppercut.js';
+import { Dodge } from './animations/common/Dodge.js';
+import { DashForward } from './animations/common/DashForward.js';
+import { Block } from './animations/common/Block.js';
+import { HitStagger } from './animations/common/HitStagger.js';
+import { Knockdown } from './animations/common/Knockdown.js';
+import { GetUp } from './animations/common/GetUp.js';
+import { ComboPunch } from './animations/common/ComboPunch.js';
+import { SpinKick } from './animations/common/SpinKick.js';
+import { JumpAttack } from './animations/common/JumpAttack.js';
+// === Facial Expression Library ===
+import { FaceAngry } from './animations/common/FaceAngry.js';
+import { FaceHappy } from './animations/common/FaceHappy.js';
+import { FaceSad } from './animations/common/FaceSad.js';
+import { FaceSurprised } from './animations/common/FaceSurprised.js';
+import { FaceDetermined } from './animations/common/FaceDetermined.js';
+import { FacePain } from './animations/common/FacePain.js';
+import { FaceSmirk } from './animations/common/FaceSmirk.js';
+import { FaceBlink } from './animations/common/FaceBlink.js';
+import { FaceConfused } from './animations/common/FaceConfused.js';
+import { FaceReset } from './animations/common/FaceReset.js';
+// === Visual Effects Library ===
+import { FXHitSpark } from './animations/common/FXHitSpark.js';
+import { FXDustKick } from './animations/common/FXDustKick.js';
+import { FXEnergyAura } from './animations/common/FXEnergyAura.js';
+import { FXShockwave } from './animations/common/FXShockwave.js';
+import { FXSpeedLines } from './animations/common/FXSpeedLines.js';
+import { FXScreenShake } from './animations/common/FXScreenShake.js';
+import { FXChargeGlow } from './animations/common/FXChargeGlow.js';
+import { FXAfterImage } from './animations/common/FXAfterImage.js';
+import { FXTrailSwipe } from './animations/common/FXTrailSwipe.js';
+import { FXBloodSpurt } from './animations/common/FXBloodSpurt.js';
 // Animations - doraemon
 import { Float } from './animations/doraemon/Float.js';
 import { NoseBlink } from './animations/doraemon/NoseBlink.js';
@@ -214,6 +250,7 @@ export function registerAll() {
   // Characters - yuyuhakusho
   registerCharacter('Yusuke', Yusuke);
   registerCharacter('Kuwabara', Kuwabara);
+  registerCharacter('Yokai', Yokai);
   // Animations - common
   registerAnimation('Bow', Bow);
   registerAnimation('Celebrate', Celebrate);
@@ -276,6 +313,41 @@ export function registerAll() {
   registerAnimation('WaveUp', WaveUp);
   registerAnimation('PullOpenDrawer', PullOpenDrawer);
   registerAnimation('JumpIntoDrawer', JumpIntoDrawer);
+  // === KOF97 Style Fighting Game Actions ===
+  registerAnimation('Punch', Punch);
+  registerAnimation('Kick', Kick);
+  registerAnimation('Uppercut', Uppercut);
+  registerAnimation('Dodge', Dodge);
+  registerAnimation('DashForward', DashForward);
+  registerAnimation('Block', Block);
+  registerAnimation('HitStagger', HitStagger);
+  registerAnimation('Knockdown', Knockdown);
+  registerAnimation('GetUp', GetUp);
+  registerAnimation('ComboPunch', ComboPunch);
+  registerAnimation('SpinKick', SpinKick);
+  registerAnimation('JumpAttack', JumpAttack);
+  // === Facial Expression Library ===
+  registerAnimation('FaceAngry', FaceAngry);
+  registerAnimation('FaceHappy', FaceHappy);
+  registerAnimation('FaceSad', FaceSad);
+  registerAnimation('FaceSurprised', FaceSurprised);
+  registerAnimation('FaceDetermined', FaceDetermined);
+  registerAnimation('FacePain', FacePain);
+  registerAnimation('FaceSmirk', FaceSmirk);
+  registerAnimation('FaceBlink', FaceBlink);
+  registerAnimation('FaceConfused', FaceConfused);
+  registerAnimation('FaceReset', FaceReset);
+  // === Visual Effects Library ===
+  registerAnimation('FXHitSpark', FXHitSpark);
+  registerAnimation('FXDustKick', FXDustKick);
+  registerAnimation('FXEnergyAura', FXEnergyAura);
+  registerAnimation('FXShockwave', FXShockwave);
+  registerAnimation('FXSpeedLines', FXSpeedLines);
+  registerAnimation('FXScreenShake', FXScreenShake);
+  registerAnimation('FXChargeGlow', FXChargeGlow);
+  registerAnimation('FXAfterImage', FXAfterImage);
+  registerAnimation('FXTrailSwipe', FXTrailSwipe);
+  registerAnimation('FXBloodSpurt', FXBloodSpurt);
   // Animations - xingzai
   registerAnimation('XingzaiFloat', XingzaiFloat);
   registerAnimation('TandemFlight', TandemFlight);
