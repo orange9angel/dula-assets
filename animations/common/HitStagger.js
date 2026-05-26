@@ -74,16 +74,25 @@ export class HitStagger extends AnimationBase {
       }
     }
 
-    // Head snaps back on impact
+    // Head snaps back on impact, then looks toward attacker (opposite of knockback)
+    // knockbackDir = -dir, so attacker is in +dir direction
+    const attackerDir = -knockbackDir;
     if (head) {
       if (t < 0.15) {
-        head.rotation.x = (t / 0.15) * 0.3;
-        head.rotation.y = (t / 0.15) * 0.15;
+        // Impact: head snaps back away from hit
+        const p = t / 0.15;
+        head.rotation.x = p * 0.3;
+        head.rotation.y = -attackerDir * p * 0.2; // turn away momentarily
       } else if (t < 0.35) {
-        head.rotation.x = 0.3 - ((t - 0.15) / 0.2) * 0.08;
+        // Stagger: head turns to look at attacker
+        const p = (t - 0.15) / 0.2;
+        head.rotation.x = 0.3 - p * 0.08;
+        head.rotation.y = -attackerDir * 0.2 + attackerDir * p * 0.35; // turn toward attacker
       } else {
-        head.rotation.x = 0.22 - ((t - 0.35) / 0.65) * 0.22;
-        head.rotation.y = 0.15 - ((t - 0.35) / 0.65) * 0.15;
+        // Recovery: return to neutral
+        const p = (t - 0.35) / 0.65;
+        head.rotation.x = 0.22 * (1 - p);
+        head.rotation.y = attackerDir * 0.15 * (1 - p);
       }
     }
   }

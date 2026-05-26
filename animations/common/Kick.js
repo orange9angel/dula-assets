@@ -101,5 +101,30 @@ export class Kick extends AnimationBase {
         character.mesh.position.y = character.baseY - ease * 0.06;
       }
     }
+
+    // Head tracks the kick — lean back during chamber, forward during kick
+    if (character.headGroup) {
+      if (t < 0.25) {
+        // Chamber: head pulls back for balance
+        const p = t / 0.25;
+        character.headGroup.rotation.x = -0.05 * p;
+        character.headGroup.rotation.y = -dir * 0.03 * p;
+      } else if (t < 0.45) {
+        // Kick: head leans forward to track target
+        const p = (t - 0.25) / 0.2;
+        character.headGroup.rotation.x = -0.05 + 0.12 * p;
+        character.headGroup.rotation.y = dir * 0.06 * p;
+      } else if (t < 0.7) {
+        // Retract: head returns
+        const p = (t - 0.45) / 0.25;
+        character.headGroup.rotation.x = 0.07 * (1 - p);
+        character.headGroup.rotation.y = dir * 0.06 * (1 - p);
+      } else {
+        // Recovery
+        const p = (t - 0.7) / 0.3;
+        character.headGroup.rotation.x = 0;
+        character.headGroup.rotation.y = 0;
+      }
+    }
   }
 }

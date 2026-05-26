@@ -82,9 +82,23 @@ export class Punch extends AnimationBase {
       }
     }
 
-    // Head tracks the punch direction
+    // Head tracks the punch direction — lean into the punch
     if (head) {
-      head.rotation.y = 0;
+      if (t < 0.15) {
+        // Wind up: head pulls back slightly
+        head.rotation.y = -dir * 0.05;
+        head.rotation.x = 0.02;
+      } else if (t < 0.35) {
+        // Punch: head leans forward to track target
+        const p = (t - 0.15) / 0.2;
+        head.rotation.y = dir * 0.08 * p;
+        head.rotation.x = 0.05 + 0.05 * p;
+      } else {
+        // Recovery: return to neutral
+        const p = (t - 0.35) / 0.65;
+        head.rotation.y = dir * 0.08 * (1 - p);
+        head.rotation.x = 0.1 * (1 - p);
+      }
     }
   }
 }
