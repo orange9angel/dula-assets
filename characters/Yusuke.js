@@ -343,6 +343,42 @@ export class Yusuke extends CharacterBase {
     this._spiritGunBeamExtend = Math.max(0, Math.min(1, t));
   }
 
+  getSpiritGunMuzzleWorldPosition() {
+    const source = this.spiritGunBeam || this.spiritGunOrb || this.rightArm;
+    const pos = new THREE.Vector3();
+
+    if (source) {
+      source.updateWorldMatrix(true, false);
+      source.getWorldPosition(pos);
+      return pos;
+    }
+
+    pos.copy(this.mesh.position);
+    pos.y += 1.15;
+    return pos;
+  }
+
+  getSpiritGunBeamVolume() {
+    if (!this.spiritGunBeam || !this.spiritGunBeam.visible) return null;
+
+    this.spiritGunBeam.updateWorldMatrix(true, false);
+    const extend = Math.max(0.01, this._spiritGunBeamExtend ?? 1);
+    const start = new THREE.Vector3(0, 0, 0).applyMatrix4(this.spiritGunBeam.matrixWorld);
+    const end = new THREE.Vector3(0, -20 * extend, 0).applyMatrix4(this.spiritGunBeam.matrixWorld);
+    const scale = new THREE.Vector3();
+    this.spiritGunBeam.getWorldScale(scale);
+    const radialScale = Math.max(scale.x, scale.z);
+
+    return {
+      type: 'capsule',
+      source: 'SpiritGunBeam',
+      start,
+      end,
+      radius: 0.16 * radialScale,
+      length: start.distanceTo(end),
+    };
+  }
+
   createToonGradient() {
     const canvas = document.createElement('canvas');
     canvas.width = 4; canvas.height = 1;

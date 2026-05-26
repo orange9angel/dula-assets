@@ -585,6 +585,7 @@ export class Kuwabara extends CharacterBase {
   showSpiritSword() {
     if (this.spiritSwordGroup) {
       this.spiritSwordGroup.visible = true;
+      this._alignSpiritSwordToCombatFacing();
     }
   }
 
@@ -634,10 +635,47 @@ export class Kuwabara extends CharacterBase {
 
   setSpiritSwordLength(t) {
     // t from 0 to 1: sword grows from nothing to full length
-    const scale = Math.max(0.01, Math.min(1, t));
+    const scale = Math.max(0.01, Math.min(1, t)) * 1.75;
     if (!this.spiritSwordGroup) return;
     // Scale the entire sword group along Z (blade direction)
     this.spiritSwordGroup.scale.set(1, 1, scale);
+    this._alignSpiritSwordToCombatFacing();
+  }
+
+  _alignSpiritSwordToCombatFacing() {
+    if (!this.spiritSwordGroup || !this.rightArm) return;
+
+    const facingDir = this.userData?.facingDir ?? this.mesh?.userData?.facingDir ?? 1;
+    const worldDir = new THREE.Vector3(facingDir >= 0 ? 1 : -1, 0, 0);
+    const localBladeAxis = new THREE.Vector3(0, 0, 1);
+    const targetWorldQuat = new THREE.Quaternion().setFromUnitVectors(localBladeAxis, worldDir);
+    const parentWorldQuat = new THREE.Quaternion();
+
+    this.rightArm.updateWorldMatrix(true, false);
+    this.rightArm.getWorldQuaternion(parentWorldQuat);
+    this.spiritSwordGroup.quaternion.copy(parentWorldQuat.invert().multiply(targetWorldQuat));
+  }
+
+  getSpiritSwordVolume() {
+    if (!this.spiritSwordGroup || !this.spiritSwordGroup.visible) return null;
+
+    this._alignSpiritSwordToCombatFacing();
+
+    this.spiritSwordGroup.updateWorldMatrix(true, false);
+    const start = new THREE.Vector3(0, 0, 0.06).applyMatrix4(this.spiritSwordGroup.matrixWorld);
+    const end = new THREE.Vector3(0, 0, 1.25).applyMatrix4(this.spiritSwordGroup.matrixWorld);
+    const scale = new THREE.Vector3();
+    this.spiritSwordGroup.getWorldScale(scale);
+    const radialScale = Math.max(scale.x, scale.y);
+
+    return {
+      type: 'capsule',
+      source: 'SpiritSword',
+      start,
+      end,
+      radius: 0.13 * radialScale,
+      length: start.distanceTo(end),
+    };
   }
 
   setBattleStance(active = true) {
@@ -687,6 +725,7 @@ export class Kuwabara extends CharacterBase {
 
     // Spirit Sword energy animation
     if (this.spiritSwordGroup && this.spiritSwordGroup.visible) {
+      this._alignSpiritSwordToCombatFacing();
       const g = this.spiritSwordGlowIntensity || 1;
       const flicker = 0.9 + Math.random() * 0.2; // subtle energy flicker
 
