@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CharacterBase } from 'dula-engine';
+import { CharacterBase, GlowEffect } from 'dula-engine';
 
 /**
  * She-Ra (希瑞) — Princess of Power
@@ -287,12 +287,17 @@ export class SheRa extends CharacterBase {
     pommel.position.y = -0.14;
     this.swordGroup.add(pommel);
 
-    // Glow effect
-    const glowGeo = new THREE.SphereGeometry(0.3, 16, 16);
-    const glowMat2 = new THREE.MeshBasicMaterial({ color: 0x88ccff, transparent: true, opacity: 0.1 });
-    this.swordGlow = new THREE.Mesh(glowGeo, glowMat2);
-    this.swordGlow.position.y = 0.6;
-    this.swordGroup.add(this.swordGlow);
+    // Glow effect — using reusable GlowEffect component
+    const swordGlow = new GlowEffect({
+      color: 0x88ccff,
+      size: 0.3,
+      intensity: 0.1,
+      pulseSpeed: 3.0,
+      pulseRange: 0.05,
+    });
+    swordGlow.mesh.position.y = 0.6;
+    this.addLightEffect('swordGlow', swordGlow, this.swordGroup);
+    this.swordGlow = swordGlow.mesh; // keep backward compat for external refs
 
     // Position in right hand
     this.swordGroup.position.set(0.4, 0.9, 0.2);
@@ -367,12 +372,7 @@ export class SheRa extends CharacterBase {
 
   update(time, delta) {
     super.update(time, delta);
-    // Sword glow pulse
-    if (this.swordGroup?.visible && this.swordGlow) {
-      const pulse = 0.1 + Math.sin(time * 3) * 0.05;
-      this.swordGlow.material.opacity = pulse;
-      this.swordGlow.scale.setScalar(1 + Math.sin(time * 3) * 0.15);
-    }
+    this.updateLightEffects(time, delta);
     // Cape subtle movement
     if (this.cape) {
       this.cape.rotation.z = Math.sin(time * 1.5) * 0.03;

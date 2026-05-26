@@ -35,6 +35,9 @@ import { ZoomBlur } from './transitions/ZoomBlur.js';
 import { Pixelate } from './transitions/Pixelate.js';
 import { SpinTransition } from './transitions/Spin.js';
 
+// Post-processing
+import { RetroTVPostProcess } from './postprocessing/RetroTVPostProcess.js';
+
 // Animations - common
 import { Bow } from './animations/common/Bow.js';
 import { Celebrate } from './animations/common/Celebrate.js';
@@ -230,6 +233,7 @@ import {
   registerVoice,
   registerDirector,
   registerTransition,
+  registerPostProcess,
 } from 'dula-engine';
 
 import { CourtDirector } from './lib/CourtDirector.js';
@@ -458,6 +462,9 @@ export function registerAll() {
   registerTransition('ZoomBlur', ZoomBlur);
   registerTransition('Pixelate', Pixelate);
   registerTransition('Spin', SpinTransition);
+
+  // Post-processing
+  registerPostProcess('RetroTV', RetroTVPostProcess);
 }
 
 // Re-exports for custom bootstrap use

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CharacterBase } from 'dula-engine';
+import { CharacterBase, AuraEffect } from 'dula-engine';
 
 /**
  * Seiya (Pegasus Bronze Saint) - Adult Proportions
@@ -503,43 +503,26 @@ export class Seiya extends CharacterBase {
   }
 
   addCosmosAura() {
-    this.cosmosGroup = new THREE.Group();
-    const auraMat = new THREE.MeshBasicMaterial({
-      color: 0x67d7ff, transparent: true, opacity: 0.1,
-      depthWrite: false, side: THREE.DoubleSide,
+    const auraEffect = new AuraEffect({
+      color: 0x67d7ff,
+      auraSize: 0.7,
+      auraOpacity: 0.1,
+      scaleX: 0.8,
+      scaleY: 1.5,
+      scaleZ: 0.55,
+      ringCount: 3,
+      ringColor: 0xffffff,
+      ringOpacity: 0.3,
+      starCount: 10,
+      pulseSpeed: 3.2,
+      rotationSpeed: 0.5,
     });
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff, transparent: true, opacity: 0.3,
-      depthWrite: false,
-    });
-
-    const aura = new THREE.Mesh(new THREE.SphereGeometry(0.7, 20, 16), auraMat);
-    aura.position.y = 0.95;
-    aura.scale.set(0.8, 1.5, 0.55);
-    this.cosmosGroup.add(aura);
-    this.cosmosAura = aura;
-
-    for (let i = 0; i < 3; i++) {
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.33 + i * 0.09, 0.005, 8, 40), ringMat.clone());
-      ring.position.y = 0.78 + i * 0.26;
-      ring.rotation.x = Math.PI / 2 + i * 0.15;
-      ring.rotation.z = i * 0.65;
-      this.cosmosGroup.add(ring);
-      if (!this.cosmosRings) this.cosmosRings = [];
-      this.cosmosRings.push(ring);
-    }
-
-    for (let i = 0; i < 10; i++) {
-      const star = new THREE.Mesh(new THREE.SphereGeometry(0.01 + (i % 3) * 0.002, 8, 8), ringMat.clone());
-      const a = (i / 10) * Math.PI * 2;
-      star.position.set(Math.cos(a) * (0.36 + (i % 2) * 0.14), 0.52 + (i % 5) * 0.2, Math.sin(a) * 0.16);
-      star.userData.baseY = star.position.y;
-      this.cosmosGroup.add(star);
-      if (!this.cosmosStars) this.cosmosStars = [];
-      this.cosmosStars.push(star);
-    }
-
-    this.mesh.add(this.cosmosGroup);
+    this.addLightEffect('cosmosAura', auraEffect, this.mesh);
+    // Keep backward compat references
+    this.cosmosGroup = auraEffect.group;
+    this.cosmosAura = auraEffect.auraMesh;
+    this.cosmosRings = auraEffect.rings;
+    this.cosmosStars = auraEffect.stars;
   }
 
   addCape() {
@@ -644,26 +627,11 @@ export class Seiya extends CharacterBase {
     if (this.leftShoulderArmor) this.leftShoulderArmor.rotation.z = Math.sin(time * 1.8) * 0.016;
     if (this.rightShoulderArmor) this.rightShoulderArmor.rotation.z = -Math.sin(time * 1.8) * 0.016;
 
-    if (this.cosmosAura) {
-      const pulse = 0.08 + Math.sin(time * 3.2) * 0.03;
-      this.cosmosAura.material.opacity = this._cosmosActive ? pulse : 0;
-      this.cosmosAura.scale.set(0.8 + Math.sin(time * 2.6) * 0.025, 1.5 + Math.sin(time * 2.1) * 0.05, 0.55);
+    // Update aura effect (delegated to AuraEffect component)
+    const auraEffect = this.getLightEffect('cosmosAura');
+    if (auraEffect) {
+      auraEffect.setActive(this._cosmosActive);
     }
-
-    if (this.cosmosRings) {
-      for (let i = 0; i < this.cosmosRings.length; i++) {
-        const ring = this.cosmosRings[i];
-        ring.rotation.z += dt * (0.5 + i * 0.18);
-        ring.material.opacity = this._cosmosActive ? 0.2 + Math.sin(time * 2.4 + i) * 0.07 : 0;
-      }
-    }
-
-    if (this.cosmosStars) {
-      for (let i = 0; i < this.cosmosStars.length; i++) {
-        const star = this.cosmosStars[i];
-        star.material.opacity = this._cosmosActive ? 0.22 + Math.abs(Math.sin(time * 4 + i)) * 0.5 : 0;
-        star.position.y = star.userData.baseY + Math.sin(time * 1.7 + i) * 0.008;
-      }
-    }
+    this.updateLightEffects(time, dt);
   }
 }
