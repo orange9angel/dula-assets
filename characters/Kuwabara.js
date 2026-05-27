@@ -687,14 +687,16 @@ export class Kuwabara extends CharacterBase {
       this.hideSpiritSword();
       return;
     }
-    // Right arm forward with Spirit Sword
+    // Boxing stance: hands up guarding face, body angled
     if (this.rightArm) {
-      this.rightArm.rotation.z = (this.rightArmBaseZ || 0) - 0.5;
-      this.rightArm.rotation.x = -0.3;
+      // Right hand forward, guarding face
+      this.rightArm.rotation.z = (this.rightArmBaseZ || 0) - 0.2;
+      this.rightArm.rotation.x = -1.4; // raised up
     }
     if (this.leftArm) {
-      this.leftArm.rotation.z = (this.leftArmBaseZ || 0) + 0.35;
-      this.leftArm.rotation.x = -0.1;
+      // Left hand back, guarding face
+      this.leftArm.rotation.z = (this.leftArmBaseZ || 0) + 0.1;
+      this.leftArm.rotation.x = -1.3; // raised up
     }
     this.showSpiritSword();
   }

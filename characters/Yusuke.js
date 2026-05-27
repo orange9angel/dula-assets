@@ -626,13 +626,16 @@ export class Yusuke extends CharacterBase {
       if (this.rightArm) this.rightArm.rotation.x = 0;
       return;
     }
+    // Boxing stance: hands up guarding face, body angled
     if (this.rightArm) {
-      this.rightArm.rotation.z = (this.rightArmBaseZ || 0) - 0.6;
-      this.rightArm.rotation.x = -0.15;
+      // Right hand forward, guarding face
+      this.rightArm.rotation.z = (this.rightArmBaseZ || 0) - 0.2;
+      this.rightArm.rotation.x = -1.4; // raised up
     }
     if (this.leftArm) {
-      this.leftArm.rotation.z = (this.leftArmBaseZ || 0) + 0.4;
-      this.leftArm.rotation.x = -0.08;
+      // Left hand back, guarding face
+      this.leftArm.rotation.z = (this.leftArmBaseZ || 0) + 0.1;
+      this.leftArm.rotation.x = -1.3; // raised up
     }
   }
 
