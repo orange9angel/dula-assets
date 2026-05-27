@@ -35,13 +35,13 @@ export class FightingStance extends AnimationBase {
     const p = t < 0.6 ? t / 0.6 : 1;
     const ease = 1 - Math.pow(1 - p, 2);
 
-    // Right arm: fist near chin, elbow tucked (rear guard)
-    rArm.rotation.z = rBaseZ - ease * 0.9;
-    rArm.rotation.x = rBaseX - ease * 0.7;
+    // Right arm: fist up guarding face (rear guard)
+    rArm.rotation.z = rBaseZ - ease * 0.15;
+    rArm.rotation.x = rBaseX - ease * 1.3;
 
-    // Left arm: extended forward slightly (lead guard)
-    lArm.rotation.z = lBaseZ + ease * 0.5;
-    lArm.rotation.x = lBaseX - ease * 0.4;
+    // Left arm: fist up guarding face (lead guard)
+    lArm.rotation.z = lBaseZ + ease * 0.1;
+    lArm.rotation.x = lBaseX - ease * 1.2;
 
     // Slight crouch - stable base
     if (character.baseY !== undefined) {
