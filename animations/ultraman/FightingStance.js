@@ -21,13 +21,13 @@ export class FightingStance extends AnimationBase {
     // Smooth transition to fighting stance
     const p = t < 0.3 ? t / 0.3 : 1;
 
-    // Right arm: fist raised near face
-    rArm.rotation.z = rBaseZ - p * 1.0;
-    rArm.rotation.x = -p * 0.8;
+    // Right arm: fist up guarding face (rear guard)
+    rArm.rotation.z = rBaseZ - p * 0.15;
+    rArm.rotation.x = -p * 1.3;
 
-    // Left arm: extended forward, open hand
-    lArm.rotation.z = lBaseZ + p * 0.6;
-    lArm.rotation.x = -p * 0.4;
+    // Left arm: fist up guarding face (lead guard)
+    lArm.rotation.z = lBaseZ + p * 0.1;
+    lArm.rotation.x = -p * 1.2;
 
     // Slight crouch (relative to baseY)
     if (character.baseY !== undefined) {
