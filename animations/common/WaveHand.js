@@ -1,15 +1,15 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class WaveHand extends AnimationBase {
   constructor() {
     super('WaveHand', 1.0);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const arm = character.rightArm;
-    if (!arm) return;
-    const baseZ = character.rightArmBaseZ || arm.rotation.z;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
     const angle = Math.sin(t * Math.PI * 4) * 0.5;
-    arm.rotation.z = baseZ + angle;
+    pose.rightShoulder = { rz: angle };
+    return pose;
   }
 }

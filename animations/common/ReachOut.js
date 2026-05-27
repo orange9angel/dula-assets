@@ -1,23 +1,23 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class ReachOut extends AnimationBase {
   constructor() {
     super('ReachOut', 1.0);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const rArm = character.rightArm;
-    if (!rArm) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
-    const rBaseZ = character.rightArmBaseZ || rArm.rotation.z;
     const ease = t < 0.3 ? t / 0.3 : 1;
     const easeOut = ease * (2 - ease);
 
     // Right arm reaches forward/up
-    rArm.rotation.z = rBaseZ + easeOut * 0.2;
-    rArm.rotation.x = -easeOut * 1.2;
+    pose.rightShoulder = { rz: easeOut * 0.2, rx: -easeOut * 1.2 };
 
     // Slight body lean
-    character.mesh.rotation.x = easeOut * 0.15;
+    pose.mesh = { rx: easeOut * 0.15 };
+
+    return pose;
   }
 }

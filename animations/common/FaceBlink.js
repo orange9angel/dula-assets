@@ -1,4 +1,4 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceBlink — 眨眼
@@ -13,6 +13,7 @@ import { AnimationBase } from 'dula-engine';
 export class FaceBlink extends AnimationBase {
   constructor() {
     super('FaceBlink', 0.25);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['headGroup'],
       suits: ['humanoid', 'monster', 'round', 'tiny'],
@@ -22,9 +23,8 @@ export class FaceBlink extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const head = character.headGroup;
-    if (!head) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
     // Blink curve: close quickly (0-0.4), hold (0.4-0.6), open (0.6-1.0)
     let blink;
@@ -37,21 +37,17 @@ export class FaceBlink extends AnimationBase {
     }
 
     // Eyelids: scale Y down to close
-    if (character.leftEyelid) {
-      character.leftEyelid.visible = true;
-      character.leftEyelid.scale.y = 1 - blink * 0.95;
-    }
-    if (character.rightEyelid) {
-      character.rightEyelid.visible = true;
-      character.rightEyelid.scale.y = 1 - blink * 0.95;
-    }
+    pose.eyelids = {
+      left: { sy: -blink * 0.95, visible: true },
+      right: { sy: -blink * 0.95, visible: true },
+    };
 
     // Fallback: if no eyelids but has pupils, shrink pupils slightly during blink
-    if (!character.leftEyelid && character.leftPupil) {
-      character.leftPupil.scale.setScalar(1 - blink * 0.3);
-    }
-    if (!character.rightEyelid && character.rightPupil) {
-      character.rightPupil.scale.setScalar(1 - blink * 0.3);
-    }
+    pose.pupils = {
+      left: { sx: -blink * 0.3, sy: -blink * 0.3, sz: -blink * 0.3 },
+      right: { sx: -blink * 0.3, sy: -blink * 0.3, sz: -blink * 0.3 },
+    };
+
+    return pose;
   }
 }

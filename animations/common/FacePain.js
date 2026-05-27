@@ -1,4 +1,4 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FacePain — 痛苦/受伤表情
@@ -13,6 +13,7 @@ import { AnimationBase } from 'dula-engine';
 export class FacePain extends AnimationBase {
   constructor() {
     super('FacePain', 0.5);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['headGroup'],
       suits: ['humanoid', 'fighter', 'athletic', 'monster'],
@@ -22,57 +23,38 @@ export class FacePain extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const head = character.headGroup;
-    if (!head) return;
-    const base = character._faceBaseState || {};
-
+  getPoseMatrix(t) {
     const ease = t < 0.2 ? t / 0.2 : 1;
+    const pose = new PoseMatrix();
 
     // Eyebrows: pinch together and raise (pain furrow)
-    if (character.leftEyebrow && base.leftEyebrow) {
-      character.leftEyebrow.position.y = base.leftEyebrow.position.y + ease * 0.015;
-      character.leftEyebrow.position.x = base.leftEyebrow.position.x + ease * 0.008; // move toward center
-      character.leftEyebrow.rotation.z = base.leftEyebrow.rotation.z - ease * 0.2;
-    }
-    if (character.rightEyebrow && base.rightEyebrow) {
-      character.rightEyebrow.position.y = base.rightEyebrow.position.y + ease * 0.015;
-      character.rightEyebrow.position.x = base.rightEyebrow.position.x - ease * 0.008; // move toward center
-      character.rightEyebrow.rotation.z = base.rightEyebrow.rotation.z + ease * 0.2;
-    }
+    pose.eyebrows.left = {
+      py: ease * 0.015,
+      px: ease * 0.008,
+      rz: -ease * 0.2,
+    };
+    pose.eyebrows.right = {
+      py: ease * 0.015,
+      px: -ease * 0.008,
+      rz: ease * 0.2,
+    };
 
     // Eyelids: squeeze shut
-    if (character.leftEyelid && base.leftEyelid) {
-      character.leftEyelid.visible = true;
-      character.leftEyelid.scale.y = base.leftEyelid.scale.y * (1 - ease * 0.85);
-    }
-    if (character.rightEyelid && base.rightEyelid) {
-      character.rightEyelid.visible = true;
-      character.rightEyelid.scale.y = base.rightEyelid.scale.y * (1 - ease * 0.85);
-    }
+    pose.eyelids.left = { visible: true, sy: -ease * 0.85 };
+    pose.eyelids.right = { visible: true, sy: -ease * 0.85 };
 
     // Mouth: grimace — open slightly, twisted
-    if (character.mouth) {
-      const geoType = character.mouth.geometry?.type || 'Unknown';
-      if (geoType === 'TubeGeometry') {
-        // Open and flatten
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 + ease * 0.3);
-        character.mouth.scale.x = character.mouthBaseScaleX * (1 + ease * 0.2);
-      } else if (geoType === 'SphereGeometry') {
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 + ease * 0.5);
-        character.mouth.scale.x = character.mouthBaseScaleX * (1 - ease * 0.2);
-      } else {
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 + ease * 0.3);
-      }
-    }
+    pose.mouth = {
+      sy: ease * 0.3,
+      sx: ease * 0.2,
+    };
 
     // Head: flinch back
-    if (base.headGroup) {
-      head.rotation.x = base.headGroup.rotation.x - ease * 0.1;
-      head.rotation.z = base.headGroup.rotation.z + (Math.random() - 0.5) * ease * 0.05; // subtle shake
-    } else {
-      head.rotation.x = -ease * 0.1;
-      head.rotation.z = (Math.random() - 0.5) * ease * 0.05; // subtle shake
-    }
+    pose.headGroup = {
+      rx: -ease * 0.1,
+      rz: (Math.random() - 0.5) * ease * 0.05,
+    };
+
+    return pose;
   }
 }

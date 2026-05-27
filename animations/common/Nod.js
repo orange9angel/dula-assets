@@ -1,13 +1,15 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class Nod extends AnimationBase {
   constructor() {
     super('Nod', 0.5);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    if (!character.headGroup) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
     const angle = Math.sin(t * Math.PI) * 0.15;
-    character.headGroup.rotation.x = angle;
+    pose.headGroup = { rx: angle };
+    return pose;
   }
 }

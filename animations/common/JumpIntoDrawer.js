@@ -1,4 +1,4 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * JumpIntoDrawer — 角色跳入抽屉的动作
@@ -7,15 +7,10 @@ import { AnimationBase } from 'dula-engine';
 export class JumpIntoDrawer extends AnimationBase {
   constructor() {
     super('JumpIntoDrawer', 1.2);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    const leftLeg = character.leftLeg;
-    const rightLeg = character.rightLeg;
-    const baseY = character.baseY || 0;
-
+  getPoseMatrix(t) {
     // Phase breakdown:
     // 0.0~0.2: crouch (蓄力)
     // 0.2~0.5: jump up and forward
@@ -55,56 +50,56 @@ export class JumpIntoDrawer extends AnimationBase {
     const tuckY = tuck > 0 ? 0.3 * (1 - tuckEase * 0.3) : 0;
     const vanishY = vanish > 0 ? 0.21 * (1 - vanishEase) : 0;
 
-    character.mesh.position.y = baseY + crouchY + jumpY + tuckY + vanishY;
+    const meshY = crouchY + jumpY + tuckY + vanishY;
 
     // === BODY ROTATION ===
     // Lean forward during jump
-    character.mesh.rotation.x = jumpEase * 0.4 + tuckEase * 0.2;
+    const meshRx = jumpEase * 0.4 + tuckEase * 0.2;
 
     // === LEGS ===
-    if (leftLeg && rightLeg) {
-      // Crouch: bend knees
-      const kneeBend = crouchEase * 0.8;
-      // Jump: legs extend then tuck
-      const legExtend = jumpEase < 0.5 ? -jumpEase * 2 * 0.6 : -(1 - jumpEase) * 0.6;
-      const legTuck = tuckEase * 1.0;
+    // Crouch: bend knees
+    const kneeBend = crouchEase * 0.8;
+    // Jump: legs extend then tuck
+    const legExtend = jumpEase < 0.5 ? -jumpEase * 2 * 0.6 : -(1 - jumpEase) * 0.6;
+    const legTuck = tuckEase * 1.0;
 
-      leftLeg.rotation.x = kneeBend + legExtend + legTuck;
-      rightLeg.rotation.x = kneeBend + legExtend + legTuck;
-    }
+    const legRx = kneeBend + legExtend + legTuck;
 
     // === ARMS ===
-    if (rArm && lArm) {
-      const rBaseZ = character.rightArmBaseZ || rArm.rotation.z;
-      const lBaseZ = character.leftArmBaseZ || lArm.rotation.z;
+    // Crouch: arms swing back
+    const armSwingBack = crouchEase * 0.5;
+    // Jump: arms fling up
+    const armFling = jumpEase > 0 ? Math.sin(jumpEase * Math.PI) * 1.2 : 0;
+    // Tuck: arms hug body
+    const armTuck = tuckEase * 0.8;
 
-      // Crouch: arms swing back
-      const armSwingBack = crouchEase * 0.5;
-      // Jump: arms fling up
-      const armFling = jumpEase > 0 ? Math.sin(jumpEase * Math.PI) * 1.2 : 0;
-      // Tuck: arms hug body
-      const armTuck = tuckEase * 0.8;
+    const rArmZ = armSwingBack - armFling + armTuck;
+    const lArmZ = -armSwingBack + armFling - armTuck;
 
-      rArm.rotation.z = rBaseZ + armSwingBack - armFling + armTuck;
-      lArm.rotation.z = lBaseZ - armSwingBack + armFling - armTuck;
-
-      // Arms reach forward during jump
-      rArm.rotation.x = jumpEase * 0.6;
-      lArm.rotation.x = jumpEase * 0.6;
-    }
+    // Arms reach forward during jump
+    const rArmX = jumpEase * 0.6;
+    const lArmX = jumpEase * 0.6;
 
     // === HEAD ===
-    if (character.headGroup) {
-      // Look down into drawer during jump
-      character.headGroup.rotation.x = crouchEase * 0.2 + jumpEase * 0.3;
-    }
+    // Look down into drawer during jump
+    const headRx = crouchEase * 0.2 + jumpEase * 0.3;
 
     // === SCALE (shrink into drawer) ===
+    let sx = 0, sy = 0, sz = 0;
     if (vanish > 0) {
       const scale = 1 - vanishEase * 0.7;
-      character.mesh.scale.setScalar(scale);
-    } else {
-      character.mesh.scale.setScalar(1);
+      sx = scale - 1;
+      sy = scale - 1;
+      sz = scale - 1;
     }
+
+    const pose = new PoseMatrix();
+    pose.mesh = { y: meshY, rx: meshRx, sx, sy, sz };
+    pose.rightHip = { rx: legRx };
+    pose.leftHip = { rx: legRx };
+    pose.rightShoulder = { rx: rArmX, rz: rArmZ };
+    pose.leftShoulder = { rx: lArmX, rz: lArmZ };
+    pose.headGroup = { rx: headRx };
+    return pose;
   }
 }

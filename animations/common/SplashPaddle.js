@@ -1,4 +1,4 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * SplashPaddle — 疯狂打水花（腿部高速踢水）
@@ -7,39 +7,36 @@ import { AnimationBase } from 'dula-engine';
 export class SplashPaddle extends AnimationBase {
   constructor() {
     super('SplashPaddle', 0.6);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
     const freq = Math.PI * 14; // 极快踢水
 
     // 腿部高速交替踢动（比 Run 更快更 frantic）
-    if (character.leftLeg) {
-      character.leftLeg.rotation.x = Math.sin(t * freq) * 1.3;
-    }
-    if (character.rightLeg) {
-      character.rightLeg.rotation.x = Math.sin(t * freq + Math.PI) * 1.3;
-    }
+    pose.leftHip = { rx: Math.sin(t * freq) * 1.3 };
+    pose.rightHip = { rx: Math.sin(t * freq + Math.PI) * 1.3 };
 
     // 身体剧烈上下颠簸（踩水）
-    const baseY = character.baseY || 0;
-    character.mesh.position.y = baseY + Math.abs(Math.sin(t * freq * 0.5)) * 0.2;
+    pose.mesh = { y: Math.abs(Math.sin(t * freq * 0.5)) * 0.2 };
 
     // 手臂慌乱划水
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    if (rArm && lArm) {
-      const rBaseZ = character.rightArmBaseZ || rArm.rotation.z;
-      const lBaseZ = character.leftArmBaseZ || lArm.rotation.z;
-      rArm.rotation.z = rBaseZ + Math.sin(t * freq * 0.7) * 0.5;
-      lArm.rotation.z = lBaseZ + Math.sin(t * freq * 0.7 + Math.PI) * 0.5;
-      rArm.rotation.x = -0.3 + Math.sin(t * freq) * 0.3;
-      lArm.rotation.x = -0.3 + Math.sin(t * freq + Math.PI) * 0.3;
-    }
+    pose.rightShoulder = {
+      rz: Math.sin(t * freq * 0.7) * 0.5,
+      rx: -0.3 + Math.sin(t * freq) * 0.3,
+    };
+    pose.leftShoulder = {
+      rz: Math.sin(t * freq * 0.7 + Math.PI) * 0.5,
+      rx: -0.3 + Math.sin(t * freq + Math.PI) * 0.3,
+    };
 
     // 头部慌乱左右看
-    if (character.headGroup) {
-      character.headGroup.rotation.y = Math.sin(t * freq * 0.3) * 0.25;
-      character.headGroup.rotation.x = -0.1 + Math.sin(t * freq * 0.5) * 0.1;
-    }
+    pose.headGroup = {
+      ry: Math.sin(t * freq * 0.3) * 0.25,
+      rx: -0.1 + Math.sin(t * freq * 0.5) * 0.1,
+    };
+
+    return pose;
   }
 }

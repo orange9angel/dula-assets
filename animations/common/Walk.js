@@ -1,30 +1,26 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class Walk extends AnimationBase {
   constructor() {
     super('Walk', 1.0);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const leftLeg = character.leftLeg;
-    const rightLeg = character.rightLeg;
-    if (!leftLeg || !rightLeg) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
+    const freq = Math.PI * 4;
 
     // alternating leg swing
-    leftLeg.rotation.x = Math.sin(t * Math.PI * 4) * 0.5;
-    rightLeg.rotation.x = Math.sin(t * Math.PI * 4 + Math.PI) * 0.5;
+    pose.leftHip = { rx: Math.sin(t * freq) * 0.5 };
+    pose.rightHip = { rx: Math.sin(t * freq + Math.PI) * 0.5 };
 
     // slight body bob
-    character.mesh.position.y = (character.baseY || 0) + Math.abs(Math.sin(t * Math.PI * 4)) * 0.05;
+    pose.mesh = { y: Math.abs(Math.sin(t * freq)) * 0.05 };
 
     // slight arm swing opposite to legs
-    if (character.rightArm) {
-      const baseZ = character.rightArmBaseZ || character.rightArm.rotation.z;
-      character.rightArm.rotation.z = baseZ + Math.sin(t * Math.PI * 4 + Math.PI) * 0.15;
-    }
-    if (character.leftArm) {
-      const baseZ = character.leftArmBaseZ || character.leftArm.rotation.z;
-      character.leftArm.rotation.z = baseZ + Math.sin(t * Math.PI * 4) * 0.15;
-    }
+    pose.rightShoulder = { rz: Math.sin(t * freq + Math.PI) * 0.15 };
+    pose.leftShoulder = { rz: Math.sin(t * freq) * 0.15 };
+
+    return pose;
   }
 }

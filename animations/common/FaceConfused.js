@@ -1,4 +1,4 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceConfused — 困惑/疑惑表情
@@ -13,6 +13,7 @@ import { AnimationBase } from 'dula-engine';
 export class FaceConfused extends AnimationBase {
   constructor() {
     super('FaceConfused', 0.4);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['headGroup'],
       suits: ['humanoid', 'monster', 'round', 'tiny'],
@@ -22,55 +23,35 @@ export class FaceConfused extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const head = character.headGroup;
-    if (!head) return;
-
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
     const ease = t < 0.3 ? t / 0.3 : 1;
 
     // Left eyebrow: raise high (questioning)
-    if (character.leftEyebrow) {
-      character.leftEyebrow.position.y += ease * 0.02;
-      character.leftEyebrow.rotation.z -= ease * 0.2;
-    }
-
     // Right eyebrow: lower / flat
-    if (character.rightEyebrow) {
-      character.rightEyebrow.position.y -= ease * 0.005;
-      character.rightEyebrow.rotation.z = 0;
-    }
+    pose.eyebrows = {
+      left: { py: ease * 0.02, rz: -ease * 0.2 },
+      right: { py: -ease * 0.005, rz: 0 },
+    };
 
-    // Eyelids: left eye wider
-    if (character.leftEyelid) {
-      character.leftEyelid.visible = false;
-    }
-    if (character.rightEyelid) {
-      character.rightEyelid.visible = true;
-      character.rightEyelid.scale.y = 1 - ease * 0.1;
-    }
+    // Eyelids: left eye wider, right slightly narrowed
+    pose.eyelids = {
+      left: { visible: false },
+      right: { sy: -ease * 0.1, visible: true },
+    };
 
     // Pupils: slight drift apart (unfocused)
-    if (character.leftPupil) {
-      character.leftPupil.position.x += ease * 0.003;
-    }
-    if (character.rightPupil) {
-      character.rightPupil.position.x -= ease * 0.003;
-    }
+    pose.pupils = {
+      left: { px: ease * 0.003 },
+      right: { px: -ease * 0.003 },
+    };
 
     // Mouth: small open "o" (puzzled)
-    if (character.mouth) {
-      const geoType = character.mouth.geometry?.type || 'Unknown';
-      if (geoType === 'TubeGeometry') {
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 + ease * 0.5);
-        character.mouth.scale.x = character.mouthBaseScaleX * (1 + ease * 0.2);
-      } else if (geoType === 'SphereGeometry') {
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 + ease * 0.6);
-      } else {
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 + ease * 0.4);
-      }
-    }
+    pose.mouth = { sy: ease * 0.5, sx: ease * 0.2 };
 
     // Head: tilt to one side (classic confused pose)
-    head.rotation.z = ease * 0.08;
+    pose.headGroup = { rz: ease * 0.08 };
+
+    return pose;
   }
 }

@@ -1,13 +1,15 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class Jump extends AnimationBase {
   constructor() {
     super('Jump', 0.6);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
     const y = Math.sin(t * Math.PI) * 0.5;
-    const baseY = character.baseY || 0;
-    character.mesh.position.y = baseY + y;
+    pose.mesh = { y };
+    return pose;
   }
 }

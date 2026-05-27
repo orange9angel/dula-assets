@@ -1,14 +1,13 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class SitDown extends AnimationBase {
   constructor() {
     super('SitDown', 1.0);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const baseY = character.baseY || 0;
-    const leftLeg = character.leftLeg;
-    const rightLeg = character.rightLeg;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
     // Lower body, bend knees
     let p = 0;
@@ -19,26 +18,17 @@ export class SitDown extends AnimationBase {
     }
     const ease = p * (2 - p);
 
-    // Body drops about 0.4 units
-    character.mesh.position.y = baseY - ease * 0.4;
+    // Body drops about 0.4 units + leans slightly forward
+    pose.mesh = { y: -ease * 0.4, rx: ease * 0.15 };
 
     // Knees bend forward
-    if (leftLeg) leftLeg.rotation.x = -ease * 0.9;
-    if (rightLeg) rightLeg.rotation.x = -ease * 0.9;
+    pose.leftHip = { rx: -ease * 0.9 };
+    pose.rightHip = { rx: -ease * 0.9 };
 
     // Arms rest on knees or lap
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    if (rArm && lArm) {
-      const rBaseZ = character.rightArmBaseZ || rArm.rotation.z;
-      const lBaseZ = character.leftArmBaseZ || lArm.rotation.z;
-      rArm.rotation.z = rBaseZ + ease * 0.2;
-      rArm.rotation.x = -ease * 0.4;
-      lArm.rotation.z = lBaseZ - ease * 0.2;
-      lArm.rotation.x = -ease * 0.4;
-    }
+    pose.rightShoulder = { rz: ease * 0.2, rx: -ease * 0.4 };
+    pose.leftShoulder = { rz: -ease * 0.2, rx: -ease * 0.4 };
 
-    // Body leans slightly forward
-    character.mesh.rotation.x = ease * 0.15;
+    return pose;
   }
 }

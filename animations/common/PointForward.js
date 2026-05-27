@@ -1,13 +1,13 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class PointForward extends AnimationBase {
   constructor() {
     super('PointForward', 1.0);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const arm = character.rightArm;
-    if (!arm) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
     // Raise -> point -> hold -> lower
     let raise = 0;
@@ -20,13 +20,13 @@ export class PointForward extends AnimationBase {
     }
     const ease = raise * (2 - raise); // ease out
 
-    const baseZ = character.rightArmBaseZ || arm.rotation.z;
-    arm.rotation.z = baseZ + ease * 0.6;     // raise to side
-    arm.rotation.x = -ease * 0.8;            // point forward
+    pose.rightShoulder = { rz: ease * 0.6, rx: -ease * 0.8 };
 
     // Head follows the pointing direction slightly
-    if (character.headGroup && t > 0.2 && t < 0.7) {
-      character.headGroup.rotation.y = 0.15 * Math.sin((t - 0.2) * Math.PI * 2);
+    if (t > 0.2 && t < 0.7) {
+      pose.headGroup = { ry: 0.15 * Math.sin((t - 0.2) * Math.PI * 2) };
     }
+
+    return pose;
   }
 }

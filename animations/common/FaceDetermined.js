@@ -1,4 +1,4 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceDetermined — 坚定/决意表情
@@ -13,6 +13,7 @@ import { AnimationBase } from 'dula-engine';
 export class FaceDetermined extends AnimationBase {
   constructor() {
     super('FaceDetermined', 0.4);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['headGroup'],
       suits: ['humanoid', 'fighter', 'athletic', 'monster'],
@@ -22,62 +23,34 @@ export class FaceDetermined extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const head = character.headGroup;
-    if (!head) return;
-    const base = character._faceBaseState || {};
-
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
     const ease = t < 0.3 ? t / 0.3 : 1;
 
     // Eyebrows: level, slightly lowered (intense focus)
-    if (character.leftEyebrow && base.leftEyebrow) {
-      character.leftEyebrow.position.y = base.leftEyebrow.position.y - ease * 0.008;
-      character.leftEyebrow.rotation.z = base.leftEyebrow.rotation.z; // perfectly level (relative to base)
-    }
-    if (character.rightEyebrow && base.rightEyebrow) {
-      character.rightEyebrow.position.y = base.rightEyebrow.position.y - ease * 0.008;
-      character.rightEyebrow.rotation.z = base.rightEyebrow.rotation.z;
-    }
+    pose.eyebrows = {
+      left: { py: -ease * 0.008, rz: 0 },
+      right: { py: -ease * 0.008, rz: 0 },
+    };
 
     // Eyelids: slight squint (sharp focus)
-    if (character.leftEyelid && base.leftEyelid) {
-      character.leftEyelid.visible = true;
-      character.leftEyelid.scale.y = base.leftEyelid.scale.y * (1 - ease * 0.25);
-    }
-    if (character.rightEyelid && base.rightEyelid) {
-      character.rightEyelid.visible = true;
-      character.rightEyelid.scale.y = base.rightEyelid.scale.y * (1 - ease * 0.25);
-    }
+    pose.eyelids = {
+      left: { sy: -ease * 0.25, visible: true },
+      right: { sy: -ease * 0.25, visible: true },
+    };
 
     // Pupils: focused forward (reset any drift)
-    if (character.leftPupil && character.leftPupil.userData.baseX !== undefined) {
-      character.leftPupil.position.x = character.leftPupil.userData.baseX;
-    }
-    if (character.rightPupil && character.rightPupil.userData.baseX !== undefined) {
-      character.rightPupil.position.x = character.rightPupil.userData.baseX;
-    }
+    pose.pupils = {
+      left: { px: 0 },
+      right: { px: 0 },
+    };
 
     // Mouth: firm straight line (grit)
-    if (character.mouth) {
-      const geoType = character.mouth.geometry?.type || 'Unknown';
-      if (geoType === 'TubeGeometry') {
-        // Flatten curve to near-line
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 - ease * 0.7);
-        character.mouth.rotation.z = 0;
-      } else if (geoType === 'SphereGeometry') {
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 - ease * 0.5);
-      } else {
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 - ease * 0.4);
-      }
-    }
+    pose.mouth = { sy: -ease * 0.7, rz: 0 };
 
     // Head: slight forward (locked in)
-    if (base.headGroup) {
-      head.rotation.x = base.headGroup.rotation.x + ease * 0.05;
-      head.rotation.y = base.headGroup.rotation.y; // face forward, no tilt
-    } else {
-      head.rotation.x = ease * 0.05;
-      head.rotation.y = 0;
-    }
+    pose.headGroup = { rx: ease * 0.05, ry: 0 };
+
+    return pose;
   }
 }

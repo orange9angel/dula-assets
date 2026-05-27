@@ -1,14 +1,16 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class ShakeHead extends AnimationBase {
   constructor() {
     super('ShakeHead', 0.8);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    if (!character.headGroup) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
     // Three shakes
     const shakes = Math.sin(t * Math.PI * 6);
-    character.headGroup.rotation.y = shakes * 0.35;
+    pose.headGroup = { ry: shakes * 0.35 };
+    return pose;
   }
 }

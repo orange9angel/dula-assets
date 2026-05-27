@@ -1,36 +1,35 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class ScratchHead extends AnimationBase {
   constructor() {
     super('ScratchHead', 1.2);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const arm = character.rightArm;
-    if (!arm) return;
-
-    const baseZ = character.rightArmBaseZ || arm.rotation.z;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
     // Reach up -> scratch (small oscillation) -> lower
     if (t < 0.25) {
       const p = t / 0.25;
-      arm.rotation.z = baseZ + p * p * 0.9;
-      arm.rotation.x = -p * p * 1.0;
+      pose.rightShoulder = { rz: p * p * 0.9, rx: -p * p * 1.0 };
     } else if (t < 0.75) {
       const p = (t - 0.25) / 0.5;
-      arm.rotation.z = baseZ + 0.9 + Math.sin(p * Math.PI * 6) * 0.08;
-      arm.rotation.x = -1.0 + Math.sin(p * Math.PI * 4) * 0.05;
+      pose.rightShoulder = {
+        rz: 0.9 + Math.sin(p * Math.PI * 6) * 0.08,
+        rx: -1.0 + Math.sin(p * Math.PI * 4) * 0.05,
+      };
       // Head tilts slightly toward scratching hand
-      if (character.headGroup) {
-        character.headGroup.rotation.z = Math.sin(p * Math.PI * 6) * 0.05;
-      }
+      pose.headGroup = { rz: Math.sin(p * Math.PI * 6) * 0.05 };
     } else {
       const p = (t - 0.75) / 0.25;
-      arm.rotation.z = baseZ + 0.9 * (1 - p) * (1 - p);
-      arm.rotation.x = -1.0 * (1 - p) * (1 - p);
-      if (character.headGroup) {
-        character.headGroup.rotation.z = 0;
-      }
+      pose.rightShoulder = {
+        rz: 0.9 * (1 - p) * (1 - p),
+        rx: -1.0 * (1 - p) * (1 - p),
+      };
+      pose.headGroup = { rz: 0 };
     }
+
+    return pose;
   }
 }

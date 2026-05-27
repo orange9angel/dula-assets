@@ -1,17 +1,13 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class Shrug extends AnimationBase {
   constructor() {
     super('Shrug', 0.8);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    if (!rArm || !lArm) return;
-
-    const rBaseZ = character.rightArmBaseZ || rArm.rotation.z;
-    const lBaseZ = character.leftArmBaseZ || lArm.rotation.z;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
     // Shrug up -> hold -> down
     let p = 0;
@@ -25,15 +21,12 @@ export class Shrug extends AnimationBase {
     const ease = Math.sin(p * Math.PI * 0.5);
 
     // Shoulders come up (arms rotate inward and up)
-    rArm.rotation.z = rBaseZ - ease * 0.3;
-    rArm.rotation.x = -ease * 0.2;
-    lArm.rotation.z = lBaseZ + ease * 0.3;
-    lArm.rotation.x = -ease * 0.2;
+    pose.rightShoulder = { rz: -ease * 0.3, rx: -ease * 0.2 };
+    pose.leftShoulder = { rz: ease * 0.3, rx: -ease * 0.2 };
 
     // Head tilts in confusion
-    if (character.headGroup) {
-      character.headGroup.rotation.z = ease * 0.1;
-      character.headGroup.rotation.x = ease * 0.1;
-    }
+    pose.headGroup = { rz: ease * 0.1, rx: ease * 0.1 };
+
+    return pose;
   }
 }

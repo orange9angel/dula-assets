@@ -1,12 +1,14 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class LookAround extends AnimationBase {
   constructor() {
     super('LookAround', 1.5);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    if (!character.headGroup) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
+
     // Look left -> center -> right -> center
     let yaw = 0;
     if (t < 0.25) {
@@ -22,6 +24,8 @@ export class LookAround extends AnimationBase {
       const p = (t - 0.75) / 0.25;
       yaw = 0.6 * (1 - p) * (1 - p);
     }
-    character.headGroup.rotation.y = yaw;
+
+    pose.headGroup = { ry: yaw };
+    return pose;
   }
 }

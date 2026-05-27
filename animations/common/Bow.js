@@ -1,13 +1,13 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class Bow extends AnimationBase {
   constructor() {
     super('Bow', 1.2);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const body = character.mesh;
-    const head = character.headGroup;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
     // Bend forward 0~45% , hold 45~70%, return 70~100%
     let angle = 0;
@@ -21,12 +21,10 @@ export class Bow extends AnimationBase {
       angle = 0.6 * (1 - p) * (1 - p); // ease out
     }
 
-    body.rotation.x = angle;
-    if (head) {
-      head.rotation.x = angle * 0.3;
-    }
+    // Body bends forward + slight forward offset to keep feet planted
+    pose.mesh = { rx: angle, z: Math.sin(angle) * 0.35 };
+    pose.headGroup = { rx: angle * 0.3 };
 
-    // Slight forward offset to keep feet planted
-    body.position.z = (Math.sin(angle) * 0.35);
+    return pose;
   }
 }

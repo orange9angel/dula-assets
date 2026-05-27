@@ -1,14 +1,13 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class HandsOnHips extends AnimationBase {
   constructor() {
     super('HandsOnHips', 1.0);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    if (!rArm || !lArm) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
     // Move to hips and hold
     let p = 0;
@@ -21,16 +20,13 @@ export class HandsOnHips extends AnimationBase {
     }
     const ease = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
 
-    const rBaseZ = character.rightArmBaseZ || rArm.rotation.z;
-    const lBaseZ = character.leftArmBaseZ || lArm.rotation.z;
-
     // Arms bent akimbo
-    rArm.rotation.z = rBaseZ - ease * 0.5;
-    rArm.rotation.x = -ease * 0.3;
-    lArm.rotation.z = lBaseZ + ease * 0.5;
-    lArm.rotation.x = -ease * 0.3;
+    pose.rightShoulder = { rz: -ease * 0.5, rx: -ease * 0.3 };
+    pose.leftShoulder = { rz: ease * 0.5, rx: -ease * 0.3 };
 
     // Slight confident chest puff
-    character.mesh.rotation.x = -ease * 0.05;
+    pose.mesh = { rx: -ease * 0.05 };
+
+    return pose;
   }
 }

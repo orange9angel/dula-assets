@@ -1,31 +1,32 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class Swim extends AnimationBase {
   constructor() {
     super('Swim', 1.0);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
+
     // Crawl stroke - arms reach high out of water then pull
     const cycle = t * Math.PI * 2;
-    
-    if (character.rightArm) {
-      const baseZ = character.rightArmBaseZ || character.rightArm.rotation.z;
-      // Arm reaches forward/up out of water, then pulls back under
-      character.rightArm.rotation.z = baseZ + Math.sin(cycle) * 0.7;
-      character.rightArm.rotation.x = Math.cos(cycle) * 0.8 - 0.2;
-    }
-    if (character.leftArm) {
-      const baseZ = character.leftArmBaseZ || character.leftArm.rotation.z;
-      // Opposite phase
-      character.leftArm.rotation.z = baseZ + Math.sin(cycle + Math.PI) * 0.7;
-      character.leftArm.rotation.x = Math.cos(cycle + Math.PI) * 0.8 - 0.2;
-    }
 
-    // Body bobs with breathing
-    character.mesh.position.y = (character.baseY || 0) + Math.sin(cycle * 2) * 0.05;
+    // Arm reaches forward/up out of water, then pulls back under
+    pose.rightShoulder = {
+      rz: Math.sin(cycle) * 0.7,
+      rx: Math.cos(cycle) * 0.8 - 0.2,
+    };
 
-    // Slight body roll
-    character.mesh.rotation.z = Math.sin(cycle) * 0.06;
+    // Opposite phase
+    pose.leftShoulder = {
+      rz: Math.sin(cycle + Math.PI) * 0.7,
+      rx: Math.cos(cycle + Math.PI) * 0.8 - 0.2,
+    };
+
+    // Body bobs with breathing + slight body roll
+    pose.mesh = { y: Math.sin(cycle * 2) * 0.05, rz: Math.sin(cycle) * 0.06 };
+
+    return pose;
   }
 }

@@ -1,4 +1,4 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceSad — 悲伤/沮丧表情
@@ -12,6 +12,7 @@ import { AnimationBase } from 'dula-engine';
 export class FaceSad extends AnimationBase {
   constructor() {
     super('FaceSad', 0.5);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['headGroup'],
       suits: ['humanoid', 'monster', 'round', 'tiny'],
@@ -21,57 +22,39 @@ export class FaceSad extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const head = character.headGroup;
-    if (!head) return;
-
+  getPoseMatrix(t) {
     const ease = t < 0.3 ? t / 0.3 : 1;
+    const pose = new PoseMatrix();
 
-    // Eyebrows: inner edges raise (sad arch / \\ shape)
-    if (character.leftEyebrow) {
-      character.leftEyebrow.position.y += ease * 0.01;
-      character.leftEyebrow.rotation.z -= ease * 0.3; // outer edge down
-    }
-    if (character.rightEyebrow) {
-      character.rightEyebrow.position.y += ease * 0.01;
-      character.rightEyebrow.rotation.z += ease * 0.3; // outer edge down
-    }
+    // Eyebrows: inner edges raise (sad arch / \ shape)
+    pose.eyebrows.left = {
+      py: ease * 0.01,
+      rz: -ease * 0.3,
+    };
+    pose.eyebrows.right = {
+      py: ease * 0.01,
+      rz: ease * 0.3,
+    };
 
     // Eyelids: half-closed (droopy eyes)
-    if (character.leftEyelid) {
-      character.leftEyelid.visible = true;
-      character.leftEyelid.scale.y = 1 - ease * 0.5;
-    }
-    if (character.rightEyelid) {
-      character.rightEyelid.visible = true;
-      character.rightEyelid.scale.y = 1 - ease * 0.5;
-    }
+    pose.eyelids.left = { visible: true, sy: -ease * 0.5 };
+    pose.eyelids.right = { visible: true, sy: -ease * 0.5 };
 
     // Pupils: look down slightly
-    if (character.leftPupil) {
-      character.leftPupil.position.y -= ease * 0.008;
-    }
-    if (character.rightPupil) {
-      character.rightPupil.position.y -= ease * 0.008;
-    }
+    pose.pupils.left = { py: -ease * 0.008 };
+    pose.pupils.right = { py: -ease * 0.008 };
 
     // Mouth: curve down (frown)
-    if (character.mouth) {
-      const geoType = character.mouth.geometry?.type || 'Unknown';
-      if (geoType === 'TubeGeometry') {
-        // Invert smile: rotate 180° around Z to flip curve
-        character.mouth.rotation.z = ease * Math.PI;
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 - ease * 0.3);
-      } else if (geoType === 'SphereGeometry') {
-        // Flatten and pull down
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 - ease * 0.5);
-        character.mouth.position.y -= ease * 0.01;
-      } else {
-        character.mouth.scale.y = character.mouthBaseScaleY * (1 - ease * 0.3);
-      }
-    }
+    pose.mouth = {
+      sy: -ease * 0.3,
+      rz: ease * Math.PI,
+    };
 
     // Head: droop forward
-    head.rotation.x = ease * 0.12;
+    pose.headGroup = {
+      rx: ease * 0.12,
+    };
+
+    return pose;
   }
 }

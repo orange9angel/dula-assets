@@ -1,17 +1,21 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 export class StompFoot extends AnimationBase {
   constructor() {
     super('StompFoot', 0.5);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const leg = character.leftLeg;
-    if (!leg) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
+
     // lift then stomp
     const phase = Math.sin(t * Math.PI);
-    leg.rotation.x = -phase * 0.6;
+    pose.leftHip = { rx: -phase * 0.6 };
+
     // body bounces slightly
-    character.mesh.position.y = (character.baseY || 0) + phase * 0.03;
+    pose.mesh = { y: phase * 0.03 };
+
+    return pose;
   }
 }
