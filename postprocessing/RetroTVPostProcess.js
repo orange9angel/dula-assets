@@ -60,10 +60,9 @@ const fragmentShader = `
     return uv + centered * (1.0 + dist) * dist;
   }
 
-  // Scanlines
+  // Scanlines — static, no animation (cel anime style)
   float scanlines(vec2 uv) {
-    float instability = sin(time * 3.7 + uv.y * 50.0) * 0.02;
-    float sl = sin((uv.y + instability) * resolution.y * scanlineDensity) * 0.5 + 0.5;
+    float sl = sin(uv.y * resolution.y * scanlineDensity) * 0.5 + 0.5;
     return mix(1.0, 0.75 + sl * 0.25, scanlineIntensity);
   }
 
@@ -130,8 +129,8 @@ const fragmentShader = `
     // Posterization for cel-shading look
     color = posterize(color, posterizeLevels);
 
-    // Film grain (animated)
-    float grain = noise(uv * resolution * 0.5 + time * 60.0) * grainIntensity;
+    // Film grain — static, no time animation (cel anime style)
+    float grain = noise(uv * resolution * 0.5) * grainIntensity;
     color += grain - grainIntensity * 0.5;
 
     // Scanlines
@@ -163,9 +162,8 @@ const fragmentShader = `
     vec3 shadowTint = vec3(0.015, 0.03, 0.008);
     color += shadowTint * (1.0 - luma) * warmTint;
 
-    // Subtle flicker (power instability)
-    float flicker = 1.0 + sin(time * 47.0) * 0.005 + sin(time * 23.0) * 0.003;
-    color *= flicker;
+    // No flicker — static image (cel anime style)
+    // color *= flicker;
 
     // Clamp
     color = clamp(color, 0.0, 1.0);
