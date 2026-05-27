@@ -82,7 +82,18 @@ import { Knockdown } from './animations/common/Knockdown.js';
 import { GetUp } from './animations/common/GetUp.js';
 import { ComboPunch } from './animations/common/ComboPunch.js';
 import { SpinKick } from './animations/common/SpinKick.js';
+import { ArcadeSpinKick } from './animations/common/ArcadeSpinKick.js';
 import { JumpAttack } from './animations/common/JumpAttack.js';
+import { JumpFlyingKick } from './animations/common/JumpFlyingKick.js';
+import { BoxerGuardHop } from './animations/common/BoxerGuardHop.js';
+import { WeaveStep } from './animations/common/WeaveStep.js';
+import { HurricaneKick } from './animations/common/HurricaneKick.js';
+import { AirTatsumaki } from './animations/common/AirTatsumaki.js';
+import { DragonPunch } from './animations/common/DragonPunch.js';
+import { BackFist } from './animations/common/BackFist.js';
+import { CounterStance } from './animations/common/CounterStance.js';
+import { SweepKick } from './animations/common/SweepKick.js';
+import { KneeStrike } from './animations/common/KneeStrike.js';
 // === Facial Expression Library ===
 import { FaceAngry } from './animations/common/FaceAngry.js';
 import { FaceHappy } from './animations/common/FaceHappy.js';
@@ -345,7 +356,18 @@ export function registerAll() {
   registerAnimation('GetUp', GetUp);
   registerAnimation('ComboPunch', ComboPunch);
   registerAnimation('SpinKick', SpinKick);
+  registerAnimation('ArcadeSpinKick', ArcadeSpinKick);
   registerAnimation('JumpAttack', JumpAttack);
+  registerAnimation('JumpFlyingKick', JumpFlyingKick);
+  registerAnimation('BoxerGuardHop', BoxerGuardHop);
+  registerAnimation('WeaveStep', WeaveStep);
+  registerAnimation('HurricaneKick', HurricaneKick);
+  registerAnimation('AirTatsumaki', AirTatsumaki);
+  registerAnimation('DragonPunch', DragonPunch);
+  registerAnimation('BackFist', BackFist);
+  registerAnimation('CounterStance', CounterStance);
+  registerAnimation('SweepKick', SweepKick);
+  registerAnimation('KneeStrike', KneeStrike);
   // === Facial Expression Library ===
   registerAnimation('FaceAngry', FaceAngry);
   registerAnimation('FaceHappy', FaceHappy);

@@ -42,8 +42,19 @@ export { Knockdown } from './Knockdown.js';
 export { GetUp } from './GetUp.js';
 export { ComboPunch } from './ComboPunch.js';
 export { SpinKick } from './SpinKick.js';
+export { ArcadeSpinKick } from './ArcadeSpinKick.js';
 export { JumpAttack } from './JumpAttack.js';
+export { JumpFlyingKick } from './JumpFlyingKick.js';
+export { BoxerGuardHop } from './BoxerGuardHop.js';
 export { FightingStance } from './FightingStance.js';
+export { WeaveStep } from './WeaveStep.js';
+export { HurricaneKick } from './HurricaneKick.js';
+export { AirTatsumaki } from './AirTatsumaki.js';
+export { DragonPunch } from './DragonPunch.js';
+export { BackFist } from './BackFist.js';
+export { CounterStance } from './CounterStance.js';
+export { SweepKick } from './SweepKick.js';
+export { KneeStrike } from './KneeStrike.js';
 
 
 // === Facial Expression Library ===
@@ -112,8 +123,19 @@ import { Knockdown } from './Knockdown.js';
 import { GetUp } from './GetUp.js';
 import { ComboPunch } from './ComboPunch.js';
 import { SpinKick } from './SpinKick.js';
+import { ArcadeSpinKick } from './ArcadeSpinKick.js';
 import { JumpAttack } from './JumpAttack.js';
+import { JumpFlyingKick } from './JumpFlyingKick.js';
+import { BoxerGuardHop } from './BoxerGuardHop.js';
 import { FightingStance } from './FightingStance.js';
+import { WeaveStep } from './WeaveStep.js';
+import { HurricaneKick } from './HurricaneKick.js';
+import { AirTatsumaki } from './AirTatsumaki.js';
+import { DragonPunch } from './DragonPunch.js';
+import { BackFist } from './BackFist.js';
+import { CounterStance } from './CounterStance.js';
+import { SweepKick } from './SweepKick.js';
+import { KneeStrike } from './KneeStrike.js';
 
 // === Facial Expression Library ===
 import { FaceAngry } from './FaceAngry.js';
@@ -183,8 +205,19 @@ export const CommonAnimations = {
   GetUp,
   ComboPunch,
   SpinKick,
+  ArcadeSpinKick,
   JumpAttack,
+  JumpFlyingKick,
+  BoxerGuardHop,
   FightingStance,
+  WeaveStep,
+  HurricaneKick,
+  AirTatsumaki,
+  DragonPunch,
+  BackFist,
+  CounterStance,
+  SweepKick,
+  KneeStrike,
   // === Facial Expressions ===
   FaceAngry,
   FaceHappy,
