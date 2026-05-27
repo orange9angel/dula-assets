@@ -45,6 +45,7 @@ export { SpinKick } from './SpinKick.js';
 export { JumpAttack } from './JumpAttack.js';
 export { FightingStance } from './FightingStance.js';
 
+
 // === Facial Expression Library ===
 export { FaceAngry } from './FaceAngry.js';
 export { FaceHappy } from './FaceHappy.js';

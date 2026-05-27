@@ -1,14 +1,15 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
- * HitStagger — 受击踉跄（战斗轴线版）
- * Reaction to taking a hit (KOF style hitstun)
- * 沿战斗轴线被击退，不覆盖角色朝向
- * Duration: 0.6s
+ * HitStagger — 受击踉跄（13点矩阵控制版）
+ *
+ * 使用关节：rightShoulder, rightElbow, leftShoulder, leftElbow,
+ *           headGroup, mesh
  */
 export class HitStagger extends AnimationBase {
   constructor() {
     super('HitStagger', 0.6);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['rightArm', 'leftArm'],
       suits: ['humanoid', 'fighter', 'athletic', 'monster'],
@@ -18,82 +19,54 @@ export class HitStagger extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    const head = character.headGroup;
-    if (!rArm || !lArm) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
-    const rBaseZ = character.rightArmBaseZ || 0;
-    const lBaseZ = character.leftArmBaseZ || 0;
-
-    // 受击方向与面向相反（被对手打退）
-    const dir = character.userData?.facingDir || 1;
-    const knockbackDir = -dir;
-
-    // Phase 1: IMPACT (0-0.15) - violent flinch with large knockback
+    // Phase 1: IMPACT (0-0.15) - 剧烈受击
     if (t < 0.15) {
       const p = t / 0.15;
       const ease = 1 - Math.pow(1 - p, 3);
-      // 沿战斗轴线被击退
-      character.mesh.position.x += knockbackDir * ease * 0.5;
-      // Body reels
-      character.mesh.rotation.z = ease * 0.15;
-      // Arms flail from impact
-      rArm.rotation.z = rBaseZ + ease * 0.6;
-      rArm.rotation.x = ease * 0.5;
-      lArm.rotation.z = lBaseZ - ease * 0.6;
-      lArm.rotation.x = ease * 0.4;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY + ease * 0.05;
-      }
+
+      // 被击退
+      pose.mesh = { x: -ease * 0.5, z: ease * 0.15, y: ease * 0.05 };
+
+      // 双臂受冲击甩动
+      pose.rightShoulder = { rz: ease * 0.6, rx: ease * 0.5 };
+      pose.rightElbow = { rx: ease * 0.3 };
+      pose.leftShoulder = { rz: -ease * 0.6, rx: ease * 0.4 };
+      pose.leftElbow = { rx: ease * 0.3 };
+
+      // 头后仰
+      pose.headGroup = { rx: ease * 0.3, ry: -ease * 0.2 };
     }
-    // Phase 2: Stagger (0.15-0.35) - hold stunned pose with wobble
+    // Phase 2: Stagger (0.15-0.35) - 踉跄摇晃
     else if (t < 0.35) {
       const p = (t - 0.15) / 0.2;
-      // Slight wobble while stunned
-      character.mesh.position.x += knockbackDir * (0.5 + Math.sin(p * Math.PI * 4) * 0.03);
-      character.mesh.rotation.z = 0.15 + Math.sin(p * Math.PI * 3) * 0.06;
-      rArm.rotation.z = rBaseZ + 0.6 + Math.sin(p * Math.PI * 5) * 0.06;
-      lArm.rotation.z = lBaseZ - 0.6 + Math.sin(p * Math.PI * 5 + 1) * 0.06;
+      const wobble = Math.sin(p * Math.PI * 4) * 0.03;
+      const wobbleArm = Math.sin(p * Math.PI * 5) * 0.06;
+
+      pose.mesh = { x: -0.5 + wobble, z: 0.15 + Math.sin(p * Math.PI * 3) * 0.06 };
+
+      pose.rightShoulder = { rz: 0.6 + wobbleArm };
+      pose.leftShoulder = { rz: -0.6 + wobbleArm };
+
+      pose.headGroup = { rx: 0.3 - p * 0.08, ry: -0.2 + p * 0.35 };
     }
-    // Phase 3: Recover (0.35-1.0) - recover to fighting stance
+    // Phase 3: Recover (0.35-1.0) - 恢复站姿
     else {
       const p = (t - 0.35) / 0.65;
       const ease = p * p;
-      // 回到原位
-      character.mesh.position.x -= knockbackDir * (1 - ease) * 0.5;
-      character.mesh.rotation.z = 0.15 - ease * 0.15;
-      // End in fighting stance: right back guard, left forward
-      rArm.rotation.z = (rBaseZ + 0.6) - ease * 1.5;
-      rArm.rotation.x = 0.5 - ease * 0.5;
-      lArm.rotation.z = (lBaseZ - 0.6) + ease * 1.1;
-      lArm.rotation.x = 0.4 - ease * 0.4;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY + 0.05) - ease * 0.11;
-      }
+
+      pose.mesh = { x: -0.5 * (1 - ease), z: 0.15 - ease * 0.15, y: 0.05 - ease * 0.11 };
+
+      pose.rightShoulder = { rz: 0.6 - ease * 1.5, rx: 0.5 - ease * 0.5 };
+      pose.rightElbow = { rx: 0.3 - ease * 0.3 };
+      pose.leftShoulder = { rz: -0.6 + ease * 1.1, rx: 0.4 - ease * 0.4 };
+      pose.leftElbow = { rx: 0.3 - ease * 0.3 };
+
+      pose.headGroup = { rx: 0.22 * (1 - ease), ry: 0.15 * (1 - ease) };
     }
 
-    // Head snaps back on impact, then looks toward attacker (opposite of knockback)
-    // knockbackDir = -dir, so attacker is in +dir direction
-    const attackerDir = -knockbackDir;
-    if (head) {
-      if (t < 0.15) {
-        // Impact: head snaps back away from hit
-        const p = t / 0.15;
-        head.rotation.x = p * 0.3;
-        head.rotation.y = -attackerDir * p * 0.2; // turn away momentarily
-      } else if (t < 0.35) {
-        // Stagger: head turns to look at attacker
-        const p = (t - 0.15) / 0.2;
-        head.rotation.x = 0.3 - p * 0.08;
-        head.rotation.y = -attackerDir * 0.2 + attackerDir * p * 0.35; // turn toward attacker
-      } else {
-        // Recovery: return to neutral
-        const p = (t - 0.35) / 0.65;
-        head.rotation.x = 0.22 * (1 - p);
-        head.rotation.y = attackerDir * 0.15 * (1 - p);
-      }
-    }
+    return pose;
   }
 }

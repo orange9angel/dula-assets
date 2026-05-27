@@ -71,6 +71,7 @@ import { PullOpenDrawer } from './animations/common/PullOpenDrawer.js';
 import { JumpIntoDrawer } from './animations/common/JumpIntoDrawer.js';
 // === KOF97 Style Fighting Game Actions ===
 import { Punch } from './animations/common/Punch.js';
+
 import { Kick } from './animations/common/Kick.js';
 import { Uppercut } from './animations/common/Uppercut.js';
 import { Dodge } from './animations/common/Dodge.js';
@@ -156,6 +157,7 @@ import { UltraBeam } from './animations/ultraman/UltraBeam.js';
 import { HeroLanding } from './animations/ultraman/HeroLanding.js';
 import { FightingStance } from './animations/ultraman/FightingStance.js';
 import { FlyAway } from './animations/ultraman/FlyAway.js';
+
 
 // Animations - yuyuhakusho
 import { SpiritGunCharge } from './animations/yuyuhakusho/SpiritGunCharge.js';
@@ -332,6 +334,7 @@ export function registerAll() {
   registerAnimation('JumpIntoDrawer', JumpIntoDrawer);
   // === KOF97 Style Fighting Game Actions ===
   registerAnimation('Punch', Punch);
+
   registerAnimation('Kick', Kick);
   registerAnimation('Uppercut', Uppercut);
   registerAnimation('Dodge', Dodge);
@@ -385,6 +388,7 @@ export function registerAll() {
   registerAnimation('UltraBeam', UltraBeam);
   registerAnimation('HeroLanding', HeroLanding);
   registerAnimation('FightingStance', FightingStance);
+
   registerAnimation('FlyAway', FlyAway);
   // Animations - yuyuhakusho
   registerAnimation('SpiritGunCharge', SpiritGunCharge);

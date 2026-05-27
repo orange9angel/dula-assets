@@ -324,116 +324,144 @@ export class Kuwabara extends CharacterBase {
 
   addArms(skinMat, uniformMat, uniformDarkMat, armbandMat) {
     const addArm = (sx, sy, sz, hx, hy, hz, isRight) => {
-      const group = new THREE.Group();
-      group.position.set(sx, sy, sz);
-      group.lookAt(hx, hy, hz);
-      group.rotateX(-Math.PI / 2);
+      // ── Shoulder Group ──
+      const shoulderGroup = new THREE.Group();
+      shoulderGroup.position.set(sx, sy, sz);
+      shoulderGroup.lookAt(hx, hy, hz);
+      shoulderGroup.rotateX(-Math.PI / 2);
 
       const len = Math.sqrt((hx - sx) ** 2 + (hy - sy) ** 2 + (hz - sz) ** 2);
       const upperLen = len * 0.45;
       const lowerLen = len * 0.4;
 
-      // Upper arm — slightly thicker for bulkier build
+      // Upper arm
       const upperArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, upperLen, 5, 12), uniformMat);
       upperArm.position.y = -upperLen / 2;
-      group.add(upperArm);
+      shoulderGroup.add(upperArm);
 
-      // Elbow
-      const elbow = new THREE.Mesh(new THREE.SphereGeometry(0.065, 10, 10), uniformDarkMat);
-      elbow.position.y = -upperLen - 0.012;
-      elbow.scale.set(1, 0.75, 0.9);
-      group.add(elbow);
+      // ── Elbow Group ──
+      const elbowGroup = new THREE.Group();
+      elbowGroup.position.y = -upperLen - 0.012;
+      shoulderGroup.add(elbowGroup);
 
-      // Forearm — uniform sleeve
+      // Elbow visual
+      const elbowMesh = new THREE.Mesh(new THREE.SphereGeometry(0.065, 10, 10), uniformDarkMat);
+      elbowMesh.scale.set(1, 0.75, 0.9);
+      elbowGroup.add(elbowMesh);
+
+      // Forearm
       const forearm = new THREE.Mesh(new THREE.CapsuleGeometry(0.058, lowerLen, 5, 12), uniformMat);
-      forearm.position.y = -upperLen - lowerLen / 2 - 0.035;
+      forearm.position.y = -lowerLen / 2 - 0.025;
       forearm.scale.set(1.05, 1, 0.92);
-      group.add(forearm);
+      elbowGroup.add(forearm);
 
-      // Red armband on left arm (Kuwabara's signature)
+      // Red armband on left arm
       if (!isRight) {
         const armband = new THREE.Mesh(new THREE.TorusGeometry(0.062, 0.015, 8, 14), armbandMat);
-        armband.position.y = -upperLen - 0.08;
+        armband.position.y = -lowerLen * 0.35;
         armband.rotation.x = Math.PI / 2;
-        group.add(armband);
+        elbowGroup.add(armband);
       }
 
-      // Wrist
-      const wrist = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.009, 8, 14), uniformDarkMat);
-      wrist.position.y = -len + 0.08;
-      wrist.rotation.x = Math.PI / 2;
-      group.add(wrist);
+      // ── Wrist Group ──
+      const wristGroup = new THREE.Group();
+      wristGroup.position.y = -lowerLen - 0.03;
+      elbowGroup.add(wristGroup);
 
-      // Hand — slightly larger
+      // Wrist visual
+      const wristMesh = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.009, 8, 14), uniformDarkMat);
+      wristMesh.rotation.x = Math.PI / 2;
+      wristGroup.add(wristMesh);
+
+      // Hand
       const hand = new THREE.Mesh(new THREE.SphereGeometry(0.062, 12, 12), skinMat);
-      hand.position.y = -len;
+      hand.position.y = -0.08;
       hand.scale.set(1, 0.92, 1.08);
-      group.add(hand);
+      wristGroup.add(hand);
 
-      // Knuckles hint
+      // Knuckles
       const knuckle = new THREE.Mesh(new THREE.BoxGeometry(0.095, 0.02, 0.03), skinMat);
-      knuckle.position.set(0, -len - 0.005, 0.035);
-      group.add(knuckle);
+      knuckle.position.set(0, -0.08 - 0.005, 0.035);
+      wristGroup.add(knuckle);
 
-      this.mesh.add(group);
+      this.mesh.add(shoulderGroup);
       if (isRight) {
-        this.rightArm = group;
+        this.rightArm = shoulderGroup;
+        this.rightElbow = elbowGroup;
+        this.rightWrist = wristGroup;
         this.rightArmLength = len;
-        this.rightArmBaseZ = group.rotation.z;
+        this.rightArmBaseZ = shoulderGroup.rotation.z;
       } else {
-        this.leftArm = group;
+        this.leftArm = shoulderGroup;
+        this.leftElbow = elbowGroup;
+        this.leftWrist = wristGroup;
         this.leftArmLength = len;
-        this.leftArmBaseZ = group.rotation.z;
+        this.leftArmBaseZ = shoulderGroup.rotation.z;
       }
     };
 
-    // Arms — slightly wider stance for bulkier build
     addArm(-0.3, 1.38, 0, -0.42, 0.78, 0.03, false);
     addArm(0.3, 1.38, 0, 0.42, 0.78, 0.03, true);
   }
 
   addLegs(uniformMat, uniformDarkMat) {
     for (const side of [-1, 1]) {
-      const legGroup = new THREE.Group();
-      legGroup.position.set(side * 0.13, 0.68, 0);
+      // ── Hip Group ──
+      const hipGroup = new THREE.Group();
+      hipGroup.position.set(side * 0.13, 0.68, 0);
 
-      // Thigh — slightly thicker
+      // Thigh
       const thigh = new THREE.Mesh(new THREE.CapsuleGeometry(0.075, 0.32, 5, 12), uniformMat);
       thigh.position.y = -0.18;
-      legGroup.add(thigh);
+      hipGroup.add(thigh);
 
-      // Knee
-      const knee = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 10), uniformDarkMat);
-      knee.position.set(0, -0.37, 0.04);
-      knee.scale.set(1.1, 0.75, 0.62);
-      legGroup.add(knee);
+      // ── Knee Group ──
+      const kneeGroup = new THREE.Group();
+      kneeGroup.position.set(0, -0.37, 0.04);
+      hipGroup.add(kneeGroup);
+
+      // Knee visual
+      const kneeMesh = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 10), uniformDarkMat);
+      kneeMesh.scale.set(1.1, 0.75, 0.62);
+      kneeGroup.add(kneeMesh);
 
       // Shin
       const shin = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.32, 5, 12), uniformMat);
-      shin.position.y = -0.56;
+      shin.position.y = -0.19;
       shin.scale.set(1, 1, 0.9);
-      legGroup.add(shin);
+      kneeGroup.add(shin);
 
-      // Ankle
-      const ankle = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.012, 8, 14), uniformDarkMat);
-      ankle.position.y = -0.74;
-      ankle.rotation.x = Math.PI / 2;
-      legGroup.add(ankle);
+      // ── Ankle Group ──
+      const ankleGroup = new THREE.Group();
+      ankleGroup.position.y = -0.37;
+      kneeGroup.add(ankleGroup);
 
-      // Shoe — school loafers style
+      // Ankle visual
+      const ankleMesh = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.012, 8, 14), uniformDarkMat);
+      ankleMesh.rotation.x = Math.PI / 2;
+      ankleGroup.add(ankleMesh);
+
+      // Shoe
       const shoe = new THREE.Mesh(new THREE.SphereGeometry(0.095, 12, 12), uniformDarkMat);
-      shoe.position.set(0, -0.82, 0.06);
+      shoe.position.set(0, -0.08, 0.02);
       shoe.scale.set(1, 0.55, 1.55);
-      legGroup.add(shoe);
+      ankleGroup.add(shoe);
 
       // Shoe sole
       const sole = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.025, 0.16), uniformDarkMat);
-      sole.position.set(0, -0.87, 0.06);
-      legGroup.add(sole);
+      sole.position.set(0, -0.13, 0.02);
+      ankleGroup.add(sole);
 
-      this.mesh.add(legGroup);
-      if (side === -1) this.leftLeg = legGroup;
-      else this.rightLeg = legGroup;
+      this.mesh.add(hipGroup);
+      if (side === -1) {
+        this.leftLeg = hipGroup;
+        this.leftKnee = kneeGroup;
+        this.leftAnkle = ankleGroup;
+      } else {
+        this.rightLeg = hipGroup;
+        this.rightKnee = kneeGroup;
+        this.rightAnkle = ankleGroup;
+      }
     }
   }
 

@@ -1,14 +1,19 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
- * Punch — 直拳（战斗轴线版）
- * Classic fighting game straight punch (KOF style)
- * 沿战斗轴线（X轴）出拳，不覆盖角色朝向
- * Duration: 0.5s
+ * Punch — 直拳（13点矩阵控制版）
+ *
+ * 使用关节：rightShoulder, rightElbow, rightWrist, leftShoulder, leftElbow, headGroup, mesh
+ *
+ * 姿势约定（相对基线偏移）：
+ * - rx 负值 = 向前（出拳方向）
+ * - rz 正值 = 向外展开，负值 = 向内收
+ * - elbow rx 负值 = 前臂向前弯曲（护脸/出拳）
  */
 export class Punch extends AnimationBase {
   constructor() {
     super('Punch', 0.5);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['rightArm', 'leftArm'],
       suits: ['humanoid', 'fighter', 'athletic'],
@@ -18,87 +23,70 @@ export class Punch extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    const head = character.headGroup;
-    if (!rArm) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
-    const rBaseZ = character.rightArmBaseZ || 0;
-    const rBaseX = character.rightArmBaseX || 0;
-    const lBaseZ = character.leftArmBaseZ || 0;
-
-    // 获取面向方向：1=向右（攻击右侧对手），-1=向左（攻击左侧对手）
-    const dir = character.userData?.facingDir || 1;
-
-    // Phase 1: Wind up (0-0.15) - pull right arm back, left arm guards
+    // Phase 1: Wind up (0-0.15) - 蓄力
     if (t < 0.15) {
       const p = t / 0.15;
       const ease = p * p;
-      rArm.rotation.z = rBaseZ - ease * 0.9;
-      rArm.rotation.x = rBaseX - ease * 0.6;
-      if (lArm) {
-        lArm.rotation.z = lBaseZ + ease * 0.5;
-        lArm.rotation.x = -ease * 0.3;
-      }
-      // 身体扭转蓄力（绕Y轴局部旋转，不覆盖全局朝向）
-      // 使用 mesh.rotation.y 的偏移量，但基于初始朝向
-      // 注意：这里不修改 rotation.y，只通过局部旋转模拟
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY - ease * 0.06;
-      }
+
+      // 右臂：向后拉，肘部弯曲蓄力
+      pose.rightShoulder = { rz: -ease * 0.3, rx: -ease * 0.4 };
+      pose.rightElbow = { rx: -ease * 1.2 };
+      pose.rightWrist = { rz: -ease * 0.2 };
+
+      // 左臂：护脸准备
+      pose.leftShoulder = { rz: ease * 0.4, rx: -ease * 0.5 };
+      pose.leftElbow = { rx: -ease * 0.8 };
+
+      // 身体：微蹲蓄力
+      pose.mesh = { y: -ease * 0.06, ry: -ease * 0.1 };
+
+      // 头：后拉
+      pose.headGroup = { ry: -0.05 * ease, rx: 0.02 * ease };
     }
-    // Phase 2: PUNCH! (0.15-0.35) - explosive forward thrust
+    // Phase 2: PUNCH! (0.15-0.35) - 爆发突刺
     else if (t < 0.35) {
       const p = (t - 0.15) / 0.2;
       const ease = 1 - Math.pow(1 - p, 3);
-      rArm.rotation.z = (rBaseZ - 0.9) + ease * 1.5;
-      rArm.rotation.x = (rBaseX - 0.6) - ease * 1.4;
-      if (lArm) {
-        lArm.rotation.z = (lBaseZ + 0.5) - ease * 0.2;
-        lArm.rotation.x = -0.3 + ease * 0.1;
-      }
-      // 沿战斗轴线（X轴）突进
-      character.mesh.position.x += dir * ease * 0.35;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY - 0.06 + ease * 0.06;
-      }
+
+      // 右臂：肩膀前推，肘部伸直，拳头冲出
+      pose.rightShoulder = { rz: -0.3 + ease * 1.0, rx: -0.4 - ease * 1.0 };
+      pose.rightElbow = { rx: -1.2 + ease * 1.5 };
+      pose.rightWrist = { rz: -0.2 + ease * 0.3 };
+
+      // 左臂：收紧护脸
+      pose.leftShoulder = { rz: 0.4 - ease * 0.1, rx: -0.5 - ease * 0.2 };
+      pose.leftElbow = { rx: -0.8 - ease * 0.3 };
+
+      // 身体：突进
+      pose.mesh = { x: ease * 0.3, y: -0.06 + ease * 0.06, ry: -0.1 + ease * 0.15 };
+
+      // 头：跟进
+      pose.headGroup = { ry: -0.05 + ease * 0.15, rx: 0.02 + ease * 0.05 };
     }
-    // Phase 3: Recovery (0.35-1.0) - recover to fighting stance
+    // Phase 3: Recovery (0.35-1.0) - 回到格斗站姿
     else {
       const p = (t - 0.35) / 0.65;
       const ease = p * p;
-      // Fighting stance: right arm back guard, left forward
-      rArm.rotation.z = (rBaseZ + 0.6) - ease * 1.5;
-      rArm.rotation.x = (rBaseX - 2.0) + ease * 1.3;
-      if (lArm) {
-        lArm.rotation.z = (lBaseZ + 0.3) - ease * 0.2;
-        lArm.rotation.x = -0.2 + ease * 0.2;
-      }
-      // 回到原位
-      character.mesh.position.x -= dir * (1 - ease) * 0.35;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY - ease * 0.06;
-      }
+
+      // 右臂：回到护脸姿势
+      pose.rightShoulder = { rz: 0.7 - ease * 0.85, rx: -1.4 + ease * 0.5 };
+      pose.rightElbow = { rx: 0.3 - ease * 1.1 };
+      pose.rightWrist = { rz: 0.1 - ease * 0.3 };
+
+      // 左臂：回到护脸
+      pose.leftShoulder = { rz: 0.3 + ease * 0.1, rx: -0.7 + ease * 0.2 };
+      pose.leftElbow = { rx: -1.1 + ease * 0.3 };
+
+      // 身体：回位
+      pose.mesh = { x: 0.3 * (1 - ease), y: -ease * 0.06, ry: 0.05 - ease * 0.05 };
+
+      // 头：回中
+      pose.headGroup = { ry: 0.1 * (1 - ease), rx: 0.07 * (1 - ease) };
     }
 
-    // Head tracks the punch direction — lean into the punch
-    if (head) {
-      if (t < 0.15) {
-        // Wind up: head pulls back slightly
-        head.rotation.y = -dir * 0.05;
-        head.rotation.x = 0.02;
-      } else if (t < 0.35) {
-        // Punch: head leans forward to track target
-        const p = (t - 0.15) / 0.2;
-        head.rotation.y = dir * 0.08 * p;
-        head.rotation.x = 0.05 + 0.05 * p;
-      } else {
-        // Recovery: return to neutral
-        const p = (t - 0.35) / 0.65;
-        head.rotation.y = dir * 0.08 * (1 - p);
-        head.rotation.x = 0.1 * (1 - p);
-      }
-    }
+    return pose;
   }
 }

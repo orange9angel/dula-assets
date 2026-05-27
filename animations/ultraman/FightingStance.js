@@ -1,40 +1,37 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
- * FightingStance — 战斗姿态
+ * FightingStance — 战斗姿态（13点矩阵控制版）
+ *
  * 经典奥特曼格斗起手式
- * 适配新Ultraman比例
  */
 export class FightingStance extends AnimationBase {
   constructor() {
     super('FightingStance', 1.5);
+    this.usePoseMatrix = true;
   }
 
-  update(t, character) {
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    if (!rArm || !lArm) return;
-
-    const rBaseZ = character.rightArmBaseZ || 0;
-    const lBaseZ = character.leftArmBaseZ || 0;
-
-    // Smooth transition to fighting stance
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
     const p = t < 0.3 ? t / 0.3 : 1;
 
-    // Right arm: fist up guarding face (rear guard)
-    rArm.rotation.z = rBaseZ - p * 0.15;
-    rArm.rotation.x = -p * 0.9;
+    // 右臂：握拳护脸（后手防守）
+    pose.rightShoulder = { rz: -p * 0.15, rx: -p * 0.9 };
+    pose.rightElbow = { rx: -p * 0.8 };
 
-    // Left arm: fist up guarding face (lead guard)
-    lArm.rotation.z = lBaseZ + p * 0.1;
-    lArm.rotation.x = -p * 0.8;
+    // 左臂：握拳护脸（前手防守）
+    pose.leftShoulder = { rz: p * 0.1, rx: -p * 0.8 };
+    pose.leftElbow = { rx: -p * 0.7 };
 
-    // Slight crouch (relative to baseY)
-    if (character.baseY !== undefined) {
-      character.mesh.position.y = character.baseY - p * 0.3;
-    }
+    // 腿部前后马步
+    pose.rightHip = { rx: -p * 0.15 };
+    pose.rightKnee = { rx: p * 0.1 };
+    pose.leftHip = { rx: p * 0.15 };
+    pose.leftKnee = { rx: p * 0.2 };
 
-    // Body angled
-    character.mesh.rotation.y = p * 0.3;
+    // 身体微蹲
+    pose.mesh = { y: -p * 0.3, ry: p * 0.3 };
+
+    return pose;
   }
 }

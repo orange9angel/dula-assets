@@ -437,10 +437,11 @@ export class Yusuke extends CharacterBase {
 
   addArms(skinMat, uniformMat, gloveMat, gloveDarkMat) {
     const addArm = (sx, sy, sz, hx, hy, hz, isRight) => {
-      const group = new THREE.Group();
-      group.position.set(sx, sy, sz);
-      group.lookAt(hx, hy, hz);
-      group.rotateX(-Math.PI / 2);
+      // ── Shoulder Group (上臂根) ──
+      const shoulderGroup = new THREE.Group();
+      shoulderGroup.position.set(sx, sy, sz);
+      shoulderGroup.lookAt(hx, hy, hz);
+      shoulderGroup.rotateX(-Math.PI / 2);
 
       const len = Math.sqrt((hx - sx) ** 2 + (hy - sy) ** 2 + (hz - sz) ** 2);
       const upperLen = len * 0.45;
@@ -449,50 +450,63 @@ export class Yusuke extends CharacterBase {
       // Upper arm - gakuran sleeve
       const upperArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.048, upperLen, 5, 12), uniformMat);
       upperArm.position.y = -upperLen / 2;
-      group.add(upperArm);
+      shoulderGroup.add(upperArm);
 
-      // Elbow
-      const elbow = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 10), skinMat);
-      elbow.position.y = -upperLen - 0.01;
-      elbow.scale.set(1, 0.7, 0.85);
-      group.add(elbow);
+      // ── Elbow Group (肘关节 pivot) ──
+      const elbowGroup = new THREE.Group();
+      elbowGroup.position.y = -upperLen - 0.01;
+      shoulderGroup.add(elbowGroup);
 
-      // Forearm - skin showing (sleeves rolled up or short sleeves)
+      // Elbow visual
+      const elbowMesh = new THREE.Mesh(new THREE.SphereGeometry(0.055, 10, 10), skinMat);
+      elbowMesh.scale.set(1, 0.7, 0.85);
+      elbowGroup.add(elbowMesh);
+
+      // Forearm - skin showing
       const forearm = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, lowerLen, 5, 12), skinMat);
-      forearm.position.y = -upperLen - lowerLen / 2 - 0.03;
-      group.add(forearm);
+      forearm.position.y = -lowerLen / 2 - 0.02;
+      elbowGroup.add(forearm);
+
+      // ── Wrist Group (腕关节 pivot) ──
+      const wristGroup = new THREE.Group();
+      wristGroup.position.y = -lowerLen - 0.04;
+      elbowGroup.add(wristGroup);
 
       // Fingerless glove
       const glove = new THREE.Mesh(new THREE.CapsuleGeometry(0.052, lowerLen * 0.45, 5, 12), gloveMat);
-      glove.position.y = -upperLen - lowerLen * 0.72 - 0.03;
-      group.add(glove);
+      glove.position.y = -lowerLen * 0.22 - 0.01;
+      wristGroup.add(glove);
 
       // Glove cuff
       const gloveCuff = new THREE.Mesh(new THREE.TorusGeometry(0.054, 0.008, 8, 14), gloveDarkMat);
-      gloveCuff.position.y = -upperLen - lowerLen * 0.52 - 0.03;
+      gloveCuff.position.y = -lowerLen * 0.02;
       gloveCuff.rotation.x = Math.PI / 2;
-      group.add(gloveCuff);
+      wristGroup.add(gloveCuff);
 
       // Hand
       const hand = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 12), skinMat);
-      hand.position.y = -len;
+      hand.position.y = -lowerLen * 0.55;
       hand.scale.set(1, 0.9, 1.05);
-      group.add(hand);
+      wristGroup.add(hand);
 
-      // Knuckles (slightly pronounced for fighter)
+      // Knuckles
       const knuckle = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.015, 0.025), skinMat);
-      knuckle.position.set(0, -len - 0.005, 0.03);
-      group.add(knuckle);
+      knuckle.position.set(0, -lowerLen * 0.55 - 0.005, 0.03);
+      wristGroup.add(knuckle);
 
-      this.mesh.add(group);
+      this.mesh.add(shoulderGroup);
       if (isRight) {
-        this.rightArm = group;
+        this.rightArm = shoulderGroup;
+        this.rightElbow = elbowGroup;
+        this.rightWrist = wristGroup;
         this.rightArmLength = len;
-        this.rightArmBaseZ = group.rotation.z;
+        this.rightArmBaseZ = shoulderGroup.rotation.z;
       } else {
-        this.leftArm = group;
+        this.leftArm = shoulderGroup;
+        this.leftElbow = elbowGroup;
+        this.leftWrist = wristGroup;
         this.leftArmLength = len;
-        this.leftArmBaseZ = group.rotation.z;
+        this.leftArmBaseZ = shoulderGroup.rotation.z;
       }
     };
 
@@ -502,52 +516,68 @@ export class Yusuke extends CharacterBase {
 
   addLegs(uniformMat, uniformDarkMat, shoeMat, shoeDarkMat) {
     for (const side of [-1, 1]) {
-      const legGroup = new THREE.Group();
-      legGroup.position.set(side * 0.11, 0.62, 0);
+      // ── Hip Group (髋/大腿根) ──
+      const hipGroup = new THREE.Group();
+      hipGroup.position.set(side * 0.11, 0.62, 0);
 
       // Thigh - gakuran pants
       const thigh = new THREE.Mesh(new THREE.CapsuleGeometry(0.065, 0.28, 5, 12), uniformMat);
       thigh.position.y = -0.16;
-      legGroup.add(thigh);
+      hipGroup.add(thigh);
 
-      // Knee
-      const knee = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 10), uniformDarkMat);
-      knee.position.set(0, -0.34, 0.03);
-      knee.scale.set(1.05, 0.7, 0.55);
-      legGroup.add(knee);
+      // ── Knee Group (膝关节 pivot) ──
+      const kneeGroup = new THREE.Group();
+      kneeGroup.position.set(0, -0.34, 0.03);
+      hipGroup.add(kneeGroup);
+
+      // Knee visual
+      const kneeMesh = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 10), uniformDarkMat);
+      kneeMesh.scale.set(1.05, 0.7, 0.55);
+      kneeGroup.add(kneeMesh);
 
       // Shin - pants continue down
       const shin = new THREE.Mesh(new THREE.CapsuleGeometry(0.06, 0.28, 5, 12), uniformMat);
-      shin.position.y = -0.52;
+      shin.position.y = -0.18;
       shin.scale.set(1, 1, 0.85);
-      legGroup.add(shin);
+      kneeGroup.add(shin);
 
-      // Ankle
-      const ankle = new THREE.Mesh(new THREE.TorusGeometry(0.065, 0.01, 8, 14), uniformDarkMat);
-      ankle.position.y = -0.68;
-      ankle.rotation.x = Math.PI / 2;
-      legGroup.add(ankle);
+      // ── Ankle Group (踝关节 pivot) ──
+      const ankleGroup = new THREE.Group();
+      ankleGroup.position.y = -0.34;
+      kneeGroup.add(ankleGroup);
 
-      // Sneaker - white, slightly bulky
+      // Ankle visual
+      const ankleMesh = new THREE.Mesh(new THREE.TorusGeometry(0.065, 0.01, 8, 14), uniformDarkMat);
+      ankleMesh.rotation.x = Math.PI / 2;
+      ankleGroup.add(ankleMesh);
+
+      // Sneaker
       const sneaker = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 12), shoeMat);
-      sneaker.position.set(0, -0.76, 0.04);
+      sneaker.position.set(0, -0.08, 0.01);
       sneaker.scale.set(1, 0.5, 1.45);
-      legGroup.add(sneaker);
+      ankleGroup.add(sneaker);
 
       // Sneaker sole
       const sole = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.025, 0.14), shoeDarkMat);
-      sole.position.set(0, -0.8, 0.04);
-      legGroup.add(sole);
+      sole.position.set(0, -0.12, 0.01);
+      ankleGroup.add(sole);
 
       // Sneaker toe cap
       const toeCap = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 10), shoeMat);
-      toeCap.position.set(0, -0.76, 0.1);
+      toeCap.position.set(0, -0.08, 0.07);
       toeCap.scale.set(1, 0.6, 1.2);
-      legGroup.add(toeCap);
+      ankleGroup.add(toeCap);
 
-      this.mesh.add(legGroup);
-      if (side === -1) this.leftLeg = legGroup;
-      else this.rightLeg = legGroup;
+      this.mesh.add(hipGroup);
+      if (side === -1) {
+        this.leftLeg = hipGroup;
+        this.leftKnee = kneeGroup;
+        this.leftAnkle = ankleGroup;
+      } else {
+        this.rightLeg = hipGroup;
+        this.rightKnee = kneeGroup;
+        this.rightAnkle = ankleGroup;
+      }
     }
   }
 

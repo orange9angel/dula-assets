@@ -1,14 +1,12 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
- * Knockdown — 击倒（战斗轴线版）
- * Getting knocked down (KOF style knockdown)
- * 沿战斗轴线向后倒下，不覆盖基础朝向
- * Duration: 0.8s
+ * Knockdown — 击倒（13点矩阵控制版）
  */
 export class Knockdown extends AnimationBase {
   constructor() {
     super('Knockdown', 0.8);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['rightArm', 'leftArm', 'rightLeg', 'leftLeg'],
       suits: ['humanoid', 'fighter', 'athletic', 'monster'],
@@ -18,90 +16,65 @@ export class Knockdown extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    const rLeg = character.rightLeg;
-    const lLeg = character.leftLeg;
-    const head = character.headGroup;
-
-    const rBaseZ = character.rightArmBaseZ || 0;
-    const lBaseZ = character.leftArmBaseZ || 0;
-
-    // 击倒方向与面向相反
-    const dir = character.userData?.facingDir || 1;
-    const fallDir = -dir;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
     // Phase 1: Impact flinch (0-0.15)
     if (t < 0.15) {
       const p = t / 0.15;
       const ease = p * p;
-      character.mesh.rotation.x = -ease * 0.3;
-      character.mesh.position.x += fallDir * ease * 0.1;
-      if (rArm) {
-        rArm.rotation.z = rBaseZ + ease * 0.3;
-        rArm.rotation.x = ease * 0.3;
-      }
-      if (lArm) {
-        lArm.rotation.z = lBaseZ - ease * 0.3;
-        lArm.rotation.x = ease * 0.3;
-      }
+
+      pose.mesh = { rx: -ease * 0.3, x: -ease * 0.1 };
+
+      pose.rightShoulder = { rz: ease * 0.3, rx: ease * 0.3 };
+      pose.rightElbow = { rx: ease * 0.3 };
+      pose.leftShoulder = { rz: -ease * 0.3, rx: ease * 0.3 };
+      pose.leftElbow = { rx: ease * 0.3 };
+
+      pose.headGroup = { rx: ease * 0.1 };
     }
-    // Phase 2: Fall back (0.15-0.6) - arc backward to ground
+    // Phase 2: Fall back (0.15-0.6) - 向后倒下
     else if (t < 0.6) {
       const p = (t - 0.15) / 0.45;
       const ease = 1 - Math.pow(1 - p, 2);
-      // Body falls backward (rotate X negative = lean back)
-      character.mesh.rotation.x = -0.3 - ease * 1.4;
-      // Arc trajectory: up then down
       const arc = Math.sin(p * Math.PI) * 0.15;
-      character.mesh.position.x += fallDir * (0.1 + ease * 0.4);
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY + arc - ease * 0.3;
-      }
-      // Arms flail
-      if (rArm) {
-        rArm.rotation.z = (rBaseZ + 0.3) + ease * 0.8;
-        rArm.rotation.x = 0.3 + ease * 0.5;
-      }
-      if (lArm) {
-        lArm.rotation.z = (lBaseZ - 0.3) - ease * 0.8;
-        lArm.rotation.x = 0.3 + ease * 0.5;
-      }
-      // Legs lift
-      if (rLeg) rLeg.rotation.x = -ease * 0.6;
-      if (lLeg) lLeg.rotation.x = -ease * 0.5;
+
+      pose.mesh = { rx: -0.3 - ease * 1.4, x: -0.1 - ease * 0.4, y: arc - ease * 0.3 };
+
+      pose.rightShoulder = { rz: 0.3 + ease * 0.8, rx: 0.3 + ease * 0.5 };
+      pose.rightElbow = { rx: 0.3 + ease * 0.3 };
+      pose.leftShoulder = { rz: -0.3 - ease * 0.8, rx: 0.3 + ease * 0.5 };
+      pose.leftElbow = { rx: 0.3 + ease * 0.3 };
+
+      pose.rightHip = { rx: -ease * 0.6 };
+      pose.rightKnee = { rx: ease * 0.4 };
+      pose.leftHip = { rx: -ease * 0.5 };
+      pose.leftKnee = { rx: ease * 0.3 };
+
+      pose.headGroup = { rx: p * 0.3 };
     }
-    // Phase 3: Hit ground (0.6-0.75) - impact bounce
+    // Phase 3: Hit ground (0.6-0.75) - 落地反弹
     else if (t < 0.75) {
       const p = (t - 0.6) / 0.15;
       const bounce = Math.sin(p * Math.PI) * 0.03;
-      character.mesh.rotation.x = -1.7;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY - 0.3 + bounce;
-      }
-      character.mesh.position.x += fallDir * 0.5;
-      if (rArm) rArm.rotation.z = rBaseZ + 1.1;
-      if (lArm) lArm.rotation.z = lBaseZ - 1.1;
+
+      pose.mesh = { rx: -1.7, x: -0.5, y: -0.3 + bounce };
+
+      pose.rightShoulder = { rz: 1.1 };
+      pose.leftShoulder = { rz: -1.1 };
+
+      pose.headGroup = { rx: 0.3 };
     }
     // Phase 4: Lie still (0.75-1.0)
     else {
-      character.mesh.rotation.x = -1.7;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY - 0.3;
-      }
-      character.mesh.position.x += fallDir * 0.5;
-      if (rArm) rArm.rotation.z = rBaseZ + 1.1;
-      if (lArm) lArm.rotation.z = lBaseZ - 1.1;
+      pose.mesh = { rx: -1.7, x: -0.5, y: -0.3 };
+
+      pose.rightShoulder = { rz: 1.1 };
+      pose.leftShoulder = { rz: -1.1 };
+
+      pose.headGroup = { rx: 0.3 };
     }
 
-    // Head follows fall
-    if (head) {
-      if (t < 0.6) {
-        head.rotation.x = ((t - 0.15) / 0.45) * 0.3;
-      } else {
-        head.rotation.x = 0.3;
-      }
-    }
+    return pose;
   }
 }

@@ -1,14 +1,12 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
- * DashForward — 前冲（战斗轴线版）
- * Aggressive forward lunge (KOF style dash-in)
- * 沿战斗轴线（X轴）突进，不覆盖角色朝向
- * Duration: 0.4s
+ * DashForward — 前冲（13点矩阵控制版）
  */
 export class DashForward extends AnimationBase {
   constructor() {
     super('DashForward', 0.4);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['rightArm', 'leftArm', 'rightLeg', 'leftLeg'],
       suits: ['humanoid', 'fighter', 'athletic', 'agile'],
@@ -18,67 +16,61 @@ export class DashForward extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    const rLeg = character.rightLeg;
-    const lLeg = character.leftLeg;
-    if (!rArm || !lArm) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
-    const rBaseZ = character.rightArmBaseZ || 0;
-    const lBaseZ = character.leftArmBaseZ || 0;
-
-    const dir = character.userData?.facingDir || 1;
-
-    // Phase 1: Wind up (0-0.15) - coil back
+    // Phase 1: Wind up (0-0.15) - 后撤蓄力
     if (t < 0.15) {
       const p = t / 0.15;
       const ease = p * p;
-      // 微向后撤蓄力
-      character.mesh.position.x -= dir * ease * 0.1;
-      // Arms tuck
-      rArm.rotation.z = rBaseZ - ease * 0.4;
-      lArm.rotation.z = lBaseZ + ease * 0.4;
-      // Legs coil
-      if (rLeg) rLeg.rotation.x = ease * 0.3;
-      if (lLeg) lLeg.rotation.x = -ease * 0.2;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY - ease * 0.05;
-      }
+
+      pose.mesh = { x: -ease * 0.1, y: -ease * 0.05 };
+
+      pose.rightShoulder = { rz: -ease * 0.4 };
+      pose.rightElbow = { rx: -ease * 0.3 };
+      pose.leftShoulder = { rz: ease * 0.4 };
+      pose.leftElbow = { rx: -ease * 0.3 };
+
+      pose.rightHip = { rx: ease * 0.3 };
+      pose.rightKnee = { rx: ease * 0.3 };
+      pose.leftHip = { rx: -ease * 0.2 };
+      pose.leftKnee = { rx: ease * 0.2 };
     }
-    // Phase 2: DASH! (0.15-0.3) - explosive forward
+    // Phase 2: DASH! (0.15-0.3) - 爆发突进
     else if (t < 0.3) {
       const p = (t - 0.15) / 0.15;
       const ease = 1 - Math.pow(1 - p, 2);
-      // 沿战斗轴线突进
-      character.mesh.position.x += dir * ease * 0.6;
-      // Arms trail behind
-      rArm.rotation.z = (rBaseZ - 0.4) - ease * 0.3;
-      rArm.rotation.x = -ease * 0.6;
-      lArm.rotation.z = (lBaseZ + 0.4) + ease * 0.3;
-      lArm.rotation.x = -ease * 0.6;
-      // Legs in running pose
-      if (rLeg) rLeg.rotation.x = 0.3 - ease * 0.8;
-      if (lLeg) lLeg.rotation.x = -0.2 + ease * 0.6;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY - 0.05) + ease * 0.02;
-      }
+
+      pose.mesh = { x: -0.1 + ease * 0.6, y: -0.05 + ease * 0.02 };
+
+      pose.rightShoulder = { rz: -0.4 - ease * 0.3, rx: -ease * 0.6 };
+      pose.rightElbow = { rx: -0.3 - ease * 0.3 };
+      pose.leftShoulder = { rz: 0.4 + ease * 0.3, rx: -ease * 0.6 };
+      pose.leftElbow = { rx: -0.3 - ease * 0.3 };
+
+      pose.rightHip = { rx: 0.3 - ease * 0.8 };
+      pose.rightKnee = { rx: 0.3 - ease * 0.5 };
+      pose.leftHip = { rx: -0.2 + ease * 0.6 };
+      pose.leftKnee = { rx: 0.2 + ease * 0.3 };
     }
-    // Phase 3: Brake (0.3-1.0) - skid to fighting stance
+    // Phase 3: Brake (0.3-1.0) - 刹车到格斗站姿
     else {
       const p = (t - 0.3) / 0.7;
       const ease = p * p;
-      // 保持在突进后的位置
-      // End in fighting stance: right back, left forward
-      rArm.rotation.z = (rBaseZ - 0.7) - ease * 0.2;
-      rArm.rotation.x = -0.6 + ease * 0.1;
-      lArm.rotation.z = (lBaseZ + 0.7) - ease * 0.2;
-      lArm.rotation.x = -0.6 + ease * 0.6;
-      if (rLeg) rLeg.rotation.x = -0.5 + ease * 0.5;
-      if (lLeg) lLeg.rotation.x = 0.4 - ease * 0.4;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY - 0.03) - ease * 0.03;
-      }
+
+      pose.mesh = { y: -0.03 - ease * 0.03 };
+
+      pose.rightShoulder = { rz: -0.7 - ease * 0.2, rx: -0.6 + ease * 0.1 };
+      pose.rightElbow = { rx: -0.6 + ease * 0.3 };
+      pose.leftShoulder = { rz: 0.7 - ease * 0.2, rx: -0.6 + ease * 0.6 };
+      pose.leftElbow = { rx: -0.6 + ease * 0.4 };
+
+      pose.rightHip = { rx: -0.5 + ease * 0.5 };
+      pose.rightKnee = { rx: -0.2 + ease * 0.2 };
+      pose.leftHip = { rx: 0.4 - ease * 0.4 };
+      pose.leftKnee = { rx: 0.5 - ease * 0.3 };
     }
+
+    return pose;
   }
 }

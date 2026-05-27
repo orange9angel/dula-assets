@@ -1,14 +1,15 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
- * SpinKick — 回旋踢（战斗轴线版）
- * Classic fighting game spinning kick (KOF style)
- * 身体旋转360°同时沿战斗轴线位移，不覆盖基础朝向
- * Duration: 0.8s
+ * SpinKick — 回旋踢（13点矩阵控制版）
+ *
+ * 使用关节：rightHip, rightKnee, rightAnkle, leftHip, leftKnee,
+ *           rightShoulder, leftShoulder, mesh
  */
 export class SpinKick extends AnimationBase {
   constructor() {
     super('SpinKick', 0.8);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['rightLeg', 'leftLeg', 'rightArm', 'leftArm'],
       suits: ['humanoid', 'fighter', 'athletic', 'agile'],
@@ -18,98 +19,78 @@ export class SpinKick extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const rLeg = character.rightLeg;
-    const lLeg = character.leftLeg;
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    if (!rLeg || !lLeg) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
-    const rLegBaseX = character.rightLegBaseX || 0;
-    const lLegBaseX = character.leftLegBaseX || 0;
-    const rBaseZ = character.rightArmBaseZ || 0;
-    const lBaseZ = character.leftArmBaseZ || 0;
-
-    const dir = character.userData?.facingDir || 1;
-
-    // Phase 1: Wind up (0-0.2) - coil and pivot
+    // Phase 1: Wind up (0-0.2) - 蓄力旋转
     if (t < 0.2) {
       const p = t / 0.2;
       const ease = p * p;
-      // 身体开始旋转（局部旋转，基于当前朝向）
-      // 使用一个临时旋转量，不覆盖基础 rotation.y
-      if (rArm) {
-        rArm.rotation.z = rBaseZ - ease * 0.5;
-        rArm.rotation.x = -ease * 0.3;
-      }
-      if (lArm) {
-        lArm.rotation.z = lBaseZ + ease * 0.5;
-        lArm.rotation.x = -ease * 0.3;
-      }
-      rLeg.rotation.x = rLegBaseX - ease * 0.8;
-      lLeg.rotation.x = lLegBaseX + ease * 0.1;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY - ease * 0.05;
-      }
+
+      pose.rightShoulder = { rz: -ease * 0.5, rx: -ease * 0.3 };
+      pose.rightElbow = { rx: -ease * 0.4 };
+      pose.leftShoulder = { rz: ease * 0.5, rx: -ease * 0.3 };
+      pose.leftElbow = { rx: -ease * 0.4 };
+
+      pose.rightHip = { rx: -ease * 0.8 };
+      pose.rightKnee = { rx: ease * 0.5 };
+      pose.leftHip = { rx: ease * 0.1 };
+
+      pose.mesh = { y: -ease * 0.05, ry: -ease * 0.2 };
     }
-    // Phase 2: SPIN (0.2-0.55) - 360° rotation with kick
+    // Phase 2: SPIN (0.2-0.55) - 旋转踢出
     else if (t < 0.55) {
       const p = (t - 0.2) / 0.35;
       const ease = 1 - Math.pow(1 - p, 2);
-      // 旋转效果通过身体局部扭转模拟，不覆盖全局 rotation.y
-      // 实际360°旋转在侧视图中表现为身体扭转
-      if (rArm) {
-        rArm.rotation.z = (rBaseZ - 0.5) + ease * 0.3;
-        rArm.rotation.x = -0.3 + ease * 0.2;
-      }
-      if (lArm) {
-        lArm.rotation.z = (lBaseZ + 0.5) - ease * 0.3;
-        lArm.rotation.x = -0.3 + ease * 0.2;
-      }
-      rLeg.rotation.x = (rLegBaseX - 0.8) + ease * 1.2;
-      lLeg.rotation.x = (lLegBaseX + 0.1) - ease * 0.3;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY - 0.05) + ease * 0.08;
-      }
-      // 回旋踢向前突进
-      character.mesh.position.x += dir * ease * 0.3;
+
+      pose.rightShoulder = { rz: -0.5 + ease * 0.3, rx: -0.3 + ease * 0.2 };
+      pose.rightElbow = { rx: -0.4 + ease * 0.2 };
+      pose.leftShoulder = { rz: 0.5 - ease * 0.3, rx: -0.3 + ease * 0.2 };
+      pose.leftElbow = { rx: -0.4 + ease * 0.2 };
+
+      pose.rightHip = { rx: -0.8 + ease * 1.2 };
+      pose.rightKnee = { rx: 0.5 - ease * 0.8 };
+      pose.rightAnkle = { rx: ease * 0.3 };
+      pose.leftHip = { rx: 0.1 - ease * 0.3 };
+      pose.leftKnee = { rx: ease * 0.2 };
+
+      pose.mesh = { y: -0.05 + ease * 0.08, x: ease * 0.3, ry: -0.2 + ease * 0.5 };
     }
-    // Phase 3: Retract (0.55-0.75) - pull leg back
+    // Phase 3: Retract (0.55-0.75) - 收腿
     else if (t < 0.75) {
       const p = (t - 0.55) / 0.2;
       const ease = p * p;
-      rLeg.rotation.x = (rLegBaseX + 0.4) - ease * 0.4;
-      lLeg.rotation.x = (lLegBaseX - 0.2) + ease * 0.2;
-      if (rArm) {
-        rArm.rotation.z = (rBaseZ - 0.2) + ease * 0.2;
-        rArm.rotation.x = -0.1 + ease * 0.1;
-      }
-      if (lArm) {
-        lArm.rotation.z = (lBaseZ + 0.2) - ease * 0.2;
-        lArm.rotation.x = -0.1 + ease * 0.1;
-      }
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY + 0.03) - ease * 0.03;
-      }
-      character.mesh.position.x -= dir * (1 - ease) * 0.3;
+
+      pose.rightHip = { rx: 0.4 - ease * 0.4 };
+      pose.rightKnee = { rx: -0.3 + ease * 0.5 };
+      pose.leftHip = { rx: -0.2 + ease * 0.2 };
+      pose.leftKnee = { rx: 0.2 - ease * 0.2 };
+
+      pose.rightShoulder = { rz: -0.2 + ease * 0.2, rx: -0.1 + ease * 0.1 };
+      pose.rightElbow = { rx: -0.2 + ease * 0.2 };
+      pose.leftShoulder = { rz: 0.2 - ease * 0.2, rx: -0.1 + ease * 0.1 };
+      pose.leftElbow = { rx: -0.2 + ease * 0.2 };
+
+      pose.mesh = { y: 0.03 - ease * 0.03, x: 0.3 * (1 - ease), ry: 0.3 - ease * 0.3 };
     }
-    // Phase 4: Recover (0.75-1.0) - return to fighting stance
+    // Phase 4: Recover (0.75-1.0) - 回到格斗站姿
     else {
       const p = (t - 0.75) / 0.25;
       const ease = p * p;
-      rLeg.rotation.x = rLegBaseX + ease * 0.25;
-      lLeg.rotation.x = lLegBaseX + ease * 0.2;
-      if (rArm) {
-        rArm.rotation.z = rBaseZ - ease * 0.9;
-        rArm.rotation.x = -ease * 0.7;
-      }
-      if (lArm) {
-        lArm.rotation.z = lBaseZ + ease * 0.5;
-        lArm.rotation.x = -ease * 0.4;
-      }
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY - ease * 0.06;
-      }
+
+      pose.rightHip = { rx: ease * 0.25 };
+      pose.rightKnee = { rx: ease * 0.2 };
+      pose.leftHip = { rx: ease * 0.2 };
+      pose.leftKnee = { rx: ease * 0.15 };
+
+      pose.rightShoulder = { rz: -ease * 0.9, rx: -ease * 0.7 };
+      pose.rightElbow = { rx: -ease * 0.5 };
+      pose.leftShoulder = { rz: ease * 0.5, rx: -ease * 0.4 };
+      pose.leftElbow = { rx: -ease * 0.4 };
+
+      pose.mesh = { y: -ease * 0.06 };
     }
+
+    return pose;
   }
 }

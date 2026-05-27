@@ -1,14 +1,15 @@
-import { AnimationBase } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
- * Dodge — 闪避（战斗轴线版）
- * Quick evasive maneuver (KOF style backdash / sidestep)
- * 沿战斗轴线后撤，不覆盖角色朝向
- * Duration: 0.4s
+ * Dodge — 闪避（13点矩阵控制版）
+ *
+ * 使用关节：rightShoulder, rightElbow, leftShoulder, leftElbow,
+ *           rightHip, rightKnee, leftHip, leftKnee, headGroup, mesh
  */
 export class Dodge extends AnimationBase {
   constructor() {
     super('Dodge', 0.4);
+    this.usePoseMatrix = true;
     this.tags = {
       requires: ['rightArm', 'leftArm'],
       suits: ['humanoid', 'fighter', 'athletic', 'agile'],
@@ -18,55 +19,52 @@ export class Dodge extends AnimationBase {
     };
   }
 
-  update(t, character) {
-    const rArm = character.rightArm;
-    const lArm = character.leftArm;
-    const head = character.headGroup;
-    if (!rArm || !lArm) return;
+  getPoseMatrix(t) {
+    const pose = new PoseMatrix();
 
-    const rBaseZ = character.rightArmBaseZ || 0;
-    const lBaseZ = character.leftArmBaseZ || 0;
-
-    const dir = character.userData?.facingDir || 1;
-
-    // Phase 1: Lean back (0-0.3) - quick evasive lean
+    // Phase 1: Lean back (0-0.3) - 快速后撤
     if (t < 0.3) {
       const p = t / 0.3;
       const ease = 1 - Math.pow(1 - p, 2);
-      // 沿战斗轴线后撤（与面向相反）
-      character.mesh.position.x -= dir * ease * 0.4;
-      // 身体后仰（局部X轴旋转）
-      character.mesh.rotation.x = -ease * 0.35;
-      // Arms guard up
-      rArm.rotation.z = rBaseZ - ease * 0.7;
-      rArm.rotation.x = -ease * 0.5;
-      lArm.rotation.z = lBaseZ + ease * 0.7;
-      lArm.rotation.x = -ease * 0.5;
-      // Slight crouch
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = character.baseY - ease * 0.08;
-      }
+
+      // 后撤
+      pose.mesh = { x: -ease * 0.4, rx: -ease * 0.35, y: -ease * 0.08 };
+
+      // 双臂护脸
+      pose.rightShoulder = { rz: -ease * 0.7, rx: -ease * 0.5 };
+      pose.rightElbow = { rx: -ease * 0.6 };
+      pose.leftShoulder = { rz: ease * 0.7, rx: -ease * 0.5 };
+      pose.leftElbow = { rx: -ease * 0.6 };
+
+      // 腿部：屈膝准备
+      pose.rightHip = { rx: ease * 0.2 };
+      pose.rightKnee = { rx: ease * 0.3 };
+      pose.leftHip = { rx: ease * 0.15 };
+      pose.leftKnee = { rx: ease * 0.25 };
+
+      // 头保持水平
+      pose.headGroup = { rx: ease * 0.35 * 0.6 };
     }
-    // Phase 2: Snap back (0.3-1.0) - return to fighting stance
+    // Phase 2: Snap back (0.3-1.0) - 回到格斗站姿
     else {
       const p = (t - 0.3) / 0.7;
       const ease = p * p;
-      // 回到原位
-      character.mesh.position.x += dir * (1 - ease) * 0.4;
-      character.mesh.rotation.x = -0.35 + ease * 0.35;
-      // End in fighting stance: right back guard, left forward
-      rArm.rotation.z = (rBaseZ - 0.7) - ease * 0.2;
-      rArm.rotation.x = -0.5 + ease * 0.5;
-      lArm.rotation.z = (lBaseZ + 0.7) - ease * 0.2;
-      lArm.rotation.x = -0.5 + ease * 0.5;
-      if (character.baseY !== undefined) {
-        character.mesh.position.y = (character.baseY - 0.08) + ease * 0.02;
-      }
+
+      pose.mesh = { x: -0.4 * (1 - ease), rx: -0.35 + ease * 0.35, y: -0.08 + ease * 0.02 };
+
+      pose.rightShoulder = { rz: -0.7 - ease * 0.2, rx: -0.5 + ease * 0.5 };
+      pose.rightElbow = { rx: -0.6 + ease * 0.6 };
+      pose.leftShoulder = { rz: 0.7 - ease * 0.2, rx: -0.5 + ease * 0.5 };
+      pose.leftElbow = { rx: -0.6 + ease * 0.6 };
+
+      pose.rightHip = { rx: 0.2 - ease * 0.2 };
+      pose.rightKnee = { rx: 0.3 - ease * 0.3 };
+      pose.leftHip = { rx: 0.15 - ease * 0.15 };
+      pose.leftKnee = { rx: 0.25 - ease * 0.25 };
+
+      pose.headGroup = { rx: -0.21 + ease * 0.21 };
     }
 
-    // Head stays level during dodge
-    if (head) {
-      head.rotation.x = -character.mesh.rotation.x * 0.6;
-    }
+    return pose;
   }
 }
