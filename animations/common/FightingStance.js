@@ -20,6 +20,7 @@ export class FightingStance extends AnimationBase {
   }
 
   update(t, character) {
+    console.log(`[FightingStance] ${character.name} t=${t.toFixed(2)} rBaseZ=${(character.rightArmBaseZ||0).toFixed(2)} lBaseZ=${(character.leftArmBaseZ||0).toFixed(2)}`);
     const rArm = character.rightArm;
     const lArm = character.leftArm;
     const rLeg = character.rightLeg;
@@ -37,11 +38,11 @@ export class FightingStance extends AnimationBase {
 
     // Right arm: fist up guarding face (rear guard)
     rArm.rotation.z = rBaseZ - ease * 0.15;
-    rArm.rotation.x = rBaseX - ease * 1.3;
+    rArm.rotation.x = -ease * 1.3;
 
     // Left arm: fist up guarding face (lead guard)
     lArm.rotation.z = lBaseZ + ease * 0.1;
-    lArm.rotation.x = lBaseX - ease * 1.2;
+    lArm.rotation.x = -ease * 1.2;
 
     // Slight crouch - stable base
     if (character.baseY !== undefined) {
@@ -62,8 +63,8 @@ export class FightingStance extends AnimationBase {
     if (t >= 0.6) {
       const breath = Math.sin((t - 0.6) * Math.PI * 3) * 0.015;
       character.mesh.position.y = (character.baseY - 0.06) + breath;
-      rArm.rotation.z = (rBaseZ - 0.9) + breath * 0.5;
-      lArm.rotation.z = (lBaseZ + 0.5) - breath * 0.5;
+      rArm.rotation.z = (rBaseZ - 0.15) + breath * 0.5;
+      lArm.rotation.z = (lBaseZ + 0.1) - breath * 0.5;
     }
   }
 }
