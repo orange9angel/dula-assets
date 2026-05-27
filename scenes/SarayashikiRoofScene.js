@@ -328,68 +328,11 @@ export class SarayashikiRoofScene extends SceneBase {
       this.clouds.push(cloudGroup);
     }
 
-    // ---- Spiritual energy particles (floating, glowing orbs) ----
-    const particleColors = [0x88ffaa, 0xaaffee, 0x88ddff, 0xccffdd];
-    const particleCount = 60;
-    const particleGeo = new THREE.BufferGeometry();
-    const particlePositions = new Float32Array(particleCount * 3);
-    const particleSizes = new Float32Array(particleCount);
-
-    for (let i = 0; i < particleCount; i++) {
-      particlePositions[i * 3] = (Math.random() - 0.5) * 35;
-      particlePositions[i * 3 + 1] = 0.5 + Math.random() * 4;
-      particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 25;
-      particleSizes[i] = 0.08 + Math.random() * 0.15;
-    }
-
-    particleGeo.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
-    particleGeo.setAttribute("size", new THREE.BufferAttribute(particleSizes, 1));
-
-    const particleMat = new THREE.PointsMaterial({
-      color: 0x88ffcc,
-      size: 0.15,
-      transparent: true,
-      opacity: 0.6,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    });
-
-    this.spiritSystem = new THREE.Points(particleGeo, particleMat);
-    this.scene.add(this.spiritSystem);
-
-    // Store initial positions for animation
-    this.spiritInitialPositions = particlePositions.slice();
+    // ---- Spiritual energy particles (subtle, reduced) ----
+    // Disabled per user feedback — green floating orbs were distracting
+    this.spiritSystem = null;
+    this.spiritInitialPositions = null;
     this.spiritPhaseOffsets = [];
-    for (let i = 0; i < particleCount; i++) {
-      this.spiritPhaseOffsets.push({
-        x: Math.random() * Math.PI * 2,
-        y: Math.random() * Math.PI * 2,
-        z: Math.random() * Math.PI * 2,
-        speed: 0.3 + Math.random() * 0.7,
-      });
-    }
-
-    // ---- Small spirit orbs (larger, individual meshes for emphasis) ----
-    const orbMat = new THREE.MeshBasicMaterial({
-      color: 0x88ffcc,
-      transparent: true,
-      opacity: 0.4,
-    });
-    for (let i = 0; i < 8; i++) {
-      const orb = new THREE.Mesh(new THREE.SphereGeometry(0.12 + Math.random() * 0.1, 8, 8), orbMat);
-      orb.position.set(
-        (Math.random() - 0.5) * 20,
-        1 + Math.random() * 3,
-        (Math.random() - 0.5) * 15
-      );
-      this.scene.add(orb);
-      this.spiritParticles.push({
-        mesh: orb,
-        basePos: orb.position.clone(),
-        phase: Math.random() * Math.PI * 2,
-        speed: 0.5 + Math.random() * 0.5,
-      });
-    }
 
     // ---- Distant power lines (silhouettes) ----
     const lineMat = new THREE.MeshStandardMaterial({ color: 0x2a1a1a, roughness: 0.9 });
@@ -415,29 +358,7 @@ export class SarayashikiRoofScene extends SceneBase {
   update(time, delta) {
     super.update(time, delta);
 
-    // Animate spirit particle system (gentle floating drift)
-    if (this.spiritSystem && this.spiritInitialPositions) {
-      const positions = this.spiritSystem.geometry.attributes.position.array;
-      for (let i = 0; i < this.spiritPhaseOffsets.length; i++) {
-        const phase = this.spiritPhaseOffsets[i];
-        const t = time * phase.speed;
-        positions[i * 3] = this.spiritInitialPositions[i * 3] + Math.sin(t + phase.x) * 0.8;
-        positions[i * 3 + 1] = this.spiritInitialPositions[i * 3 + 1] + Math.sin(t * 0.7 + phase.y) * 0.5;
-        positions[i * 3 + 2] = this.spiritInitialPositions[i * 3 + 2] + Math.cos(t * 0.5 + phase.z) * 0.6;
-      }
-      this.spiritSystem.geometry.attributes.position.needsUpdate = true;
-
-      // Pulsing opacity
-      this.spiritSystem.material.opacity = 0.4 + Math.sin(time * 1.5) * 0.2;
-    }
-
-    // Animate individual spirit orbs
-    for (const orb of this.spiritParticles) {
-      const t = time * orb.speed;
-      orb.mesh.position.x = orb.basePos.x + Math.sin(t + orb.phase) * 1.2;
-      orb.mesh.position.y = orb.basePos.y + Math.sin(t * 0.8 + orb.phase) * 0.6;
-      orb.mesh.position.z = orb.basePos.z + Math.cos(t * 0.6 + orb.phase) * 0.8;
-    }
+    // Spirit particles disabled — see build() comment
 
     // Slow cloud drift
     for (const cloud of this.clouds) {
