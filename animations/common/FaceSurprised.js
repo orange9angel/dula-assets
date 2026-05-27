@@ -27,20 +27,22 @@ export class FaceSurprised extends AnimationBase {
     const pose = new PoseMatrix();
 
     // Eyebrows: shoot way up
-    pose.eyebrows.left = {
-      py: ease * 0.025,
-    };
-    pose.eyebrows.right = {
-      py: ease * 0.025,
+    pose.eyebrows = {
+      left: { py: ease * 0.025 },
+      right: { py: ease * 0.025 },
     };
 
     // Eyelids: wide open (no squint)
-    pose.eyelids.left = { visible: false };
-    pose.eyelids.right = { visible: false };
+    pose.eyelids = {
+      left: { visible: false },
+      right: { visible: false },
+    };
 
     // Pupils: shrink slightly (shock)
-    pose.pupils.left = { sx: -ease * 0.2, sy: -ease * 0.2, sz: -ease * 0.2 };
-    pose.pupils.right = { sx: -ease * 0.2, sy: -ease * 0.2, sz: -ease * 0.2 };
+    pose.pupils = {
+      left: { sx: -ease * 0.2, sy: -ease * 0.2, sz: -ease * 0.2 },
+      right: { sx: -ease * 0.2, sy: -ease * 0.2, sz: -ease * 0.2 },
+    };
 
     // Mouth: open wide (O shape)
     pose.mouth = {

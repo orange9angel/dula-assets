@@ -27,21 +27,17 @@ export class FaceSmirk extends AnimationBase {
     const ease = t < 0.3 ? t / 0.3 : 1;
     const pose = new PoseMatrix();
 
-    // Left eyebrow: raise (cocky)
-    pose.eyebrows.left = {
-      py: ease * 0.018,
-      rz: -ease * 0.1,
-    };
-
-    // Right eyebrow: lower slightly (asymmetric)
-    pose.eyebrows.right = {
-      py: -ease * 0.005,
-      rz: ease * 0.15,
+    // Eyebrows: left raised (cocky), right lowered (asymmetric)
+    pose.eyebrows = {
+      left: { py: ease * 0.018, rz: -ease * 0.1 },
+      right: { py: -ease * 0.005, rz: ease * 0.15 },
     };
 
     // Eyelids: left eye slightly more open
-    pose.eyelids.left = { visible: false };
-    pose.eyelids.right = { visible: true, sy: -ease * 0.15 };
+    pose.eyelids = {
+      left: { visible: false },
+      right: { visible: true, sy: -ease * 0.15 },
+    };
 
     // Mouth: one side up (smirk)
     pose.mouth = {

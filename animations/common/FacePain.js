@@ -28,20 +28,16 @@ export class FacePain extends AnimationBase {
     const pose = new PoseMatrix();
 
     // Eyebrows: pinch together and raise (pain furrow)
-    pose.eyebrows.left = {
-      py: ease * 0.015,
-      px: ease * 0.008,
-      rz: -ease * 0.2,
-    };
-    pose.eyebrows.right = {
-      py: ease * 0.015,
-      px: -ease * 0.008,
-      rz: ease * 0.2,
+    pose.eyebrows = {
+      left: { py: ease * 0.015, px: ease * 0.008, rz: -ease * 0.2 },
+      right: { py: ease * 0.015, px: -ease * 0.008, rz: ease * 0.2 },
     };
 
     // Eyelids: squeeze shut
-    pose.eyelids.left = { visible: true, sy: -ease * 0.85 };
-    pose.eyelids.right = { visible: true, sy: -ease * 0.85 };
+    pose.eyelids = {
+      left: { visible: true, sy: -ease * 0.85 },
+      right: { visible: true, sy: -ease * 0.85 },
+    };
 
     // Mouth: grimace — open slightly, twisted
     pose.mouth = {

@@ -27,22 +27,22 @@ export class FaceSad extends AnimationBase {
     const pose = new PoseMatrix();
 
     // Eyebrows: inner edges raise (sad arch / \ shape)
-    pose.eyebrows.left = {
-      py: ease * 0.01,
-      rz: -ease * 0.3,
-    };
-    pose.eyebrows.right = {
-      py: ease * 0.01,
-      rz: ease * 0.3,
+    pose.eyebrows = {
+      left: { py: ease * 0.01, rz: -ease * 0.3 },
+      right: { py: ease * 0.01, rz: ease * 0.3 },
     };
 
     // Eyelids: half-closed (droopy eyes)
-    pose.eyelids.left = { visible: true, sy: -ease * 0.5 };
-    pose.eyelids.right = { visible: true, sy: -ease * 0.5 };
+    pose.eyelids = {
+      left: { visible: true, sy: -ease * 0.5 },
+      right: { visible: true, sy: -ease * 0.5 },
+    };
 
     // Pupils: look down slightly
-    pose.pupils.left = { py: -ease * 0.008 };
-    pose.pupils.right = { py: -ease * 0.008 };
+    pose.pupils = {
+      left: { py: -ease * 0.008 },
+      right: { py: -ease * 0.008 },
+    };
 
     // Mouth: curve down (frown)
     pose.mouth = {
