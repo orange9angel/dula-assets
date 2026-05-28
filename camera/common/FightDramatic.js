@@ -26,6 +26,8 @@ export class FightDramatic extends CameraMoveBase {
 
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this.endPos, eased);
+    // Clamp camera above ground
+    desiredPos.y = Math.max(0.4, desiredPos.y);
     camera.position.copy(desiredPos);
     camera.lookAt(this.lookAtPos);
   }

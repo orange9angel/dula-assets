@@ -71,6 +71,8 @@ import { PullOpenDrawer } from './animations/common/PullOpenDrawer.js';
 import { JumpIntoDrawer } from './animations/common/JumpIntoDrawer.js';
 // === KOF97 Style Fighting Game Actions ===
 import { Punch } from './animations/common/Punch.js';
+import { RightPunch } from './animations/common/RightPunch.js';
+import { LeftPunch } from './animations/common/LeftPunch.js';
 
 import { Kick } from './animations/common/Kick.js';
 import { Uppercut } from './animations/common/Uppercut.js';
@@ -83,6 +85,13 @@ import { GetUp } from './animations/common/GetUp.js';
 import { ComboPunch } from './animations/common/ComboPunch.js';
 import { SpinKick } from './animations/common/SpinKick.js';
 import { ArcadeSpinKick } from './animations/common/ArcadeSpinKick.js';
+import { SkyDiveKick } from './animations/common/SkyDiveKick.js';
+import { RollPunch } from './animations/common/RollPunch.js';
+import { TatsumakiSenpuuKyaku } from './animations/common/TatsumakiSenpuuKyaku.js';
+import { FlyingKnee } from './animations/common/FlyingKnee.js';
+import { TornadoKick } from './animations/common/TornadoKick.js';
+import { GroundSlam } from './animations/common/GroundSlam.js';
+import { AxeKick } from './animations/common/AxeKick.js';
 import { JumpAttack } from './animations/common/JumpAttack.js';
 import { JumpFlyingKick } from './animations/common/JumpFlyingKick.js';
 import { BoxerGuardHop } from './animations/common/BoxerGuardHop.js';
@@ -94,6 +103,12 @@ import { BackFist } from './animations/common/BackFist.js';
 import { CounterStance } from './animations/common/CounterStance.js';
 import { SweepKick } from './animations/common/SweepKick.js';
 import { KneeStrike } from './animations/common/KneeStrike.js';
+import { HeadStomp } from './animations/common/HeadStomp.js';
+import { KneeDrop } from './animations/common/KneeDrop.js';
+import { RollingThunder } from './animations/common/RollingThunder.js';
+import { GalaxyWhirl } from './animations/common/GalaxyWhirl.js';
+import { BlitzBall } from './animations/common/BlitzBall.js';
+import { GenocideCutter } from './animations/common/GenocideCutter.js';
 // === Facial Expression Library ===
 import { FaceAngry } from './animations/common/FaceAngry.js';
 import { FaceHappy } from './animations/common/FaceHappy.js';
@@ -345,6 +360,8 @@ export function registerAll() {
   registerAnimation('JumpIntoDrawer', JumpIntoDrawer);
   // === KOF97 Style Fighting Game Actions ===
   registerAnimation('Punch', Punch);
+  registerAnimation('RightPunch', RightPunch);
+  registerAnimation('LeftPunch', LeftPunch);
 
   registerAnimation('Kick', Kick);
   registerAnimation('Uppercut', Uppercut);
@@ -357,6 +374,13 @@ export function registerAll() {
   registerAnimation('ComboPunch', ComboPunch);
   registerAnimation('SpinKick', SpinKick);
   registerAnimation('ArcadeSpinKick', ArcadeSpinKick);
+  registerAnimation('SkyDiveKick', SkyDiveKick);
+  registerAnimation('RollPunch', RollPunch);
+  registerAnimation('TatsumakiSenpuuKyaku', TatsumakiSenpuuKyaku);
+  registerAnimation('FlyingKnee', FlyingKnee);
+  registerAnimation('TornadoKick', TornadoKick);
+  registerAnimation('GroundSlam', GroundSlam);
+  registerAnimation('AxeKick', AxeKick);
   registerAnimation('JumpAttack', JumpAttack);
   registerAnimation('JumpFlyingKick', JumpFlyingKick);
   registerAnimation('BoxerGuardHop', BoxerGuardHop);
@@ -368,6 +392,12 @@ export function registerAll() {
   registerAnimation('CounterStance', CounterStance);
   registerAnimation('SweepKick', SweepKick);
   registerAnimation('KneeStrike', KneeStrike);
+  registerAnimation('HeadStomp', HeadStomp);
+  registerAnimation('KneeDrop', KneeDrop);
+  registerAnimation('RollingThunder', RollingThunder);
+  registerAnimation('GalaxyWhirl', GalaxyWhirl);
+  registerAnimation('BlitzBall', BlitzBall);
+  registerAnimation('GenocideCutter', GenocideCutter);
   // === Facial Expression Library ===
   registerAnimation('FaceAngry', FaceAngry);
   registerAnimation('FaceHappy', FaceHappy);

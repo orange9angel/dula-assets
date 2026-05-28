@@ -19,7 +19,7 @@ export class FollowCharacter extends CameraMoveBase {
     const pos = char.mesh.position;
     camera.position.set(
       pos.x + this.offset.x,
-      pos.y + this.offset.y,
+      Math.max(0.5, pos.y + this.offset.y),
       pos.z + this.offset.z
     );
     camera.lookAt(

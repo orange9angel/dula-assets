@@ -31,7 +31,7 @@ export class OrbitCharacter extends CameraMoveBase {
 
     camera.position.set(
       centerX + Math.cos(angle) * this.radius,
-      centerY + this.height,
+      Math.max(0.8, centerY + this.height),
       centerZ + Math.sin(angle) * this.radius
     );
     camera.lookAt(centerX, centerY, centerZ);

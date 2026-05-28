@@ -44,7 +44,10 @@ export class ReactionShot extends CameraMoveBase {
     this.endPos.y = lookAt.y - 0.15; // slightly lower to capture upper body
 
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    camera.position.lerpVectors(this.startPos, this.endPos, eased);
+    const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this.endPos, eased);
+    // Clamp camera above ground
+    desiredPos.y = Math.max(0.5, desiredPos.y);
+    camera.position.copy(desiredPos);
     camera.lookAt(lookAt);
   }
 }

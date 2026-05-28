@@ -24,7 +24,7 @@ export class Orbit extends CameraMoveBase {
     const angle = this.startAngle + (this.endAngle - this.startAngle) * eased;
     camera.position.set(
       this.center.x + Math.cos(angle) * this.radius,
-      this.center.y + this.height,
+      Math.max(0.8, this.center.y + this.height),
       this.center.z + Math.sin(angle) * this.radius
     );
     camera.lookAt(this.center);

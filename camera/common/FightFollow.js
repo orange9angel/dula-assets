@@ -20,27 +20,40 @@ export class FightFollow extends CameraMoveBase {
     super.start(camera, context);
     this.currentPos = camera.position.clone();
     this._computeTarget(context);
+    this._lastTargetPos = this.endPos.clone();
   }
 
   update(t, camera, context) {
     this._computeTarget(context);
 
-    // 平滑追踪（lerp 而不是直接跳转）
-    this.currentPos.lerp(this.endPos, this.smoothness);
+    // Smooth follow with delta-time compensation to reduce wobble at 30fps
+    const dtCompensatedSmooth = Math.min(0.5, this.smoothness * 2.0);
+    this.currentPos.lerp(this.endPos, dtCompensatedSmooth);
+    // Clamp camera above ground
+    this.currentPos.y = Math.max(0.8, this.currentPos.y);
     camera.position.copy(this.currentPos);
-    camera.lookAt(this.lookAtPos);
+    // Smooth lookAt to prevent jitter
+    if (!this._smoothLookAt) this._smoothLookAt = this.lookAtPos.clone();
+    this._smoothLookAt.lerp(this.lookAtPos, 0.3);
+    camera.lookAt(this._smoothLookAt);
   }
 
   _computeTarget(context) {
     const charA = context.characters.get(this.characterA);
     const charB = context.characters.get(this.characterB);
-    if (!charA || !charB) return;
 
-    const posA = charA.mesh.position.clone();
-    const posB = charB.mesh.position.clone();
-
-    // 战斗中点
-    const mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
+    let mid;
+    if (charA && charB) {
+      const posA = charA.mesh.position.clone();
+      const posB = charB.mesh.position.clone();
+      mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
+    } else if (charA) {
+      mid = charA.mesh.position.clone();
+    } else if (charB) {
+      mid = charB.mesh.position.clone();
+    } else {
+      return;
+    }
 
     // 目标位置
     this.endPos = new THREE.Vector3(

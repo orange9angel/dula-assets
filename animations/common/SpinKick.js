@@ -1,18 +1,16 @@
 import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
- * SpinKick — 回旋踢（空中回旋踢版）
+ * SpinKick — 街霸红丸式 360° 多圈回旋踢（专业版）
  *
- * 动作分解：
- * 1. 蓄力下蹲（0-0.15s）
- * 2. 起跳+身体旋转（0.15-0.35s）
- * 3. 空中回旋踢出（0.35-0.55s）— 右腿高踢，身体水平旋转
- * 4. 落地收腿（0.55-0.80s）
- * 5. 恢复站姿（0.80-1.0s）
+ * 改进：
+ * - 起跳更高，踢腿更直
+ * - 旋转时身体更水平
+ * - 落地有缓冲
  */
 export class SpinKick extends AnimationBase {
   constructor() {
-    super('SpinKick', 0.9);
+    super('SpinKick', 1.4);
     this.usePoseMatrix = true;
     this.tags = {
       requires: ['rightLeg', 'leftLeg', 'rightArm', 'leftArm'],
@@ -26,126 +24,125 @@ export class SpinKick extends AnimationBase {
   getPoseMatrix(t) {
     const pose = new PoseMatrix();
 
-    // Phase 1: Crouch wind-up (0-0.15) - 蓄力下蹲
-    if (t < 0.15) {
-      const p = t / 0.15;
+    // Phase 1: Crouch wind-up (0-0.12) - 蓄力下蹲
+    if (t < 0.12) {
+      const p = t / 0.12;
       const ease = p * p;
 
-      // 下蹲蓄力
-      pose.mesh = { y: -ease * 0.25, ry: -ease * 0.3 };
+      // 下蹲但不穿地（限制下沉）
+      pose.mesh = { y: -ease * 0.08, ry: -ease * 0.5 };
 
       // 右腿向后抬起蓄力
-      pose.rightHip = { rx: -ease * 0.6, rz: ease * 0.2 };
-      pose.rightKnee = { rx: ease * 1.2 };
-      pose.rightAnkle = { rx: -ease * 0.4 };
+      pose.rightHip = { rx: -ease * 0.8, rz: ease * 0.3 };
+      pose.rightKnee = { rx: ease * 1.4 };
+      pose.rightAnkle = { rx: -ease * 0.5 };
 
       // 左腿弯曲支撑
-      pose.leftHip = { rx: ease * 0.4 };
-      pose.leftKnee = { rx: ease * 0.8 };
-      pose.leftAnkle = { rx: -ease * 0.3 };
+      pose.leftHip = { rx: ease * 0.5 };
+      pose.leftKnee = { rx: ease * 1.0 };
+      pose.leftAnkle = { rx: -ease * 0.4 };
 
       // 手臂张开保持平衡
-      pose.rightShoulder = { rz: -ease * 0.8, rx: -ease * 0.3 };
-      pose.rightElbow = { rx: -ease * 0.6 };
-      pose.leftShoulder = { rz: ease * 0.8, rx: -ease * 0.3 };
-      pose.leftElbow = { rx: -ease * 0.6 };
+      pose.rightShoulder = { rz: -ease * 1.0, rx: -ease * 0.4 };
+      pose.rightElbow = { rx: -ease * 0.8 };
+      pose.leftShoulder = { rz: ease * 1.0, rx: -ease * 0.4 };
+      pose.leftElbow = { rx: -ease * 0.8 };
     }
-    // Phase 2: Jump + spin start (0.15-0.35) - 起跳旋转
-    else if (t < 0.35) {
-      const p = (t - 0.15) / 0.2;
+    // Phase 2: Jump + 5-spin (0.12-0.55) - 起跳+高速旋转5圈
+    else if (t < 0.55) {
+      const p = (t - 0.12) / 0.43;
       const ease = 1 - Math.pow(1 - p, 2);
 
-      // 身体起跳+旋转
+      // 起跳高度 + 5圈旋转 (5 * 2π = 31.4 rad)
       pose.mesh = {
-        y: -0.25 + ease * 0.6,  // 起跳高度
-        ry: -0.3 + ease * 1.8,   // 大幅旋转（约100度）
+        y: -0.08 + ease * 1.5,
+        ry: -0.5 + ease * 31.4,
+        rx: ease * 0.35,
       };
 
-      // 右腿开始向前上方踢出
-      pose.rightHip = { rx: -0.6 + ease * 1.8, rz: 0.2 - ease * 0.2 };
-      pose.rightKnee = { rx: 1.2 - ease * 0.3 };
-      pose.rightAnkle = { rx: -0.4 + ease * 0.6 };
+      // 右腿：蓄力→完全伸直 水平高踢
+      pose.rightHip = { rx: -0.8 + ease * 2.8, rz: 0.3 - ease * 0.3 };
+      pose.rightKnee = { rx: 1.4 - ease * 1.4 };
+      pose.rightAnkle = { rx: -0.5 + ease * 0.5 };
 
-      // 左腿收起
-      pose.leftHip = { rx: 0.4 + ease * 0.4 };
-      pose.leftKnee = { rx: 0.8 + ease * 0.4 };
-      pose.leftAnkle = { rx: -0.3 - ease * 0.2 };
+      // 左腿：收起贴紧身体
+      pose.leftHip = { rx: 0.5 + ease * 0.8, rz: -ease * 0.2 };
+      pose.leftKnee = { rx: 1.0 + ease * 0.5 };
+      pose.leftAnkle = { rx: -0.4 - ease * 0.3 };
 
-      // 手臂配合旋转
-      pose.rightShoulder = { rz: -0.8 + ease * 0.4, rx: -0.3 + ease * 0.2 };
-      pose.rightElbow = { rx: -0.6 + ease * 0.3 };
-      pose.leftShoulder = { rz: 0.8 - ease * 0.6, rx: -0.3 + ease * 0.2 };
-      pose.leftElbow = { rx: -0.6 + ease * 0.3 };
+      // 手臂：张开→收紧旋转
+      pose.rightShoulder = { rz: -1.0 + ease * 0.5, rx: -0.4 + ease * 0.3 };
+      pose.rightElbow = { rx: -0.8 + ease * 0.5 };
+      pose.leftShoulder = { rz: 1.0 - ease * 0.7, rx: -0.4 + ease * 0.3 };
+      pose.leftElbow = { rx: -0.8 + ease * 0.5 };
     }
-    // Phase 3: KICK! (0.35-0.55) - 空中回旋踢最高点
-    else if (t < 0.55) {
-      const p = (t - 0.35) / 0.2;
-      const ease = Math.sin(p * Math.PI);  // 峰值曲线
+    // Phase 3: HOLD kick (0.55-0.75) - 维持旋转+踢击
+    else if (t < 0.75) {
+      const p = (t - 0.55) / 0.2;
+      const hold = 1 - p * 0.1;
 
-      // 空中最高点，身体水平
       pose.mesh = {
-        y: 0.35 + ease * 0.15,
-        ry: 1.5,  // 保持旋转角度
-        rx: ease * 0.15,  // 轻微侧倾
+        y: 1.42 * hold,
+        ry: 30.9 * hold,
+        rx: 0.35 * hold,
       };
 
-      // 右腿完全踢出（高踢）
-      pose.rightHip = { rx: 1.2 + ease * 0.3, rz: 0 };
-      pose.rightKnee = { rx: 0.9 - ease * 0.6 };
-      pose.rightAnkle = { rx: 0.2 + ease * 0.2 };
+      // 右腿保持伸直高踢
+      pose.rightHip = { rx: 2.0, rz: 0 };
+      pose.rightKnee = { rx: 0 };
+      pose.rightAnkle = { rx: 0 };
 
-      // 左腿弯曲收起
-      pose.leftHip = { rx: 0.8, rz: -0.1 };
-      pose.leftKnee = { rx: 1.2 };
-      pose.leftAnkle = { rx: -0.5 };
+      // 左腿保持收起
+      pose.leftHip = { rx: 1.3, rz: -0.2 };
+      pose.leftKnee = { rx: 1.5 };
+      pose.leftAnkle = { rx: -0.7 };
 
-      // 手臂张开保持平衡
-      pose.rightShoulder = { rz: -0.4, rx: -0.1 };
+      // 手臂保持旋转姿态
+      pose.rightShoulder = { rz: -0.5, rx: -0.1 };
       pose.rightElbow = { rx: -0.3 };
-      pose.leftShoulder = { rz: 0.2, rx: -0.1 };
+      pose.leftShoulder = { rz: 0.3, rx: -0.1 };
       pose.leftElbow = { rx: -0.3 };
     }
-    // Phase 4: Land + retract (0.55-0.80) - 落地收腿
-    else if (t < 0.80) {
-      const p = (t - 0.55) / 0.25;
+    // Phase 4: Land + retract (0.75-0.90) - 落地收腿
+    else if (t < 0.90) {
+      const p = (t - 0.75) / 0.15;
       const ease = p * p;
 
-      // 落地
       pose.mesh = {
-        y: 0.5 - ease * 0.5,
-        ry: 1.5 - ease * 1.2,
-        rx: ease * 0.1,
+        y: 1.28 - ease * 1.28,
+        ry: 27.8 - ease * 27.3,
+        rx: 0.32 - ease * 0.32,
       };
 
       // 右腿收回
-      pose.rightHip = { rx: 1.5 - ease * 1.5, rz: ease * 0.1 };
-      pose.rightKnee = { rx: 0.3 + ease * 0.3 };
-      pose.rightAnkle = { rx: 0.4 - ease * 0.4 };
+      pose.rightHip = { rx: 2.0 - ease * 2.0, rz: ease * 0.1 };
+      pose.rightKnee = { rx: ease * 0.4 };
+      pose.rightAnkle = { rx: -ease * 0.2 };
 
       // 左腿落地支撑
-      pose.leftHip = { rx: 0.8 - ease * 0.6 };
-      pose.leftKnee = { rx: 1.2 - ease * 0.8 };
-      pose.leftAnkle = { rx: -0.5 + ease * 0.3 };
+      pose.leftHip = { rx: 1.3 - ease * 0.9 };
+      pose.leftKnee = { rx: 1.5 - ease * 1.1 };
+      pose.leftAnkle = { rx: -0.7 + ease * 0.5 };
 
       // 手臂收回
-      pose.rightShoulder = { rz: -0.4 + ease * 0.2, rx: -0.1 + ease * 0.1 };
+      pose.rightShoulder = { rz: -0.5 + ease * 0.3, rx: -0.1 + ease * 0.1 };
       pose.rightElbow = { rx: -0.3 + ease * 0.2 };
-      pose.leftShoulder = { rz: 0.2 - ease * 0.1, rx: -0.1 + ease * 0.1 };
+      pose.leftShoulder = { rz: 0.3 - ease * 0.2, rx: -0.1 + ease * 0.1 };
       pose.leftElbow = { rx: -0.3 + ease * 0.2 };
     }
-    // Phase 5: Recover (0.80-1.0) - 恢复格斗站姿
+    // Phase 5: Recover (0.90-1.0) - 恢复格斗站姿
     else {
-      const p = (t - 0.80) / 0.2;
+      const p = (t - 0.90) / 0.1;
       const ease = p * p;
 
-      pose.mesh = { ry: 0.3 - ease * 0.3 };
+      pose.mesh = { ry: 0.5 - ease * 0.5 };
 
       pose.rightHip = { rx: ease * 0.2 };
-      pose.rightKnee = { rx: ease * 0.1 };
+      pose.rightKnee = { rx: ease * 0.15 };
       pose.rightAnkle = { rx: -ease * 0.1 };
 
       pose.leftHip = { rx: ease * 0.2 };
-      pose.leftKnee = { rx: ease * 0.1 };
+      pose.leftKnee = { rx: ease * 0.15 };
       pose.leftAnkle = { rx: -ease * 0.1 };
 
       pose.rightShoulder = { rz: -ease * 0.9, rx: -ease * 0.7 };

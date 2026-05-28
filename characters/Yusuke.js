@@ -679,33 +679,10 @@ export class Yusuke extends CharacterBase {
       this.backHair.rotation.x = 0.35 + Math.sin(time * 1.2) * 0.02;
     }
 
-    // Subtle idle sway (slightly slouched)
-    if (this.headGroup) {
-      this.headGroup.rotation.x = Math.sin(time * 0.8) * 0.008;
-      this.headGroup.rotation.y = Math.sin(time * 0.5) * 0.012;
-    }
-
-    // Spirit aura pulse
-    if (this.spiritAura) {
-      const pulse = 0.08 + Math.sin(time * 3.2) * 0.03;
-      this.spiritAura.material.opacity = this._spiritActive ? pulse : 0;
-      this.spiritAura.scale.set(0.8 + Math.sin(time * 2.6) * 0.025, 1.5 + Math.sin(time * 2.1) * 0.05, 0.55);
-    }
-
-    if (this.spiritRings) {
-      for (let i = 0; i < this.spiritRings.length; i++) {
-        const ring = this.spiritRings[i];
-        ring.rotation.z += dt * (0.5 + i * 0.18);
-        ring.material.opacity = this._spiritActive ? 0.2 + Math.sin(time * 2.4 + i) * 0.07 : 0;
-      }
-    }
-
-    if (this.spiritStars) {
-      for (let i = 0; i < this.spiritStars.length; i++) {
-        const star = this.spiritStars[i];
-        star.material.opacity = this._spiritActive ? 0.22 + Math.abs(Math.sin(time * 4 + i)) * 0.5 : 0;
-        star.position.y = star.userData.baseY + Math.sin(time * 1.7 + i) * 0.008;
-      }
+    // No idle sway — static head for clean motion demo
+    // Spirit aura fully disabled for motion demo clarity
+    if (this.spiritGroup) {
+      this.spiritGroup.visible = false;
     }
 
     // Late attach Spirit Gun orb if rightArm wasn't ready during build

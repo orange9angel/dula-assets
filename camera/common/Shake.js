@@ -20,7 +20,7 @@ export class Shake extends CameraMoveBase {
     const i = this.intensity * decay;
     camera.position.set(
       this.basePos.x + (Math.random() - 0.5) * i,
-      this.basePos.y + (Math.random() - 0.5) * i,
+      Math.max(0.5, this.basePos.y + (Math.random() - 0.5) * i),
       this.basePos.z + (Math.random() - 0.5) * i
     );
   }

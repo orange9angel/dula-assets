@@ -36,7 +36,7 @@ export class TrackingCloseUp extends CameraMoveBase {
     const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle)).add(side.multiplyScalar(Math.sin(this.sideAngle)));
 
     const camPos = lookAt.clone().add(camDir.multiplyScalar(this.distance));
-    camPos.y = lookAt.y + 0.02;
+    camPos.y = Math.max(0.5, lookAt.y + 0.02);
 
     camera.position.copy(camPos);
     camera.lookAt(lookAt);

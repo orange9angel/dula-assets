@@ -28,6 +28,8 @@ export class FightWide extends CameraMoveBase {
 
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this.endPos, eased);
+    // Clamp camera above ground
+    desiredPos.y = Math.max(1.0, desiredPos.y);
     camera.position.copy(desiredPos);
     camera.lookAt(this.lookAtPos);
   }
@@ -35,16 +37,23 @@ export class FightWide extends CameraMoveBase {
   _computeTarget(context) {
     const charA = context.characters.get(this.characterA);
     const charB = context.characters.get(this.characterB);
-    if (!charA || !charB) return;
 
-    const posA = charA.mesh.position.clone();
-    const posB = charB.mesh.position.clone();
-
-    // 战斗中点
-    const mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
+    let mid;
+    let distAB = 0;
+    if (charA && charB) {
+      const posA = charA.mesh.position.clone();
+      const posB = charB.mesh.position.clone();
+      mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
+      distAB = posA.distanceTo(posB);
+    } else if (charA) {
+      mid = charA.mesh.position.clone();
+    } else if (charB) {
+      mid = charB.mesh.position.clone();
+    } else {
+      return;
+    }
 
     // 计算两人距离，动态调整相机距离
-    const distAB = posA.distanceTo(posB);
     const dynamicDist = Math.max(this.distance, distAB * 1.5 + 2);
     const dynamicHeight = Math.max(this.height, distAB * 0.5 + 2);
 

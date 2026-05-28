@@ -23,16 +23,14 @@ export class FightingStance extends AnimationBase {
   getPoseMatrix(t) {
     const pose = new PoseMatrix();
 
-    // 循环周期 1.2s，重心左右微移
+    // 循环周期 1.2s，纯上下呼吸（去掉左右晃动）
     const cycle = t * Math.PI * 2;
-    const breathe = Math.sin(cycle) * 0.012;
-    const sway = Math.sin(cycle * 0.5) * 0.02;
+    const breathe = Math.sin(cycle) * 0.008;
 
-    // 身体：微蹲，重心下沉
+    // 身体：更低更稳的格斗站姿，重心下沉但不左右晃
     pose.mesh = {
-      y: -0.08 + breathe,
-      x: sway,
-      rx: 0.06,
+      y: -0.06 + breathe,
+      rx: 0.04,
     };
 
     // 头部：保持水平，微随呼吸
@@ -41,52 +39,54 @@ export class FightingStance extends AnimationBase {
       ry: Math.sin(cycle * 0.3) * 0.015,
     };
 
-    // 右臂：前伸护脸（拳架）
+    // 右臂：前伸护脸（拳架）— 更大角度，更专业
     pose.rightShoulder = {
-      rz: -0.75 + Math.sin(cycle * 0.7) * 0.03,
-      rx: -0.55 + Math.sin(cycle * 0.6) * 0.02,
+      rz: -0.9 + Math.sin(cycle * 0.7) * 0.02,
+      rx: -0.7 + Math.sin(cycle * 0.6) * 0.015,
     };
     pose.rightElbow = {
-      rx: -0.95 + Math.sin(cycle * 0.8) * 0.04,
+      rx: -1.1 + Math.sin(cycle * 0.8) * 0.03,
     };
     pose.rightWrist = {
-      rz: -0.15,
+      rz: -0.2,
+      rx: -0.15,
+    };
+
+    // 左臂：稍靠后，护肋 — 同样增大角度
+    pose.leftShoulder = {
+      rz: 0.8 + Math.sin(cycle * 0.7 + 1) * 0.02,
+      rx: -0.6 + Math.sin(cycle * 0.6 + 1) * 0.015,
+    };
+    pose.leftElbow = {
+      rx: -1.0 + Math.sin(cycle * 0.8 + 1) * 0.03,
+    };
+    pose.leftWrist = {
+      rz: 0.15,
       rx: -0.1,
     };
 
-    // 左臂：稍靠后，护肋
-    pose.leftShoulder = {
-      rz: 0.65 + Math.sin(cycle * 0.7 + 1) * 0.03,
-      rx: -0.45 + Math.sin(cycle * 0.6 + 1) * 0.02,
-    };
-    pose.leftElbow = {
-      rx: -0.85 + Math.sin(cycle * 0.8 + 1) * 0.04,
-    };
-    pose.leftWrist = {
-      rz: 0.12,
-      rx: -0.08,
-    };
-
-    // 右腿：微屈，主力腿
+    // 右腿：明显弯曲，主力腿 — KOF风格低重心
     pose.rightHip = {
-      rx: 0.15 + Math.sin(cycle * 0.5) * 0.02,
+      rx: 0.25 + Math.sin(cycle * 0.5) * 0.015,
+      rz: 0.05,
     };
     pose.rightKnee = {
-      rx: 0.25 + Math.sin(cycle * 0.5) * 0.03,
+      rx: 0.45 + Math.sin(cycle * 0.5) * 0.02,
     };
     pose.rightAnkle = {
-      rx: -0.08,
+      rx: -0.15,
     };
 
-    // 左腿：稍直，辅助支撑
+    // 左腿：同样弯曲，辅助支撑
     pose.leftHip = {
-      rx: 0.08 - Math.sin(cycle * 0.5) * 0.01,
+      rx: 0.2 - Math.sin(cycle * 0.5) * 0.01,
+      rz: -0.03,
     };
     pose.leftKnee = {
-      rx: 0.18 - Math.sin(cycle * 0.5) * 0.02,
+      rx: 0.35 - Math.sin(cycle * 0.5) * 0.015,
     };
     pose.leftAnkle = {
-      rx: -0.05,
+      rx: -0.1,
     };
 
     return pose;

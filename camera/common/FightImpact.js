@@ -40,6 +40,8 @@ export class FightImpact extends CameraMoveBase {
       desiredPos.z += (Math.random() - 0.5) * i;
     }
 
+    // Clamp camera above ground
+    desiredPos.y = Math.max(0.5, desiredPos.y);
     camera.position.copy(desiredPos);
     camera.lookAt(this.lookAtPos);
   }

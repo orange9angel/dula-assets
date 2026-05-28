@@ -20,28 +20,38 @@ export class FightSide extends CameraMoveBase {
     super.start(camera, context);
     this.startPos = camera.position.clone();
     this._computeTarget(context);
+    // Snapshot endPos at start to prevent wobble during interpolation
+    this._snapshotEndPos = this.endPos.clone();
+    this._snapshotLookAt = this.lookAtPos.clone();
   }
 
   update(t, camera, context) {
-    // 每帧重新计算目标，追踪移动中的角色
-    this._computeTarget(context);
+    // Use snapshotted endPos for stable interpolation (no wobble)
 
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this.endPos, eased);
+    const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this._snapshotEndPos, eased);
+    // Clamp camera above ground
+    desiredPos.y = Math.max(0.8, desiredPos.y);
     camera.position.copy(desiredPos);
-    camera.lookAt(this.lookAtPos);
+    camera.lookAt(this._snapshotLookAt);
   }
 
   _computeTarget(context) {
     const charA = context.characters.get(this.characterA);
     const charB = context.characters.get(this.characterB);
-    if (!charA || !charB) return;
 
-    const posA = charA.mesh.position.clone();
-    const posB = charB.mesh.position.clone();
-
-    // 战斗中点
-    const mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
+    let mid;
+    if (charA && charB) {
+      const posA = charA.mesh.position.clone();
+      const posB = charB.mesh.position.clone();
+      mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
+    } else if (charA) {
+      mid = charA.mesh.position.clone();
+    } else if (charB) {
+      mid = charB.mesh.position.clone();
+    } else {
+      return;
+    }
 
     // 确定相机在哪一侧
     let camSide = this.side;

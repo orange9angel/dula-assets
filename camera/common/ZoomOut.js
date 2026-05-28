@@ -24,6 +24,8 @@ export class ZoomOut extends CameraMoveBase {
   update(t, camera, context) {
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     camera.position.lerpVectors(this.startPos, this.endPos, eased);
+    // Clamp camera above ground
+    camera.position.y = Math.max(0.5, camera.position.y);
     camera.lookAt(this.targetPos);
   }
 }

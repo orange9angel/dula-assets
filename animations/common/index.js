@@ -32,6 +32,8 @@ export { JumpIntoDrawer } from './JumpIntoDrawer.js';
 
 // === KOF97 Style Fighting Game Actions ===
 export { Punch } from './Punch.js';
+export { RightPunch } from './RightPunch.js';
+export { LeftPunch } from './LeftPunch.js';
 export { Kick } from './Kick.js';
 export { Uppercut } from './Uppercut.js';
 export { Dodge } from './Dodge.js';
@@ -43,6 +45,13 @@ export { GetUp } from './GetUp.js';
 export { ComboPunch } from './ComboPunch.js';
 export { SpinKick } from './SpinKick.js';
 export { ArcadeSpinKick } from './ArcadeSpinKick.js';
+export { SkyDiveKick } from './SkyDiveKick.js';
+export { RollPunch } from './RollPunch.js';
+export { TatsumakiSenpuuKyaku } from './TatsumakiSenpuuKyaku.js';
+export { FlyingKnee } from './FlyingKnee.js';
+export { TornadoKick } from './TornadoKick.js';
+export { GroundSlam } from './GroundSlam.js';
+export { AxeKick } from './AxeKick.js';
 export { JumpAttack } from './JumpAttack.js';
 export { JumpFlyingKick } from './JumpFlyingKick.js';
 export { BoxerGuardHop } from './BoxerGuardHop.js';
@@ -55,7 +64,12 @@ export { BackFist } from './BackFist.js';
 export { CounterStance } from './CounterStance.js';
 export { SweepKick } from './SweepKick.js';
 export { KneeStrike } from './KneeStrike.js';
-
+export { HeadStomp } from './HeadStomp.js';
+export { KneeDrop } from './KneeDrop.js';
+export { RollingThunder } from './RollingThunder.js';
+export { GalaxyWhirl } from './GalaxyWhirl.js';
+export { BlitzBall } from './BlitzBall.js';
+export { GenocideCutter } from './GenocideCutter.js';
 
 // === Facial Expression Library ===
 export { FaceAngry } from './FaceAngry.js';
@@ -113,6 +127,8 @@ import { JumpIntoDrawer } from './JumpIntoDrawer.js';
 
 // === KOF97 Style Fighting Game Actions ===
 import { Punch } from './Punch.js';
+import { RightPunch } from './RightPunch.js';
+import { LeftPunch } from './LeftPunch.js';
 import { Kick } from './Kick.js';
 import { Uppercut } from './Uppercut.js';
 import { Dodge } from './Dodge.js';
@@ -124,6 +140,11 @@ import { GetUp } from './GetUp.js';
 import { ComboPunch } from './ComboPunch.js';
 import { SpinKick } from './SpinKick.js';
 import { ArcadeSpinKick } from './ArcadeSpinKick.js';
+import { SkyDiveKick } from './SkyDiveKick.js';
+import { RollPunch } from './RollPunch.js';
+import { TornadoKick } from './TornadoKick.js';
+import { GroundSlam } from './GroundSlam.js';
+import { AxeKick } from './AxeKick.js';
 import { JumpAttack } from './JumpAttack.js';
 import { JumpFlyingKick } from './JumpFlyingKick.js';
 import { BoxerGuardHop } from './BoxerGuardHop.js';
@@ -136,6 +157,12 @@ import { BackFist } from './BackFist.js';
 import { CounterStance } from './CounterStance.js';
 import { SweepKick } from './SweepKick.js';
 import { KneeStrike } from './KneeStrike.js';
+import { HeadStomp } from './HeadStomp.js';
+import { KneeDrop } from './KneeDrop.js';
+import { RollingThunder } from './RollingThunder.js';
+import { GalaxyWhirl } from './GalaxyWhirl.js';
+import { BlitzBall } from './BlitzBall.js';
+import { GenocideCutter } from './GenocideCutter.js';
 
 // === Facial Expression Library ===
 import { FaceAngry } from './FaceAngry.js';
@@ -195,6 +222,8 @@ export const CommonAnimations = {
   JumpIntoDrawer,
   // === Fighting Game Actions ===
   Punch,
+  RightPunch,
+  LeftPunch,
   Kick,
   Uppercut,
   Dodge,
@@ -206,6 +235,13 @@ export const CommonAnimations = {
   ComboPunch,
   SpinKick,
   ArcadeSpinKick,
+  SkyDiveKick,
+  RollPunch,
+  TatsumakiSenpuuKyaku,
+  FlyingKnee,
+  TornadoKick,
+  GroundSlam,
+  AxeKick,
   JumpAttack,
   JumpFlyingKick,
   BoxerGuardHop,
@@ -218,6 +254,12 @@ export const CommonAnimations = {
   CounterStance,
   SweepKick,
   KneeStrike,
+  HeadStomp,
+  KneeDrop,
+  RollingThunder,
+  GalaxyWhirl,
+  BlitzBall,
+  GenocideCutter,
   // === Facial Expressions ===
   FaceAngry,
   FaceHappy,

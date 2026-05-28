@@ -28,7 +28,7 @@ export class WhipPan extends CameraMoveBase {
     const toPos = this.toTarget.clone().add(new THREE.Vector3(0, 0, this.distance));
 
     const currentPos = new THREE.Vector3().lerpVectors(fromPos, toPos, eased);
-    currentPos.y = this.height;
+    currentPos.y = Math.max(0.8, this.height);
 
     camera.position.copy(currentPos);
 

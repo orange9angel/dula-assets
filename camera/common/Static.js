@@ -17,6 +17,8 @@ export class Static extends CameraMoveBase {
     super.start(camera, context);
     if (this.position) {
       camera.position.copy(this.position);
+      // Clamp camera above ground
+      camera.position.y = Math.max(0.5, camera.position.y);
     }
     if (this.lookAt) {
       camera.lookAt(this.lookAt);
