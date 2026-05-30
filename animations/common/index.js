@@ -60,6 +60,7 @@ export { FightingStance } from './FightingStance.js';
 export { WeaveStep } from './WeaveStep.js';
 export { HurricaneKick } from './HurricaneKick.js';
 export { AirTatsumaki } from './AirTatsumaki.js';
+export { Hadoken } from './Hadoken.js';
 export { DragonPunch } from './DragonPunch.js';
 export { BackFist } from './BackFist.js';
 export { CounterStance } from './CounterStance.js';
@@ -95,6 +96,7 @@ export { FXChargeGlow } from './FXChargeGlow.js';
 export { FXAfterImage } from './FXAfterImage.js';
 export { FXTrailSwipe } from './FXTrailSwipe.js';
 export { FXBloodSpurt } from './FXBloodSpurt.js';
+export { FXSmokeCloud } from './FXSmokeCloud.js';
 
 import { Nod } from './Nod.js';
 import { Jump } from './Jump.js';
@@ -153,6 +155,7 @@ import { FightingStance } from './FightingStance.js';
 import { WeaveStep } from './WeaveStep.js';
 import { HurricaneKick } from './HurricaneKick.js';
 import { AirTatsumaki } from './AirTatsumaki.js';
+import { Hadoken } from './Hadoken.js';
 import { DragonPunch } from './DragonPunch.js';
 import { BackFist } from './BackFist.js';
 import { CounterStance } from './CounterStance.js';
@@ -188,6 +191,7 @@ import { FXChargeGlow } from './FXChargeGlow.js';
 import { FXAfterImage } from './FXAfterImage.js';
 import { FXTrailSwipe } from './FXTrailSwipe.js';
 import { FXBloodSpurt } from './FXBloodSpurt.js';
+import { FXSmokeCloud } from './FXSmokeCloud.js';
 
 export const CommonAnimations = {
   Nod,
@@ -251,6 +255,7 @@ export const CommonAnimations = {
   WeaveStep,
   HurricaneKick,
   AirTatsumaki,
+  Hadoken,
   DragonPunch,
   BackFist,
   CounterStance,
@@ -284,4 +289,5 @@ export const CommonAnimations = {
   FXAfterImage,
   FXTrailSwipe,
   FXBloodSpurt,
+  FXSmokeCloud,
 };

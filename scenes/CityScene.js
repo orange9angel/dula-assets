@@ -120,33 +120,8 @@ export class CityScene extends SceneBase {
       this.scene.add(lampGroup);
     }
 
-    // ---- Cars (tiny, for scale) ----
-    const carColors = [0xff0000, 0x0000ff, 0xffffff, 0x000000];
-    for (let i = 0; i < 6; i++) {
-      const carGroup = new THREE.Group();
-      const carBody = new THREE.Mesh(
-        new THREE.BoxGeometry(1.8, 0.8, 3.5),
-        new THREE.MeshStandardMaterial({ color: carColors[i % carColors.length] })
-      );
-      carBody.position.y = 0.4;
-      carGroup.add(carBody);
-      
-      // Wheels
-      for (const wx of [-0.8, 0.8]) {
-        for (const wz of [-1.2, 1.2]) {
-          const wheel = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.25, 0.25, 0.2, 8),
-            new THREE.MeshStandardMaterial({ color: 0x111111 })
-          );
-          wheel.rotation.z = Math.PI / 2;
-          wheel.position.set(wx, 0.25, wz);
-          carGroup.add(wheel);
-        }
-      }
-      
-      carGroup.position.set((Math.random() - 0.5) * 6, 0, (Math.random() - 0.5) * 40);
-      this.scene.add(carGroup);
-    }
+    // ---- Cars removed for clean fighting scene ----
+    // (no obstacles in the fighting area)
 
     // ---- Clouds ----
     const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 });

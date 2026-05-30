@@ -35,8 +35,8 @@ import { ZoomBlur } from './transitions/ZoomBlur.js';
 import { Pixelate } from './transitions/Pixelate.js';
 import { SpinTransition } from './transitions/Spin.js';
 
-// Post-processing
-import { RetroTVPostProcess } from './postprocessing/RetroTVPostProcess.js';
+// Post-processing (disabled for brighter output)
+// import { RetroTVPostProcess } from './postprocessing/RetroTVPostProcess.js';
 
 // Animations - common
 import { Bow } from './animations/common/Bow.js';
@@ -97,6 +97,8 @@ import { JumpAttack } from './animations/common/JumpAttack.js';
 import { JumpFlyingKick } from './animations/common/JumpFlyingKick.js';
 import { BoxerGuardHop } from './animations/common/BoxerGuardHop.js';
 import { WeaveStep } from './animations/common/WeaveStep.js';
+import { Hadoken } from './animations/common/Hadoken.js';
+import { ArmsToWaist } from './animations/common/ArmsToWaist.js';
 import { HurricaneKick } from './animations/common/HurricaneKick.js';
 import { AirTatsumaki } from './animations/common/AirTatsumaki.js';
 import { DragonPunch } from './animations/common/DragonPunch.js';
@@ -390,6 +392,8 @@ export function registerAll() {
   registerAnimation('WeaveStep', WeaveStep);
   registerAnimation('HurricaneKick', HurricaneKick);
   registerAnimation('AirTatsumaki', AirTatsumaki);
+  registerAnimation('Hadoken', Hadoken);
+  registerAnimation('ArmsToWaist', ArmsToWaist);
   registerAnimation('DragonPunch', DragonPunch);
   registerAnimation('BackFist', BackFist);
   registerAnimation('CounterStance', CounterStance);
@@ -523,8 +527,8 @@ export function registerAll() {
   registerTransition('Pixelate', Pixelate);
   registerTransition('Spin', SpinTransition);
 
-  // Post-processing
-  registerPostProcess('RetroTV', RetroTVPostProcess);
+  // Post-processing (disabled for brighter output)
+  // registerPostProcess('RetroTV', RetroTVPostProcess);
 }
 
 // Re-exports for custom bootstrap use

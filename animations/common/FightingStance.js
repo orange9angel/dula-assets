@@ -39,7 +39,9 @@ export class FightingStance extends AnimationBase {
     };
 
     // 右臂：前伸护脸（拳架）— 更大角度，更专业
+    // ry offset 抵消 baseline ry(1.245)，让手臂从正面可见
     pose.rightShoulder = {
+      ry: -1.245,
       rz: -0.9 + Math.sin(cycle * 0.7) * 0.02,
       rx: -0.7 + Math.sin(cycle * 0.6) * 0.015,
     };
@@ -52,7 +54,9 @@ export class FightingStance extends AnimationBase {
     };
 
     // 左臂：稍靠后，护肋 — 同样增大角度
+    // ry offset 抵消 baseline ry(-1.245)，让手臂从正面可见
     pose.leftShoulder = {
+      ry: 1.245,
       rz: 0.8 + Math.sin(cycle * 0.7 + 1) * 0.02,
       rx: -0.6 + Math.sin(cycle * 0.6 + 1) * 0.015,
     };

@@ -99,11 +99,12 @@ export class DragonPunch extends AnimationBase {
       };
 
       // === 右手：垂直上勾！ ===
-      // 基线 rx=-0.739 (手臂向前下方)
+      // 基线 rx=-0.739, ry=1.245, rz=0.712 (手臂向前下方外展)
       // 目标 world space: 垂直向上 (0, 1, 0)
-      // CROUCH 结束: rx=-1.0, 需要再转 -1.7 到垂直
+      // 需要抵消 ry 基线，否则小臂会外八
       pose.rightShoulder = {
         rx: -1.0 - e * 1.7,   // 从 -1.0 到 -2.7，垂直向上
+        ry: -1.245,            // 抵消基线 ry，防止外八
         rz: -0.5 - e * 0.6,   // 内收
       };
       pose.rightElbow = {
@@ -114,9 +115,10 @@ export class DragonPunch extends AnimationBase {
       };
 
       // === 左手：护脸！ ===
-      // CROUCH 结束: rx=-1.0
+      // 基线 ry=-1.245，同样需要抵消防止外八
       pose.leftShoulder = {
         rx: -1.0 - e * 1.0,   // 从 -1.0 到 -2.0，抬高护脸
+        ry: 1.245,             // 抵消基线 ry，防止外八
         rz: 0.5 + e * 0.5,    // 向内收，护脸
       };
       pose.leftElbow = {
@@ -165,12 +167,12 @@ export class DragonPunch extends AnimationBase {
       pose.headGroup = { rx: -0.2 };
 
       // 右手：保持垂直上勾
-      pose.rightShoulder = { rx: -2.5, rz: -1.0 };
+      pose.rightShoulder = { rx: -2.5, ry: -1.245, rz: -1.0 };
       pose.rightElbow = { rx: 0 };
       pose.rightWrist = { rz: 0 };
 
       // 左手：保持护脸
-      pose.leftShoulder = { rx: -1.8, rz: 0.9 };
+      pose.leftShoulder = { rx: -1.8, ry: 1.245, rz: 0.9 };
       pose.leftElbow = { rx: -0.7 };
       pose.leftWrist = { rz: 0.5 };
 
@@ -200,6 +202,7 @@ export class DragonPunch extends AnimationBase {
       // 右手：从头顶收回，起始值与 PEAK 结束匹配
       pose.rightShoulder = {
         rx: -2.7 + e * 2.5,   // 从 -2.7 到 -0.2
+        ry: -1.245,            // 保持抵消外八
         rz: -1.1 + e * 1.0,   // 从 -1.1 到 -0.1
       };
       pose.rightElbow = { rx: e * 0.5 };
@@ -208,6 +211,7 @@ export class DragonPunch extends AnimationBase {
       // 左手：从护脸收回，起始值与 PEAK 结束匹配
       pose.leftShoulder = {
         rx: -2.0 + e * 1.7,   // 从 -2.0 到 -0.3
+        ry: 1.245,             // 保持抵消外八
         rz: 1.0 - e * 0.8,    // 从 1.0 到 0.2
       };
       pose.leftElbow = { rx: -0.7 + e * 0.3 };
@@ -238,11 +242,11 @@ export class DragonPunch extends AnimationBase {
       pose.headGroup = { rx: 0 };
 
       // 双臂：恢复格斗抱架（接近 FightingStance 的姿势）
-      pose.rightShoulder = { rx: -0.2 - e * 0.5, rz: -0.2 - e * 0.7 };
+      pose.rightShoulder = { rx: -0.2 - e * 0.5, ry: 0, rz: -0.2 - e * 0.7 };
       pose.rightElbow = { rx: -0.5 - e * 0.6 };
       pose.rightWrist = { rz: -0.1 };
 
-      pose.leftShoulder = { rx: -0.3 - e * 0.3, rz: 0.2 + e * 0.6 };
+      pose.leftShoulder = { rx: -0.3 - e * 0.3, ry: 0, rz: 0.2 + e * 0.6 };
       pose.leftElbow = { rx: -0.4 - e * 0.6 };
       pose.leftWrist = { rz: 0.1 };
 
