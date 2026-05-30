@@ -102,6 +102,7 @@ import { AirTatsumaki } from './animations/common/AirTatsumaki.js';
 import { DragonPunch } from './animations/common/DragonPunch.js';
 import { BackFist } from './animations/common/BackFist.js';
 import { CounterStance } from './animations/common/CounterStance.js';
+import { FightingStance } from './animations/common/FightingStance.js';
 import { SweepKick } from './animations/common/SweepKick.js';
 import { KneeStrike } from './animations/common/KneeStrike.js';
 import { HeadStomp } from './animations/common/HeadStomp.js';
@@ -182,7 +183,7 @@ import { ShadowSpell } from './animations/shera/ShadowSpell.js';
 // Animations - ultraman
 import { UltraBeam } from './animations/ultraman/UltraBeam.js';
 import { HeroLanding } from './animations/ultraman/HeroLanding.js';
-import { FightingStance } from './animations/ultraman/FightingStance.js';
+import { UltraFightingStance } from './animations/ultraman/FightingStance.js';
 import { FlyAway } from './animations/ultraman/FlyAway.js';
 
 
@@ -392,6 +393,7 @@ export function registerAll() {
   registerAnimation('DragonPunch', DragonPunch);
   registerAnimation('BackFist', BackFist);
   registerAnimation('CounterStance', CounterStance);
+  registerAnimation('FightingStance', FightingStance);
   registerAnimation('SweepKick', SweepKick);
   registerAnimation('KneeStrike', KneeStrike);
   registerAnimation('HeadStomp', HeadStomp);
@@ -441,7 +443,7 @@ export function registerAll() {
   // Animations - ultraman
   registerAnimation('UltraBeam', UltraBeam);
   registerAnimation('HeroLanding', HeroLanding);
-  registerAnimation('FightingStance', FightingStance);
+  registerAnimation('UltraFightingStance', UltraFightingStance);
 
   registerAnimation('FlyAway', FlyAway);
   // Animations - yuyuhakusho

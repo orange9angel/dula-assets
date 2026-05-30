@@ -40,10 +40,12 @@ export class FaceSmirk extends AnimationBase {
     };
 
     // Mouth: one side up (smirk)
+    // 注意：mouth 是 TubeGeometry，rz 旋转会绕自身中心转导致"飞嘴"
+    // 用 sx 不对称缩放 + py 微移来模拟歪嘴
     pose.mouth = {
       sy: ease * 0.3,
-      rz: -ease * 0.15,
-      px: ease * 0.01,
+      sx: ease * 0.15,   // 轻微不对称，模拟歪嘴
+      py: ease * 0.003,  // 微上移
     };
 
     // Head: slight tilt (confident)

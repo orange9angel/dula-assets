@@ -5,7 +5,7 @@ import { AnimationBase, PoseMatrix } from 'dula-engine';
  *
  * 经典奥特曼格斗起手式
  */
-export class FightingStance extends AnimationBase {
+export class UltraFightingStance extends AnimationBase {
   constructor() {
     super('FightingStance', 1.5);
     this.usePoseMatrix = true;

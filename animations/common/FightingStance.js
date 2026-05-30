@@ -22,7 +22,6 @@ export class FightingStance extends AnimationBase {
 
   getPoseMatrix(t) {
     const pose = new PoseMatrix();
-
     // 循环周期 1.2s，纯上下呼吸（去掉左右晃动）
     const cycle = t * Math.PI * 2;
     const breathe = Math.sin(cycle) * 0.008;

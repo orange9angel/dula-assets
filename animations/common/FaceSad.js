@@ -45,9 +45,10 @@ export class FaceSad extends AnimationBase {
     };
 
     // Mouth: curve down (frown)
+    // 注意：mouth 是 TubeGeometry，rz 旋转会导致"飞嘴"
     pose.mouth = {
       sy: -ease * 0.3,
-      rz: ease * Math.PI,
+      py: -ease * 0.005,
     };
 
     // Head: droop forward

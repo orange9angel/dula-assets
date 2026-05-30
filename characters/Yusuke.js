@@ -517,8 +517,11 @@ export class Yusuke extends CharacterBase {
   addLegs(uniformMat, uniformDarkMat, shoeMat, shoeDarkMat) {
     for (const side of [-1, 1]) {
       // ── Hip Group (髋/大腿根) ──
+      // 调整 hip 高度使脚(sole)在 y=0 处接触地面
+      // 原 hip 0.62, 链长: thigh(0.16) + knee(0.34) + ankle(0.34) + sole(0.12) = 0.96
+      // 新 hip: 0.96, 这样 sole 在 y=0
       const hipGroup = new THREE.Group();
-      hipGroup.position.set(side * 0.11, 0.62, 0);
+      hipGroup.position.set(side * 0.11, 0.96, 0);
 
       // Thigh - gakuran pants
       const thigh = new THREE.Mesh(new THREE.CapsuleGeometry(0.065, 0.28, 5, 12), uniformMat);
