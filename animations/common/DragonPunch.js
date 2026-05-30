@@ -21,77 +21,77 @@ export class DragonPunch extends AnimationBase {
   getPoseMatrix(t) {
     const pose = new PoseMatrix();
 
-    // ===== Phase 1: Crouch charge (0-0.15) =====
-    if (t < 0.15) {
-      const p = t / 0.15;
+    // ===== Phase 1: Crouch charge (0-0.20) =====
+    if (t < 0.20) {
+      const p = t / 0.20;
       const e = p * p;
 
       pose.mesh = {
-        y: -e * 0.5,
-        rx: e * 0.15,
+        y: -e * 0.8,        // 更深的下蹲
+        rx: e * 0.20,       // 略前倾蓄力
       };
 
-      pose.headGroup = { rx: e * 0.2 };
+      pose.headGroup = { rx: e * 0.3 };
 
-      // 右手：收在腰间蓄力，稍微向后预摆
+      // 右手：紧紧收在腰后蓄力，大幅度向后预摆
       pose.rightShoulder = {
-        rx: -e * 0.5,    // 向后预摆，为上升做准备
-        rz: -e * 0.3,
+        rx: -e * 1.0,       // 更强向后预摆
+        rz: -e * 0.5,
       };
       pose.rightElbow = {
-        rx: e * 1.5,
+        rx: e * 1.8,        // 弯曲更明显
       };
       pose.rightWrist = {
-        rz: -e * 0.2,
+        rz: -e * 0.3,
       };
 
-      // 左手：弯曲护脸
+      // 左手：弯曲护脸，收紧
       pose.leftShoulder = {
-        rx: -e * 0.8,
-        rz: e * 0.4,
+        rx: -e * 1.0,
+        rz: e * 0.5,
       };
       pose.leftElbow = {
-        rx: -e * 1.2,
+        rx: -e * 1.5,
       };
       pose.leftWrist = {
-        rz: e * 0.2,
+        rz: e * 0.3,
       };
 
       // 右腿：深蹲弯曲
       pose.rightHip = {
-        rx: e * 1.0,
-        rz: e * 0.1,
+        rx: e * 1.2,
+        rz: e * 0.15,
       };
       pose.rightKnee = {
-        rx: e * 1.5,
+        rx: e * 1.8,
       };
       pose.rightAnkle = {
-        rx: -e * 0.4,
+        rx: -e * 0.5,
       };
 
       // 左腿：后撤弯曲
       pose.leftHip = {
-        rx: e * 0.8,
-        rz: -e * 0.2,
+        rx: e * 1.0,
+        rz: -e * 0.3,
       };
       pose.leftKnee = {
-        rx: e * 1.2,
+        rx: e * 1.5,
       };
       pose.leftAnkle = {
-        rx: -e * 0.3,
+        rx: -e * 0.4,
       };
     }
 
-    // ===== Phase 2: EXPLODE UP (0.15-0.40) =====
-    else if (t < 0.40) {
-      const p = (t - 0.15) / 0.25;
-      // 线性 + 轻微缓入缓出，让变化更均匀
-      const e = p * p * (3 - 2 * p);
+    // ===== Phase 2: EXPLODE UP (0.20-0.45) =====
+    else if (t < 0.45) {
+      const p = (t - 0.20) / 0.25;
+      // 快速爆发：早期更快达到目标
+      const e = 1 - Math.pow(1 - p, 2);
 
       // 身体：垂直跳起，微后仰（不要过度后仰导致手臂看起来张开）
       pose.mesh = {
-        y: -0.5 + e * 3.5,
-        rx: 0.15 - e * 0.3,   // 减少后仰
+        y: -0.8 + e * 3.8,    // 从更深下蹲开始爆发
+        rx: 0.20 - e * 0.35,  // 减少后仰
       };
 
       pose.headGroup = {
@@ -101,11 +101,10 @@ export class DragonPunch extends AnimationBase {
       // === 右手：垂直上勾！ ===
       // 基线 rx=-0.739 (手臂向前下方)
       // 目标 world space: 垂直向上 (0, 1, 0)
-      // 需要 offset 使总 rx ≈ -2.4 (约-138°)，同时 rz 内收
-      // 加速：让手臂在 e=0.5 时就接近垂直
+      // CROUCH 结束: rx=-1.0, 需要再转 -1.7 到垂直
       pose.rightShoulder = {
-        rx: 0.3 - e * 3.0,    // 终点: -2.7 rad，更快达到垂直向上
-        rz: -0.3 - e * 0.6,   // 适度内收
+        rx: -1.0 - e * 1.7,   // 从 -1.0 到 -2.7，垂直向上
+        rz: -0.5 - e * 0.6,   // 内收
       };
       pose.rightElbow = {
         rx: 1.5 - e * 1.5,    // 从弯曲到伸直
@@ -115,11 +114,10 @@ export class DragonPunch extends AnimationBase {
       };
 
       // === 左手：护脸！ ===
-      // 基线 rx=-0.739 (手臂向前下方)
-      // 目标 world space: 抬高向内护在脸前
+      // CROUCH 结束: rx=-1.0
       pose.leftShoulder = {
-        rx: -0.8 - e * 1.2,   // 终点: -2.0，更快抬高护脸
-        rz: 0.4 + e * 0.6,    // 强向内收，护脸
+        rx: -1.0 - e * 1.0,   // 从 -1.0 到 -2.0，抬高护脸
+        rz: 0.5 + e * 0.5,    // 向内收，护脸
       };
       pose.leftElbow = {
         rx: -1.2 + e * 0.5,   // 保持弯曲
@@ -129,35 +127,34 @@ export class DragonPunch extends AnimationBase {
       };
 
       // === 右腿：垂直蹬直！ ===
-      // 基线 rx=0 (腿垂直向下)
-      // 目标 world space: 保持垂直向下
+      // CROUCH 结束: rx=1.2
       pose.rightHip = {
-        rx: 1.0 - e * 1.0,    // 终点: 0，保持垂直
-        rz: 0.1 - e * 0.1,
+        rx: 1.2 - e * 1.2,    // 从弯曲到垂直
+        rz: 0.15 - e * 0.15,
       };
       pose.rightKnee = {
-        rx: 1.5 - e * 1.5,    // 从弯曲到伸直
+        rx: 1.8 - e * 1.8,    // 从弯曲到伸直
       };
       pose.rightAnkle = {
-        rx: -0.4 + e * 0.4,   // 脚绷直
+        rx: -0.5 + e * 0.5,   // 脚绷直
       };
 
       // === 左腿：弯曲 tuck ===
       pose.leftHip = {
-        rx: 0.8 - e * 1.6,    // 大腿抬起
-        rz: -0.2 + e * 0.3,
+        rx: 1.0 - e * 1.8,    // 大腿抬起更多
+        rz: -0.3 + e * 0.3,
       };
       pose.leftKnee = {
-        rx: 1.2 - e * 0.4,    // 保持弯曲
+        rx: 1.5 - e * 0.5,    // 保持弯曲
       };
       pose.leftAnkle = {
-        rx: -0.3 + e * 0.3,
+        rx: -0.4 + e * 0.4,
       };
     }
 
-    // ===== Phase 3: PEAK (0.40-0.65) =====
-    else if (t < 0.65) {
-      const p = (t - 0.40) / 0.25;
+    // ===== Phase 3: PEAK (0.45-0.70) =====
+    else if (t < 0.70) {
+      const p = (t - 0.45) / 0.25;
       const hover = Math.sin(p * Math.PI) * 0.1;
 
       pose.mesh = {
@@ -168,12 +165,12 @@ export class DragonPunch extends AnimationBase {
       pose.headGroup = { rx: -0.2 };
 
       // 右手：保持垂直上勾
-      pose.rightShoulder = { rx: -2.4, rz: -1.1 };
+      pose.rightShoulder = { rx: -2.5, rz: -1.0 };
       pose.rightElbow = { rx: 0 };
       pose.rightWrist = { rz: 0 };
 
       // 左手：保持护脸
-      pose.leftShoulder = { rx: -1.7, rz: 1.0 };
+      pose.leftShoulder = { rx: -1.8, rz: 0.9 };
       pose.leftElbow = { rx: -0.7 };
       pose.leftWrist = { rz: 0.5 };
 
@@ -188,9 +185,9 @@ export class DragonPunch extends AnimationBase {
       pose.leftAnkle = { rx: 0 };
     }
 
-    // ===== Phase 4: Fall (0.65-0.90) =====
-    else if (t < 0.90) {
-      const p = (t - 0.65) / 0.25;
+    // ===== Phase 4: Fall (0.70-0.95) =====
+    else if (t < 0.95) {
+      const p = (t - 0.70) / 0.25;
       const e = p * p;
 
       pose.mesh = {
@@ -202,15 +199,15 @@ export class DragonPunch extends AnimationBase {
 
       // 右手：从头顶收回，起始值与 PEAK 结束匹配
       pose.rightShoulder = {
-        rx: -2.4 + e * 2.2,   // 从 -2.4 到 -0.2
-        rz: -0.9 + e * 0.8,   // 从 -0.9 到 -0.1
+        rx: -2.7 + e * 2.5,   // 从 -2.7 到 -0.2
+        rz: -1.1 + e * 1.0,   // 从 -1.1 到 -0.1
       };
       pose.rightElbow = { rx: e * 0.5 };
       pose.rightWrist = { rz: -e * 0.1 };
 
       // 左手：从护脸收回，起始值与 PEAK 结束匹配
       pose.leftShoulder = {
-        rx: -1.7 + e * 1.4,   // 从 -1.7 到 -0.3
+        rx: -2.0 + e * 1.7,   // 从 -2.0 到 -0.3
         rz: 1.0 - e * 0.8,    // 从 1.0 到 0.2
       };
       pose.leftElbow = { rx: -0.7 + e * 0.3 };
@@ -227,9 +224,9 @@ export class DragonPunch extends AnimationBase {
       pose.leftAnkle = { rx: -0.1 + e * 0.05 };
     }
 
-    // ===== Phase 5: Landing recovery (0.90-1.0) =====
+    // ===== Phase 5: Landing recovery (0.95-1.0) =====
     else {
-      const p = (t - 0.90) / 0.10;
+      const p = (t - 0.95) / 0.05;
       const e = 1 - Math.pow(1 - p, 2);
       const bounce = Math.sin(p * Math.PI) * 0.05;
 
