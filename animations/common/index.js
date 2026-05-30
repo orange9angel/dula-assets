@@ -48,6 +48,7 @@ export { ArcadeSpinKick } from './ArcadeSpinKick.js';
 export { SkyDiveKick } from './SkyDiveKick.js';
 export { RollPunch } from './RollPunch.js';
 export { TatsumakiSenpuuKyaku } from './TatsumakiSenpuuKyaku.js';
+export { RyuHurricaneKick } from './RyuHurricaneKick.js';
 export { FlyingKnee } from './FlyingKnee.js';
 export { TornadoKick } from './TornadoKick.js';
 export { GroundSlam } from './GroundSlam.js';
@@ -238,6 +239,7 @@ export const CommonAnimations = {
   SkyDiveKick,
   RollPunch,
   TatsumakiSenpuuKyaku,
+  RyuHurricaneKick,
   FlyingKnee,
   TornadoKick,
   GroundSlam,

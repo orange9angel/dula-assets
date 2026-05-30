@@ -185,6 +185,7 @@ export class CityScene extends SceneBase {
   }
 
   update(time, delta) {
+    super.update(time, delta);
     // Cloud drift
     for (const cloud of this.clouds) {
       cloud.position.x += delta * 0.5;

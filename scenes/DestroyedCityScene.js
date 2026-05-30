@@ -187,6 +187,7 @@ export class DestroyedCityScene extends SceneBase {
   }
 
   update(time, delta) {
+    super.update(time, delta);
     // Fire flicker
     for (const fire of this.fires) {
       fire.scale.setScalar(0.7 + Math.random() * 0.6);

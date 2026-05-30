@@ -88,6 +88,7 @@ import { ArcadeSpinKick } from './animations/common/ArcadeSpinKick.js';
 import { SkyDiveKick } from './animations/common/SkyDiveKick.js';
 import { RollPunch } from './animations/common/RollPunch.js';
 import { TatsumakiSenpuuKyaku } from './animations/common/TatsumakiSenpuuKyaku.js';
+import { RyuHurricaneKick } from './animations/common/RyuHurricaneKick.js';
 import { FlyingKnee } from './animations/common/FlyingKnee.js';
 import { TornadoKick } from './animations/common/TornadoKick.js';
 import { GroundSlam } from './animations/common/GroundSlam.js';
@@ -377,6 +378,7 @@ export function registerAll() {
   registerAnimation('SkyDiveKick', SkyDiveKick);
   registerAnimation('RollPunch', RollPunch);
   registerAnimation('TatsumakiSenpuuKyaku', TatsumakiSenpuuKyaku);
+  registerAnimation('RyuHurricaneKick', RyuHurricaneKick);
   registerAnimation('FlyingKnee', FlyingKnee);
   registerAnimation('TornadoKick', TornadoKick);
   registerAnimation('GroundSlam', GroundSlam);
