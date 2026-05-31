@@ -4,7 +4,7 @@ import { CharacterBase } from 'dula-engine';
 /**
  * Yusuke Urameshi (浦饭幽助) - Yu Yu Hakusho Main Protagonist
  * Delinquent-turned-Spirit-Detective. Green school uniform (gakuran),
- * messy black spiky hair, sharp brown eyes, red armband, fingerless gloves.
+ * messy black spiky hair, sharp brown eyes, fingerless gloves.
  * Slightly slouched posture, lean athletic build (~1.72m).
  */
 export class Yusuke extends CharacterBase {
@@ -32,7 +32,6 @@ export class Yusuke extends CharacterBase {
     const gloveDarkMat = new THREE.MeshToonMaterial({ color: 0x0d0d0d, gradientMap: toonGradient });
     const shoeMat = new THREE.MeshToonMaterial({ color: 0xf0f0f0, gradientMap: toonGradient });
     const shoeDarkMat = new THREE.MeshToonMaterial({ color: 0x8a8a8a, gradientMap: toonGradient });
-    const armbandMat = new THREE.MeshToonMaterial({ color: 0xcc1a1a, gradientMap: toonGradient });
 
     // ========== HEAD GROUP ==========
     const headGroup = new THREE.Group();
@@ -228,7 +227,6 @@ export class Yusuke extends CharacterBase {
 
     this.addArms(skinMat, uniformMat, gloveMat, gloveDarkMat);
     this.addLegs(uniformMat, uniformDarkMat, shoeMat, shoeDarkMat);
-    this.addArmband(armbandMat);
     this.addSpiritAura();
     this.addSpiritGunEffects();
     this._captureFaceBaseState();
@@ -436,12 +434,20 @@ export class Yusuke extends CharacterBase {
   }
 
   addArms(skinMat, uniformMat, gloveMat, gloveDarkMat) {
-    const addArm = (sx, sy, sz, hx, hy, hz, isRight) => {
+    const addArm = (sx, sy, sz, hx, hy, hz, isRight, extraRotY = 0, manualRot = false) => {
       // ── Shoulder Group (上臂根) ──
       const shoulderGroup = new THREE.Group();
       shoulderGroup.position.set(sx, sy, sz);
-      shoulderGroup.lookAt(hx, hy, hz);
-      shoulderGroup.rotateX(-Math.PI / 2);
+
+      if (manualRot) {
+        // 手动设置rotation：上臂初始垂直向下（自然下垂）
+        // 默认upperArm沿-Y方向，rotation.set(0,0,0)即为垂直向下
+        shoulderGroup.rotation.set(0, 0, 0);
+      } else {
+        shoulderGroup.lookAt(hx, hy, hz);
+        shoulderGroup.rotateX(-Math.PI / 2);
+        if (extraRotY !== 0) shoulderGroup.rotateY(extraRotY);
+      }
 
       const len = Math.sqrt((hx - sx) ** 2 + (hy - sy) ** 2 + (hz - sz) ** 2);
       const upperLen = len * 0.45;
@@ -453,6 +459,7 @@ export class Yusuke extends CharacterBase {
       shoulderGroup.add(upperArm);
 
       // ── Elbow Group (肘关节 pivot) ──
+      // elbowGroup 控制 rx/rz（弯曲）
       const elbowGroup = new THREE.Group();
       elbowGroup.position.y = -upperLen - 0.01;
       shoulderGroup.add(elbowGroup);
@@ -462,15 +469,20 @@ export class Yusuke extends CharacterBase {
       elbowMesh.scale.set(1, 0.7, 0.85);
       elbowGroup.add(elbowMesh);
 
+      // ── Elbow Twist Group (肘部扭转 pivot) ──
+      // elbowTwistGroup 控制 ry（在水平面内旋转前臂）
+      const elbowTwistGroup = new THREE.Group();
+      elbowGroup.add(elbowTwistGroup);
+
       // Forearm - skin showing
       const forearm = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, lowerLen, 5, 12), skinMat);
       forearm.position.y = -lowerLen / 2 - 0.02;
-      elbowGroup.add(forearm);
+      elbowTwistGroup.add(forearm);
 
       // ── Wrist Group (腕关节 pivot) ──
       const wristGroup = new THREE.Group();
       wristGroup.position.y = -lowerLen - 0.04;
-      elbowGroup.add(wristGroup);
+      elbowTwistGroup.add(wristGroup);
 
       // Fingerless glove
       const glove = new THREE.Mesh(new THREE.CapsuleGeometry(0.052, lowerLen * 0.45, 5, 12), gloveMat);
@@ -498,20 +510,24 @@ export class Yusuke extends CharacterBase {
       if (isRight) {
         this.rightArm = shoulderGroup;
         this.rightElbow = elbowGroup;
+        this.rightElbowTwist = elbowTwistGroup;
         this.rightWrist = wristGroup;
         this.rightArmLength = len;
         this.rightArmBaseZ = shoulderGroup.rotation.z;
       } else {
         this.leftArm = shoulderGroup;
         this.leftElbow = elbowGroup;
+        this.leftElbowTwist = elbowTwistGroup;
         this.leftWrist = wristGroup;
         this.leftArmLength = len;
         this.leftArmBaseZ = shoulderGroup.rotation.z;
       }
     };
 
-    addArm(-0.26, 1.28, 0, -0.38, 0.72, 0.03, false);
-    addArm(0.26, 1.28, 0, 0.38, 0.72, 0.03, true);
+    // Both arms use the same manual neutral basis for pose-matrix punches.
+    // The target points are only used to derive equal chain lengths.
+    addArm(-0.26, 1.28, 0, -0.83, 1.28, 0, false, 0, true);
+    addArm(0.26, 1.28, 0, 0.83, 1.28, 0, true, 0, true);
   }
 
   addLegs(uniformMat, uniformDarkMat, shoeMat, shoeDarkMat) {
@@ -582,23 +598,6 @@ export class Yusuke extends CharacterBase {
         this.rightAnkle = ankleGroup;
       }
     }
-  }
-
-  addArmband(armbandMat) {
-    // Red armband on left arm (Spirit Detective badge)
-    const armband = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.06, 14), armbandMat);
-    armband.position.set(-0.26, 1.12, 0);
-    armband.rotation.z = 0.15;
-    this.mesh.add(armband);
-
-    // Badge emblem (small gold circle)
-    const badge = new THREE.Mesh(
-      new THREE.SphereGeometry(0.015, 8, 8),
-      new THREE.MeshToonMaterial({ color: 0xc4a030, gradientMap: this.createToonGradient() })
-    );
-    badge.position.set(-0.26, 1.12, 0.05);
-    badge.scale.set(1, 1, 0.4);
-    this.mesh.add(badge);
   }
 
   addSpiritAura() {

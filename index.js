@@ -58,7 +58,6 @@ import { Shrug } from './animations/common/Shrug.js';
 import { SitDown } from './animations/common/SitDown.js';
 import { StompFoot } from './animations/common/StompFoot.js';
 import { SurprisedJump } from './animations/common/SurprisedJump.js';
-import { SwayBody } from './animations/common/SwayBody.js';
 import { SwingRacket } from './animations/common/SwingRacket.js';
 import { Think } from './animations/common/Think.js';
 import { Tremble } from './animations/common/Tremble.js';
@@ -73,6 +72,9 @@ import { JumpIntoDrawer } from './animations/common/JumpIntoDrawer.js';
 import { Punch } from './animations/common/Punch.js';
 import { RightPunch } from './animations/common/RightPunch.js';
 import { LeftPunch } from './animations/common/LeftPunch.js';
+import { LeftRightPunchCombo } from './animations/common/LeftRightPunchCombo.js';
+import { RightHook } from './animations/common/RightHook.js';
+import { LeftHook } from './animations/common/LeftHook.js';
 
 import { Kick } from './animations/common/Kick.js';
 import { Uppercut } from './animations/common/Uppercut.js';
@@ -323,7 +325,6 @@ export function registerAll() {
   registerAnimation('SitDown', SitDown);
   registerAnimation('StompFoot', StompFoot);
   registerAnimation('SurprisedJump', SurprisedJump);
-  registerAnimation('SwayBody', SwayBody);
   registerAnimation('SwingRacket', SwingRacket);
   registerAnimation('Think', Think);
   registerAnimation('Tremble', Tremble);
@@ -366,6 +367,9 @@ export function registerAll() {
   registerAnimation('Punch', Punch);
   registerAnimation('RightPunch', RightPunch);
   registerAnimation('LeftPunch', LeftPunch);
+  registerAnimation('LeftRightPunchCombo', LeftRightPunchCombo);
+  registerAnimation('RightHook', RightHook);
+  registerAnimation('LeftHook', LeftHook);
 
   registerAnimation('Kick', Kick);
   registerAnimation('Uppercut', Uppercut);

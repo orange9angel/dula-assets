@@ -27,6 +27,11 @@ export class FightImpact extends CameraMoveBase {
     // 追踪攻击者位置
     this._computeTarget(context);
 
+    // Guard: ensure startPos and endPos are set
+    if (!this.startPos || !this.endPos) {
+      return;
+    }
+
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     let desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this.endPos, eased);
 

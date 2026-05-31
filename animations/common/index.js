@@ -1,6 +1,5 @@
 export { Nod } from './Nod.js';
 export { Jump } from './Jump.js';
-export { SwayBody } from './SwayBody.js';
 export { WaveHand } from './WaveHand.js';
 export { StompFoot } from './StompFoot.js';
 export { Walk } from './Walk.js';
@@ -34,6 +33,9 @@ export { JumpIntoDrawer } from './JumpIntoDrawer.js';
 export { Punch } from './Punch.js';
 export { RightPunch } from './RightPunch.js';
 export { LeftPunch } from './LeftPunch.js';
+export { LeftRightPunchCombo } from './LeftRightPunchCombo.js';
+export { RightHook } from './RightHook.js';
+export { LeftHook } from './LeftHook.js';
 export { Kick } from './Kick.js';
 export { Uppercut } from './Uppercut.js';
 export { Dodge } from './Dodge.js';
@@ -100,7 +102,6 @@ export { FXSmokeCloud } from './FXSmokeCloud.js';
 
 import { Nod } from './Nod.js';
 import { Jump } from './Jump.js';
-import { SwayBody } from './SwayBody.js';
 import { WaveHand } from './WaveHand.js';
 import { StompFoot } from './StompFoot.js';
 import { Walk } from './Walk.js';
@@ -132,6 +133,9 @@ import { JumpIntoDrawer } from './JumpIntoDrawer.js';
 import { Punch } from './Punch.js';
 import { RightPunch } from './RightPunch.js';
 import { LeftPunch } from './LeftPunch.js';
+import { LeftRightPunchCombo } from './LeftRightPunchCombo.js';
+import { RightHook } from './RightHook.js';
+import { LeftHook } from './LeftHook.js';
 import { Kick } from './Kick.js';
 import { Uppercut } from './Uppercut.js';
 import { Dodge } from './Dodge.js';
@@ -196,7 +200,6 @@ import { FXSmokeCloud } from './FXSmokeCloud.js';
 export const CommonAnimations = {
   Nod,
   Jump,
-  SwayBody,
   WaveHand,
   StompFoot,
   Walk,
@@ -229,6 +232,9 @@ export const CommonAnimations = {
   Punch,
   RightPunch,
   LeftPunch,
+  LeftRightPunchCombo,
+  RightHook,
+  LeftHook,
   Kick,
   Uppercut,
   Dodge,

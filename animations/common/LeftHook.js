@@ -1,13 +1,13 @@
 import { AnimationBase, PoseMatrix } from 'dula-engine';
-import { generateCombo } from './PoseGenerator.js';
+import { generateHook } from './PoseGenerator.js';
 
 /**
- * ComboPunch — 连击拳（左刺拳→右直拳→左勾拳）
+ * LeftHook — 左勾拳
  * 使用参数化生成器
  */
-export class ComboPunch extends AnimationBase {
+export class LeftHook extends AnimationBase {
   constructor() {
-    super('ComboPunch', 1.0);
+    super('LeftHook', 0.5);
     this.usePoseMatrix = true;
     this.tags = {
       requires: ['rightArm', 'leftArm'],
@@ -16,10 +16,7 @@ export class ComboPunch extends AnimationBase {
       minHeight: 0.8,
       maxHeight: 2.5,
     };
-    this._generator = generateCombo({
-      moves: ['leftJab', 'rightCross', 'leftHook'],
-      power: 0.8,
-    });
+    this._generator = generateHook({ hand: 'left', power: 0.85, swingAngle: 130 });
   }
 
   getPoseMatrix(t) {
