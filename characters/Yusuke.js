@@ -13,6 +13,18 @@ export class Yusuke extends CharacterBase {
     this.boundingRadius = 0.55;
     this._spiritActive = true;
     this.archetypes = ['humanoid', 'fighter', 'athletic', 'delinquent'];
+    this.trustedBodyAnimations = [
+      'Walk',
+      'Run',
+      'LeftPunch',
+      'RightPunch',
+      'LeftRightPunchCombo',
+      'Kick',
+      'DragonPunch',
+      'RyuHurricaneKick',
+      'TatsumakiSenpuuKyaku',
+    ];
+    this.allowedBodyAnimations = new Set(this.trustedBodyAnimations);
   }
 
   build() {
