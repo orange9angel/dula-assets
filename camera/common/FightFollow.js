@@ -20,11 +20,14 @@ export class FightFollow extends CameraMoveBase {
     super.start(camera, context);
     this.currentPos = camera.position.clone();
     this._computeTarget(context);
+    if (!this.endPos) this.endPos = new THREE.Vector3(0, this.height, this.distance);
+    if (!this.lookAtPos) this.lookAtPos = new THREE.Vector3(0, 1.3, 0);
     this._lastTargetPos = this.endPos.clone();
   }
 
   update(t, camera, context) {
     this._computeTarget(context);
+    if (!this.endPos || !this.lookAtPos) return;
 
     // Smooth follow with delta-time compensation to reduce wobble at 30fps
     const dtCompensatedSmooth = Math.min(0.5, this.smoothness * 2.0);
@@ -52,7 +55,7 @@ export class FightFollow extends CameraMoveBase {
     } else if (charB) {
       mid = charB.mesh.position.clone();
     } else {
-      return;
+      mid = new THREE.Vector3(0, 0, 0);
     }
 
     // 目标位置

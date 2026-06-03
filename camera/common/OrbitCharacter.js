@@ -9,7 +9,7 @@ import { parseVecOption } from '../utils.js';
 export class OrbitCharacter extends CameraMoveBase {
   constructor(options = {}) {
     super({ duration: options.duration ?? 3.0 });
-    this.characterName = options.characterName ?? 'Nobita';
+    this.characterName = options.characterName ?? options.target ?? 'Nobita';
     this.radius = options.radius ?? 5;
     this.startAngle = options.startAngle ?? 0;
     this.endAngle = options.endAngle ?? Math.PI * 2;

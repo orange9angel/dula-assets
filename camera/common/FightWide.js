@@ -50,7 +50,8 @@ export class FightWide extends CameraMoveBase {
     } else if (charB) {
       mid = charB.mesh.position.clone();
     } else {
-      return;
+      // No characters available — use default center
+      mid = new THREE.Vector3(0, 0, 0);
     }
 
     // 计算两人距离，动态调整相机距离

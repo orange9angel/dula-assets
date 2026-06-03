@@ -21,6 +21,8 @@ export { SurprisedJump } from './SurprisedJump.js';
 export { Tremble } from './Tremble.js';
 export { Think } from './Think.js';
 export { SitDown } from './SitDown.js';
+export { Crouch } from './Crouch.js';
+export { CrouchJump } from './CrouchJump.js';
 export { CrossArms } from './CrossArms.js';
 export { FlailArms } from './FlailArms.js';
 export { LookUp } from './LookUp.js';
@@ -121,6 +123,8 @@ import { SurprisedJump } from './SurprisedJump.js';
 import { Tremble } from './Tremble.js';
 import { Think } from './Think.js';
 import { SitDown } from './SitDown.js';
+import { Crouch } from './Crouch.js';
+import { CrouchJump } from './CrouchJump.js';
 import { CrossArms } from './CrossArms.js';
 import { FlailArms } from './FlailArms.js';
 import { LookUp } from './LookUp.js';
@@ -221,6 +225,8 @@ export const CommonAnimations = {
   Tremble,
   Think,
   SitDown,
+  Crouch,
+  CrouchJump,
   CrossArms,
   FlailArms,
   LookUp,

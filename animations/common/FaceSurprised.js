@@ -1,4 +1,4 @@
-import { AnimationBase, PoseMatrix } from 'dula-engine';
+﻿import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceSurprised — 惊讶/震惊表情
@@ -45,10 +45,7 @@ export class FaceSurprised extends AnimationBase {
     };
 
     // Mouth: open wide (O shape)
-    pose.mouth = {
-      sy: ease * 1.2,
-      sx: ease * 0.4,
-    };
+    pose.mouth = { tension: -0.2 };
 
     // Head: snap back slightly
     pose.headGroup = {

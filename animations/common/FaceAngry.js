@@ -1,4 +1,4 @@
-import { AnimationBase, PoseMatrix } from 'dula-engine';
+﻿import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceAngry — 愤怒表情
@@ -39,8 +39,8 @@ export class FaceAngry extends AnimationBase {
       right: { sy: -ease * 0.4, visible: true },
     };
 
-    // Mouth: tight / flat line
-    pose.mouth = { sy: -ease * 0.5 };
+    // Mouth: tension (tightens the mouth without overriding viseme shape)
+    pose.mouth = { tension: ease * 0.6 };
 
     // Head: slight forward thrust (aggressive posture)
     pose.headGroup = { rx: ease * 0.08 };

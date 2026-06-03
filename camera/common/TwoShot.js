@@ -34,7 +34,12 @@ export class TwoShot extends CameraMoveBase {
   _computeTarget(camera, context) {
     const charA = context.characters.get(this.characterA);
     const charB = context.characters.get(this.characterB);
-    if (!charA || !charB) return;
+    if (!charA || !charB) {
+      // Fallback: use camera's current look direction
+      this.endPos = camera.position.clone();
+      this.lookAtPos = new THREE.Vector3(0, 1.5, 0);
+      return;
+    }
 
     const posA = charA.mesh.position.clone();
     const posB = charB.mesh.position.clone();

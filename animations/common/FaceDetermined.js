@@ -1,4 +1,4 @@
-import { AnimationBase, PoseMatrix } from 'dula-engine';
+﻿import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceDetermined — 坚定/决意表情
@@ -46,7 +46,7 @@ export class FaceDetermined extends AnimationBase {
     };
 
     // Mouth: firm straight line (grit)
-    pose.mouth = { sy: -ease * 0.7, rz: 0 };
+    pose.mouth = { tension: 0.35 };
 
     // Head: slight forward (locked in)
     pose.headGroup = { rx: ease * 0.05, ry: 0 };

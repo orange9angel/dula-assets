@@ -14,15 +14,13 @@ export class Yusuke extends CharacterBase {
     this._spiritActive = true;
     this.archetypes = ['humanoid', 'fighter', 'athletic', 'delinquent'];
     this.trustedBodyAnimations = [
-      'Walk',
-      'Run',
-      'LeftPunch',
-      'RightPunch',
-      'LeftRightPunchCombo',
-      'Kick',
-      'DragonPunch',
-      'RyuHurricaneKick',
-      'TatsumakiSenpuuKyaku',
+      'Walk', 'Run',
+      'LeftPunch', 'RightPunch', 'LeftRightPunchCombo',
+      'Kick', 'DragonPunch',
+      'RyuHurricaneKick', 'TatsumakiSenpuuKyaku',
+      'CrossArms', 'HandsOnHips', 'PointForward',
+      'FightingStance', 'DashForward', 'Dodge',
+      'Nod', 'Think', 'WaveHand', 'FaceSmirk',
     ];
     this.allowedBodyAnimations = new Set(this.trustedBodyAnimations);
   }

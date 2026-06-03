@@ -8,7 +8,7 @@ import { parseVecOption } from '../utils.js';
 export class FollowCharacter extends CameraMoveBase {
   constructor(options = {}) {
     super({ duration: options.duration ?? 1.0 });
-    this.characterName = options.characterName ?? 'Nobita';
+    this.characterName = options.characterName ?? options.target ?? 'Nobita';
     this.offset = parseVecOption(options.offset, new THREE.Vector3(0, 3, 6));
     this.lookAtOffset = parseVecOption(options.lookAtOffset, new THREE.Vector3(0, 1.5, 0));
   }

@@ -1,4 +1,4 @@
-import { AnimationBase, PoseMatrix } from 'dula-engine';
+﻿import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceSmirk — 得意/坏笑表情
@@ -42,11 +42,7 @@ export class FaceSmirk extends AnimationBase {
     // Mouth: one side up (smirk)
     // 注意：mouth 是 TubeGeometry，rz 旋转会绕自身中心转导致"飞嘴"
     // 用 sx 不对称缩放 + py 微移来模拟歪嘴
-    pose.mouth = {
-      sy: ease * 0.3,
-      sx: ease * 0.15,   // 轻微不对称，模拟歪嘴
-      py: ease * 0.003,  // 微上移
-    };
+    pose.mouth = { tension: 0.3 };
 
     // Head: slight tilt (confident)
     pose.headGroup = {

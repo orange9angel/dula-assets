@@ -1,4 +1,4 @@
-import { AnimationBase, PoseMatrix } from 'dula-engine';
+﻿import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceConfused — 困惑/疑惑表情
@@ -47,7 +47,7 @@ export class FaceConfused extends AnimationBase {
     };
 
     // Mouth: small open "o" (puzzled)
-    pose.mouth = { sy: ease * 0.5, sx: ease * 0.2 };
+    pose.mouth = { tension: 0.1 };
 
     // Head: tilt to one side (classic confused pose)
     pose.headGroup = { rz: ease * 0.08 };

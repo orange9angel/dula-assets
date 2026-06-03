@@ -27,6 +27,12 @@ import { Yusuke } from './characters/Yusuke.js';
 import { Kuwabara } from './characters/Kuwabara.js';
 import { Yokai } from './characters/Yokai.js';
 
+// Characters - Star Travelers (Aliens)
+import { Zorak } from './characters/Zorak.js';
+import { Klaw } from './characters/Klaw.js';
+import { Vex } from './characters/Vex.js';
+import { Rex } from './characters/Rex.js';
+
 // Transitions
 import { Fade } from './transitions/Fade.js';
 import { Iris } from './transitions/Iris.js';
@@ -56,6 +62,8 @@ import { ScratchHead } from './animations/common/ScratchHead.js';
 import { ShakeHead } from './animations/common/ShakeHead.js';
 import { Shrug } from './animations/common/Shrug.js';
 import { SitDown } from './animations/common/SitDown.js';
+import { Crouch } from './animations/common/Crouch.js';
+import { CrouchJump } from './animations/common/CrouchJump.js';
 import { StompFoot } from './animations/common/StompFoot.js';
 import { SurprisedJump } from './animations/common/SurprisedJump.js';
 import { SwingRacket } from './animations/common/SwingRacket.js';
@@ -137,6 +145,9 @@ import { FXChargeGlow } from './animations/common/FXChargeGlow.js';
 import { FXAfterImage } from './animations/common/FXAfterImage.js';
 import { FXTrailSwipe } from './animations/common/FXTrailSwipe.js';
 import { FXBloodSpurt } from './animations/common/FXBloodSpurt.js';
+import { FXCrystalShards } from './animations/common/FXCrystalShards.js';
+import { FXBioluminescentPulse } from './animations/common/FXBioluminescentPulse.js';
+import { FXPlasmaBolt } from './animations/common/FXPlasmaBolt.js';
 // Animations - doraemon
 import { Float } from './animations/doraemon/Float.js';
 import { NoseBlink } from './animations/doraemon/NoseBlink.js';
@@ -213,6 +224,8 @@ import { WhisperingWoodsScene } from './scenes/WhisperingWoodsScene.js';
 import { CityScene } from './scenes/CityScene.js';
 import { DestroyedCityScene } from './scenes/DestroyedCityScene.js';
 import { SarayashikiRoofScene } from './scenes/SarayashikiRoofScene.js';
+import { SpaceStationScene } from './scenes/SpaceStationScene.js';
+import { AlienPlanetScene } from './scenes/AlienPlanetScene.js';
 
 // Camera moves
 import { CloseUp } from './camera/common/CloseUp.js';
@@ -302,6 +315,11 @@ export function registerAll() {
   registerCharacter('Yusuke', Yusuke);
   registerCharacter('Kuwabara', Kuwabara);
   registerCharacter('Yokai', Yokai);
+  // Characters - star travelers
+  registerCharacter('Zorak', Zorak);
+  registerCharacter('Klaw', Klaw);
+  registerCharacter('Vex', Vex);
+  registerCharacter('Rex', Rex);
   // Animations - common
   registerAnimation('Bow', Bow);
   registerAnimation('Celebrate', Celebrate);
@@ -323,6 +341,8 @@ export function registerAll() {
   registerAnimation('ShakeHead', ShakeHead);
   registerAnimation('Shrug', Shrug);
   registerAnimation('SitDown', SitDown);
+  registerAnimation('Crouch', Crouch);
+  registerAnimation('CrouchJump', CrouchJump);
   registerAnimation('StompFoot', StompFoot);
   registerAnimation('SurprisedJump', SurprisedJump);
   registerAnimation('SwingRacket', SwingRacket);
@@ -432,6 +452,9 @@ export function registerAll() {
   registerAnimation('FXAfterImage', FXAfterImage);
   registerAnimation('FXTrailSwipe', FXTrailSwipe);
   registerAnimation('FXBloodSpurt', FXBloodSpurt);
+  registerAnimation('FXCrystalShards', FXCrystalShards);
+  registerAnimation('FXBioluminescentPulse', FXBioluminescentPulse);
+  registerAnimation('FXPlasmaBolt', FXPlasmaBolt);
   // Animations - xingzai
   registerAnimation('XingzaiFloat', XingzaiFloat);
   registerAnimation('TandemFlight', TandemFlight);
@@ -475,6 +498,8 @@ export function registerAll() {
   registerScene('CityScene', CityScene);
   registerScene('DestroyedCityScene', DestroyedCityScene);
   registerScene('SarayashikiRoofScene', SarayashikiRoofScene);
+  registerScene('SpaceStationScene', SpaceStationScene);
+  registerScene('AlienPlanetScene', AlienPlanetScene);
   // Camera moves
   registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);

@@ -8,7 +8,7 @@ import { CameraMoveBase } from 'dula-engine';
 export class CloseUp extends CameraMoveBase {
   constructor(options = {}) {
     super({ duration: options.duration ?? 1.0 });
-    this.characterName = options.characterName ?? 'Nobita';
+    this.characterName = options.characterName ?? options.target ?? 'Nobita';
     this.distance = options.distance ?? 1.8;
     this.heightOffset = options.heightOffset ?? 0.1;
     this.sideAngle = (options.sideAngle ?? 0) * (Math.PI / 180);

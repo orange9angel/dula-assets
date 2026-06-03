@@ -9,7 +9,7 @@ import { CameraMoveBase } from 'dula-engine';
 export class SpiritGunCloseUp extends CameraMoveBase {
   constructor(options = {}) {
     super({ duration: options.duration ?? 2.0 });
-    this.characterName = options.characterName ?? 'Yusuke';
+    this.characterName = options.characterName ?? options.target ?? 'Yusuke';
     this.startDistance = options.startDistance ?? 2.5;
     this.endDistance = options.endDistance ?? 1.3;
     this.heightOffset = options.heightOffset ?? 0.0;

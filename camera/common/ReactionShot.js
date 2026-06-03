@@ -8,7 +8,7 @@ import { CameraMoveBase } from 'dula-engine';
 export class ReactionShot extends CameraMoveBase {
   constructor(options = {}) {
     super({ duration: options.duration ?? 1.0 });
-    this.characterName = options.characterName ?? 'Shizuka';
+    this.characterName = options.characterName ?? options.target ?? 'Shizuka';
     this.distance = options.distance ?? 2.8;
     this.heightOffset = options.heightOffset ?? 0.0;
     this.sideAngle = (options.sideAngle ?? 15) * (Math.PI / 180);

@@ -20,6 +20,8 @@ export class FightSide extends CameraMoveBase {
     super.start(camera, context);
     this.startPos = camera.position.clone();
     this._computeTarget(context);
+    if (!this.endPos) this.endPos = new THREE.Vector3(0, this.height, this.distance);
+    if (!this.lookAtPos) this.lookAtPos = new THREE.Vector3(0, 1.3, 0);
     // Snapshot endPos at start to prevent wobble during interpolation
     this._snapshotEndPos = this.endPos.clone();
     this._snapshotLookAt = this.lookAtPos.clone();
@@ -28,6 +30,7 @@ export class FightSide extends CameraMoveBase {
   update(t, camera, context) {
     // Use snapshotted endPos for stable interpolation (no wobble)
 
+    if (!this._snapshotEndPos || !this._snapshotLookAt) return;
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this._snapshotEndPos, eased);
     // Clamp camera above ground
@@ -50,7 +53,7 @@ export class FightSide extends CameraMoveBase {
     } else if (charB) {
       mid = charB.mesh.position.clone();
     } else {
-      return;
+      mid = new THREE.Vector3(0, 0, 0);
     }
 
     // 确定相机在哪一侧

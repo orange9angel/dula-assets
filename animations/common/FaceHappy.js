@@ -1,4 +1,4 @@
-import { AnimationBase, PoseMatrix } from 'dula-engine';
+﻿import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceHappy — 开心/微笑表情
@@ -39,7 +39,7 @@ export class FaceHappy extends AnimationBase {
     };
 
     // Mouth: big smile — curve up
-    pose.mouth = { sy: ease * 0.6, py: ease * 0.005, sx: ease * 0.2 };
+    pose.mouth = { tension: 0.0 };
 
     // Head: slight tilt up (cheerful)
     pose.headGroup = { rx: -ease * 0.05 };

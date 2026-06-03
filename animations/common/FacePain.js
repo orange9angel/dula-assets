@@ -1,4 +1,4 @@
-import { AnimationBase, PoseMatrix } from 'dula-engine';
+﻿import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FacePain — 痛苦/受伤表情
@@ -40,10 +40,7 @@ export class FacePain extends AnimationBase {
     };
 
     // Mouth: grimace — open slightly, twisted
-    pose.mouth = {
-      sy: ease * 0.3,
-      sx: ease * 0.2,
-    };
+    pose.mouth = { tension: 0.5 };
 
     // Head: flinch back
     pose.headGroup = {
