@@ -306,6 +306,38 @@ export class AlienPlanetScene extends SceneBase {
       this.scene.add(crater);
     }
 
+    // ---- Story rock — large boulder for Rex to hide behind ----
+    // Positioned BETWEEN the camera (z~5) and Rex (z~-4) so it blocks the view
+    const storyRockGroup = new THREE.Group();
+    const storyRockMat = new THREE.MeshStandardMaterial({ color: 0x3a2a4a, roughness: 0.95 });
+    // Main boulder — taller to fully hide a crouching character (~2m tall)
+    const mainBoulder = new THREE.Mesh(
+      new THREE.ConeGeometry(2.5, 4.5, 7),
+      storyRockMat
+    );
+    mainBoulder.position.y = 2.0;
+    mainBoulder.rotation.y = 0.3;
+    mainBoulder.rotation.z = 0.15;
+    storyRockGroup.add(mainBoulder);
+    // Secondary rocks for natural look
+    for (let j = 0; j < 3; j++) {
+      const small = new THREE.Mesh(
+        new THREE.SphereGeometry(0.5 + Math.random() * 0.7, 8, 8),
+        storyRockMat
+      );
+      small.position.set(
+        (Math.random() - 0.5) * 3.0,
+        0.3 + Math.random() * 0.8,
+        (Math.random() - 0.5) * 3.0
+      );
+      small.scale.y = 0.5 + Math.random() * 0.4;
+      storyRockGroup.add(small);
+    }
+    // Position: between camera and Rex. Camera at z~5, Rex at z~-4.
+    // Rock at z=-2.5, x=-0.5 — Rex at (0.5, -4) hides behind it from most angles
+    storyRockGroup.position.set(-0.5, 0, -2.5);
+    this.scene.add(storyRockGroup);
+
     return this.scene;
   }
 

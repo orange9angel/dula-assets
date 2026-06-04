@@ -287,6 +287,7 @@ import { CourtDirector } from './lib/CourtDirector.js';
 import { DunkDirector } from './lib/DunkDirector.js';
 import { CombatDirector } from './lib/CombatDirector.js';
 import { CinematicCombatAdapter } from './lib/CinematicCombatAdapter.js';
+import { SceneDirector } from './lib/SceneDirector.js';
 
 export function registerAll() {
   // Characters
@@ -547,6 +548,7 @@ export function registerAll() {
   registerDirector('DunkDirector', DunkDirector);
   registerDirector('CombatDirector', CombatDirector);
   registerDirector('CinematicCombatAdapter', CinematicCombatAdapter);
+  registerDirector('SceneDirector', SceneDirector);
 
   // Transitions
   registerTransition('Fade', Fade);
