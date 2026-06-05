@@ -15,10 +15,10 @@ export class Zorak extends CharacterBase {
     this.trustedBodyAnimations = [
       'Walk', 'Run', 'LookAround',
       'LeftPunch', 'RightPunch', 'LeftRightPunchCombo',
-      'Kick', 'SpinKick', 'JumpFlyingKick',
+      'Kick', 'SpinKick', 'JumpFlyingKick', 'GenocideCutter', 'GalaxyWhirl', 'HeadStomp',
       'DragonPunch', 'RyuHurricaneKick', 'TatsumakiSenpuuKyaku',
       'Block', 'HitStagger', 'Dodge', 'DashForward',
-      'PointForward', 'CrossArms', 'FightingStance', 'Crouch',
+      'PointForward', 'CrossArms', 'FightingStance', 'Crouch', 'TurnAround',
       'Bow', 'ReachOut', 'Nod', 'FaceDetermined', 'CrouchJump',
     ];
     this.allowedBodyAnimations = new Set(this.trustedBodyAnimations);
