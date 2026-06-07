@@ -19,7 +19,7 @@ export class Zorak extends CharacterBase {
       'DragonPunch', 'RyuHurricaneKick', 'TatsumakiSenpuuKyaku',
       'Block', 'HitStagger', 'Dodge', 'DashForward',
       'PointForward', 'CrossArms', 'FightingStance', 'Crouch', 'TurnAround',
-      'Bow', 'ReachOut', 'Nod', 'FaceDetermined', 'CrouchJump',
+      'Bow', 'ReachOut', 'Nod', 'FaceDetermined', 'CrouchJump', 'BroadcastStretch',
     ];
     this.allowedBodyAnimations = new Set(this.trustedBodyAnimations);
   }
@@ -329,31 +329,54 @@ export class Zorak extends CharacterBase {
   }
 
   addArms(skinMat, armorMat, armorLightMat) {
-    const addArm = (sx, sy, sz, isRight) => {
+    const addArm = (clavicleX, clavicleY, clavicleZ, shoulderX, shoulderY, shoulderZ, isRight) => {
+      // ── Clavicle Group (锁骨) ──
+      // 锁骨从胸骨附近(身体中心)延伸到肩峰(肩膀外侧)
+      // 控制手臂整体的前后/上下摆动
+      const clavicleGroup = new THREE.Group();
+      clavicleGroup.position.set(clavicleX, clavicleY, clavicleZ);
+      clavicleGroup.rotation.set(0, 0, 0);
+
+      // ── Shoulder Group (肩关节/上臂根部) ──
+      // 位于锁骨外端(肩峰)，是上臂的旋转中心
       const shoulderGroup = new THREE.Group();
-      shoulderGroup.position.set(sx, sy, sz);
+      shoulderGroup.position.set(shoulderX, shoulderY, shoulderZ);
       shoulderGroup.rotation.set(0, 0, 0);
+      clavicleGroup.add(shoulderGroup);
+
+      // ── Arm Pivot (上臂方向修正) ──
+      // 关键：把上臂初始方向从"朝下"改为"朝前"，这样旋转轴更符合人体：
+      // - rx: 绕水平左右轴 → 控制手臂上下抬放（屈/伸）
+      // - ry: 绕垂直轴 → 控制手臂水平面内摆动（内收/外展）
+      // - rz: 绕水平前后轴 → 控制手臂自旋
+      // 这样 rx 和 ry 独立不耦合，手臂水平前举后 ry 不会导致穿模
+      const armPivot = new THREE.Group();
+      armPivot.rotation.x = Math.PI / 2; // 把上臂从朝下转到朝前
+      shoulderGroup.add(armPivot);
 
       const upperLen = 0.28;
       const lowerLen = 0.26;
 
-      // Upper arm
+      // Upper arm — 从肩膀向前延伸（由于 armPivot 旋转了90度）
+      // CapsuleGeometry 默认沿 Y 轴，需要旋转 90° 使其沿 Z 轴（前方）
       const upperArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, upperLen, 5, 12), skinMat);
-      upperArm.position.y = -upperLen / 2;
-      shoulderGroup.add(upperArm);
+      upperArm.rotation.x = -Math.PI / 2; // 让胶囊沿 Z 轴
+      upperArm.position.z = upperLen / 2; // 沿 Z 轴（前方）延伸
+      armPivot.add(upperArm);
 
       // Forearm armor plate
       const forearmArmor = new THREE.Mesh(
         new THREE.CapsuleGeometry(0.048, upperLen * 0.6, 5, 12),
         armorLightMat
       );
-      forearmArmor.position.y = -upperLen / 2;
-      shoulderGroup.add(forearmArmor);
+      forearmArmor.rotation.x = -Math.PI / 2;
+      forearmArmor.position.z = upperLen / 2;
+      armPivot.add(forearmArmor);
 
-      // Elbow Group
+      // Elbow Group — 在 armPivot 坐标系中，上臂末端在 z = upperLen
       const elbowGroup = new THREE.Group();
-      elbowGroup.position.y = -upperLen - 0.01;
-      shoulderGroup.add(elbowGroup);
+      elbowGroup.position.z = upperLen + 0.01;
+      armPivot.add(elbowGroup);
 
       const elbowMesh = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 10), skinMat);
       elbowMesh.scale.set(1, 0.7, 0.85);
@@ -363,19 +386,20 @@ export class Zorak extends CharacterBase {
       const elbowTwistGroup = new THREE.Group();
       elbowGroup.add(elbowTwistGroup);
 
-      // Forearm
+      // Forearm — keep the forearm's zero pose aligned with the upper arm.
       const forearm = new THREE.Mesh(new THREE.CapsuleGeometry(0.042, lowerLen, 5, 12), skinMat);
-      forearm.position.y = -lowerLen / 2 - 0.02;
+      forearm.rotation.x = -Math.PI / 2;
+      forearm.position.z = lowerLen / 2 + 0.02;
       elbowTwistGroup.add(forearm);
 
       // Wrist Group
       const wristGroup = new THREE.Group();
-      wristGroup.position.y = -lowerLen - 0.04;
+      wristGroup.position.z = lowerLen + 0.04;
       elbowTwistGroup.add(wristGroup);
 
       // Hand — 3-fingered alien hand
       const hand = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 12), skinMat);
-      hand.position.y = -0.03;
+      hand.position.z = 0.03;
       hand.scale.set(1, 0.85, 1.1);
       wristGroup.add(hand);
 
@@ -386,13 +410,15 @@ export class Zorak extends CharacterBase {
           skinMat
         );
         const fAngle = (f - 1) * 0.35;
-        finger.position.set(Math.sin(fAngle) * 0.03, -0.07, Math.cos(fAngle) * 0.03);
-        finger.rotation.x = fAngle;
+        finger.position.set(Math.sin(fAngle) * 0.03, 0, 0.07 + Math.cos(fAngle) * 0.03);
+        finger.rotation.x = Math.PI / 2;
+        finger.rotation.y = fAngle;
         wristGroup.add(finger);
       }
 
-      this.mesh.add(shoulderGroup);
+      this.mesh.add(clavicleGroup);
       if (isRight) {
+        this.rightClavicle = clavicleGroup;
         this.rightArm = shoulderGroup;
         this.rightElbow = elbowGroup;
         this.rightElbowTwist = elbowTwistGroup;
@@ -400,6 +426,7 @@ export class Zorak extends CharacterBase {
         this.rightArmLength = upperLen + lowerLen;
         this.rightArmBaseZ = 0;
       } else {
+        this.leftClavicle = clavicleGroup;
         this.leftArm = shoulderGroup;
         this.leftElbow = elbowGroup;
         this.leftElbowTwist = elbowTwistGroup;
@@ -409,8 +436,10 @@ export class Zorak extends CharacterBase {
       }
     };
 
-    addArm(-0.26, 1.3, 0, false);
-    addArm(0.26, 1.3, 0, true);
+    // 左臂: 锁骨从 x=-0.10(靠近中心) 到 x=-0.26(肩膀外侧)
+    addArm(-0.10, 1.35, 0.05, -0.16, -0.05, -0.05, false);
+    // 右臂: 锁骨从 x=0.10(靠近中心) 到 x=0.26(肩膀外侧)
+    addArm(0.10, 1.35, 0.05, 0.16, -0.05, -0.05, true);
   }
 
   addLegs(armorMat, armorLightMat) {

@@ -46,6 +46,7 @@ import { SpinTransition } from './transitions/Spin.js';
 
 // Animations - common
 import { Bow } from './animations/common/Bow.js';
+import { BroadcastStretch } from './animations/common/BroadcastStretch.js';
 import { Celebrate } from './animations/common/Celebrate.js';
 import { ClapHands } from './animations/common/ClapHands.js';
 import { CrossArms } from './animations/common/CrossArms.js';
@@ -323,6 +324,7 @@ export function registerAll() {
   registerCharacter('Rex', Rex);
   // Animations - common
   registerAnimation('Bow', Bow);
+  registerAnimation('BroadcastStretch', BroadcastStretch);
   registerAnimation('Celebrate', Celebrate);
   registerAnimation('ClapHands', ClapHands);
   registerAnimation('CrashLand', CrashLand);
