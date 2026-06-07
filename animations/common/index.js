@@ -10,6 +10,7 @@ export { SwingRacket } from './SwingRacket.js';
 export { Run } from './Run.js';
 export { Bow } from './Bow.js';
 export { BroadcastStretch } from './BroadcastStretch.js';
+export { BroadcastChestExpansion } from './BroadcastChestExpansion.js';
 export { ShakeHead } from './ShakeHead.js';
 export { LookAround } from './LookAround.js';
 export { PointForward } from './PointForward.js';
@@ -113,6 +114,7 @@ import { SwingRacket } from './SwingRacket.js';
 import { Run } from './Run.js';
 import { Bow } from './Bow.js';
 import { BroadcastStretch } from './BroadcastStretch.js';
+import { BroadcastChestExpansion } from './BroadcastChestExpansion.js';
 import { ShakeHead } from './ShakeHead.js';
 import { LookAround } from './LookAround.js';
 import { PointForward } from './PointForward.js';
@@ -216,6 +218,7 @@ export const CommonAnimations = {
   Run,
   Bow,
   BroadcastStretch,
+  BroadcastChestExpansion,
   ShakeHead,
   LookAround,
   PointForward,
