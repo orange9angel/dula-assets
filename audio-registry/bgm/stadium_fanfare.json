@@ -1,0 +1,27 @@
+{
+  "name": "stadium_fanfare",
+  "category": "bgm",
+  "description": "Upbeat, brassy sports fanfare for stadium introductions and pre-game announcements. Energetic, triumphant, crowd-rousing.",
+  "mood": ["energetic", "triumphant", "sporty", "brassy", "upbeat"],
+  "suggested_scenes": ["StadiumScene", "BasketballArenaScene"],
+  "trigger_hints": "Play during character introductions, pre-race announcements, or victory ceremonies.",
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Sports Rock Energetic Action",
+      "author": "SoundGalleryByDmitryTaras",
+      "url": "https://pixabay.com/music/rock-sports-rock-energetic-action-266107/",
+      "license": "Pixabay Content License",
+      "notes": "Energetic rock with brass elements. Duration ~2:20. Perfect for sports introductions."
+    }
+  ],
+  "local_filename": "stadium_fanfare.mp3",
+  "format": "mp3",
+  "loop": true,
+  "mixing_notes": {
+    "bgm_volume": 0.22,
+    "ducking": "reduce by 4-6 dB during dialogue",
+    "fade_in": "1.0s",
+    "fade_out": "1.5s"
+  }
+}

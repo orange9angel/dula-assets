@@ -1,0 +1,27 @@
+{
+  "name": "disco_party",
+  "category": "bgm",
+  "description": "High-energy electronic dance music with disco vibes. Heavy bass, synth leads, four-on-the-floor beat. Perfect for dance sequences and party scenes.",
+  "mood": ["energetic", "disco", "electronic", "party", "dance", "bass-heavy"],
+  "suggested_scenes": ["StadiumScene", "RoomScene"],
+  "trigger_hints": "Play during dance sequences, party scenes, or high-energy character moments. Sync with bpm=128 animations.",
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Electronic Dance Music Background Music",
+      "author": "Music_Unlimited",
+      "url": "https://pixabay.com/music/dance-electric-dance-music-background-music-280147/",
+      "license": "Pixabay Content License",
+      "notes": "Electronic dance track with strong beat. Duration ~2:38. Good for disco/worm dance scenes."
+    }
+  ],
+  "local_filename": "disco_party.mp3",
+  "format": "mp3",
+  "loop": true,
+  "mixing_notes": {
+    "bgm_volume": 0.65,
+    "ducking": "reduce by 2-3 dB during dialogue, but keep prominent for dance",
+    "fade_in": "0.1s",
+    "fade_out": "0.5s"
+  }
+}

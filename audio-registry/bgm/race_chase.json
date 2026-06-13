@@ -1,0 +1,27 @@
+{
+  "name": "race_chase",
+  "category": "bgm",
+  "description": "Fast-paced, intense chase music with driving percussion and urgent strings. Perfect for running races, competitions, and action sequences.",
+  "mood": ["intense", "fast", "driving", "competitive", "urgent", "percussion-heavy"],
+  "suggested_scenes": ["StadiumScene", "ParkScene"],
+  "trigger_hints": "Play during race sequences, chase scenes, or competitive sports moments. Start at 'Go!' command.",
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Action Sport Rock Trailer",
+      "author": "SoundGalleryByDmitryTaras",
+      "url": "https://pixabay.com/music/rock-action-sport-rock-trailer-266106/",
+      "license": "Pixabay Content License",
+      "notes": "High-energy rock with driving drums. Duration ~2:15. Perfect for race/action sequences."
+    }
+  ],
+  "local_filename": "race_chase.mp3",
+  "format": "mp3",
+  "loop": true,
+  "mixing_notes": {
+    "bgm_volume": 0.40,
+    "ducking": "reduce by 3-4 dB during dialogue, keep prominent during action",
+    "fade_in": "0.3s",
+    "fade_out": "1.0s"
+  }
+}
