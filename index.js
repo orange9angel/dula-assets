@@ -33,6 +33,15 @@ import { Klaw } from './characters/Klaw.js';
 import { Vex } from './characters/Vex.js';
 import { Rex } from './characters/Rex.js';
 
+// Characters - Disco Worm
+import { DiscoWorm } from './characters/DiscoWorm.js';
+
+// Characters - Reporter & Cameraman
+import { Reporter } from './characters/Reporter.js';
+import { Cameraman } from './characters/Cameraman.js';
+import { Cameraman2 } from './characters/Cameraman2.js';
+import { Cameraman3 } from './characters/Cameraman3.js';
+
 // Transitions
 import { Fade } from './transitions/Fade.js';
 import { Iris } from './transitions/Iris.js';
@@ -48,6 +57,9 @@ import { SpinTransition } from './transitions/Spin.js';
 import { Bow } from './animations/common/Bow.js';
 import { BroadcastStretch } from './animations/common/BroadcastStretch.js';
 import { BroadcastChestExpansion } from './animations/common/BroadcastChestExpansion.js';
+import { WormDance } from './animations/common/WormDance.js';
+import { WormWiggle } from './animations/common/WormWiggle.js';
+import { WormTunnel } from './animations/common/WormTunnel.js';
 import { Celebrate } from './animations/common/Celebrate.js';
 import { ClapHands } from './animations/common/ClapHands.js';
 import { CrossArms } from './animations/common/CrossArms.js';
@@ -228,6 +240,7 @@ import { DestroyedCityScene } from './scenes/DestroyedCityScene.js';
 import { SarayashikiRoofScene } from './scenes/SarayashikiRoofScene.js';
 import { SpaceStationScene } from './scenes/SpaceStationScene.js';
 import { AlienPlanetScene } from './scenes/AlienPlanetScene.js';
+import { StadiumScene } from './scenes/StadiumScene.js';
 
 // Camera moves
 import { CloseUp } from './camera/common/CloseUp.js';
@@ -245,6 +258,7 @@ import { WhipPan } from './camera/common/WhipPan.js';
 import { ZoomIn } from './camera/common/ZoomIn.js';
 import { ZoomOut } from './camera/common/ZoomOut.js';
 import { OrbitCharacter } from './camera/common/OrbitCharacter.js';
+import { RaceSideTrack } from './camera/common/RaceSideTrack.js';
 
 // Camera moves - ultraman
 import { HeroReveal } from './camera/ultraman/HeroReveal.js';
@@ -323,10 +337,18 @@ export function registerAll() {
   registerCharacter('Klaw', Klaw);
   registerCharacter('Vex', Vex);
   registerCharacter('Rex', Rex);
+  registerCharacter('DiscoWorm', DiscoWorm);
+  registerCharacter('Reporter', Reporter);
+  registerCharacter('Cameraman', Cameraman);
+  registerCharacter('Cameraman2', Cameraman2);
+  registerCharacter('Cameraman3', Cameraman3);
   // Animations - common
   registerAnimation('Bow', Bow);
   registerAnimation('BroadcastStretch', BroadcastStretch);
   registerAnimation('BroadcastChestExpansion', BroadcastChestExpansion);
+  registerAnimation('WormDance', WormDance);
+  registerAnimation('WormWiggle', WormWiggle);
+  registerAnimation('WormTunnel', WormTunnel);
   registerAnimation('Celebrate', Celebrate);
   registerAnimation('ClapHands', ClapHands);
   registerAnimation('CrashLand', CrashLand);
@@ -505,6 +527,7 @@ export function registerAll() {
   registerScene('SarayashikiRoofScene', SarayashikiRoofScene);
   registerScene('SpaceStationScene', SpaceStationScene);
   registerScene('AlienPlanetScene', AlienPlanetScene);
+  registerScene('StadiumScene', StadiumScene);
   // Camera moves
   registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);
@@ -521,6 +544,7 @@ export function registerAll() {
   registerCameraMove('ZoomIn', ZoomIn);
   registerCameraMove('ZoomOut', ZoomOut);
   registerCameraMove('OrbitCharacter', OrbitCharacter);
+  registerCameraMove('RaceSideTrack', RaceSideTrack);
   // Camera moves - ultraman
   registerCameraMove('HeroReveal', HeroReveal);
   registerCameraMove('MonsterStomp', MonsterStomp);

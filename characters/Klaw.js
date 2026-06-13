@@ -19,7 +19,8 @@ export class Klaw extends CharacterBase {
       'DragonPunch', 'RyuHurricaneKick', 'TatsumakiSenpuuKyaku',
       'Block', 'HitStagger', 'Dodge', 'DashForward',
       'CrossArms', 'SurprisedJump', 'ScratchHead', 'BroadcastChestExpansion',
-      'FightingStance', 'Crouch', 'FaceSurprised', 'Run',
+      'FightingStance', 'Crouch', 'CrouchJump', 'FaceSurprised', 'Run',
+      'HandsOnHips', 'WaveHand',
     ];
     this.allowedBodyAnimations = new Set(this.trustedBodyAnimations);
   }

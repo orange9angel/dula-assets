@@ -17,6 +17,14 @@ export function parseVecOption(v, defaultVec = null) {
     );
   }
   if (v instanceof THREE.Vector3) return v.clone();
+  if (typeof v === 'string') {
+    const parts = v.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+    return new THREE.Vector3(
+      parts[0] ?? defaultVec?.x ?? 0,
+      parts[1] ?? defaultVec?.y ?? 0,
+      parts[2] ?? defaultVec?.z ?? 0
+    );
+  }
   if (typeof v === 'object' && (v.x !== undefined || v.y !== undefined || v.z !== undefined)) {
     return new THREE.Vector3(v.x ?? 0, v.y ?? 0, v.z ?? 0);
   }

@@ -13,8 +13,7 @@ export class Static extends CameraMoveBase {
     this.lookAt = parseVecOption(options.lookAt);
   }
 
-  start(camera, context) {
-    super.start(camera, context);
+  _apply(camera) {
     if (this.position) {
       camera.position.copy(this.position);
       // Clamp camera above ground
@@ -25,7 +24,12 @@ export class Static extends CameraMoveBase {
     }
   }
 
+  start(camera, context) {
+    super.start(camera, context);
+    this._apply(camera);
+  }
+
   update(t, camera, context) {
-    // No-op: camera remains fixed
+    this._apply(camera);
   }
 }

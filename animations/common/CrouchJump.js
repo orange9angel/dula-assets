@@ -135,25 +135,49 @@ export class CrouchJump extends AnimationBase {
       const launchEase = easeOutCubic(Math.min(1, p / 0.3));
       y = -depth * (1 - launchEase) + y;
 
+      // 跨栏专用：更大前倾角度，让跳跃更有冲击力
+      const hurdleLean = lean * 1.5;
+
       pose.mesh = {
         y: Math.max(-depth, y),
-        rx: lean * (1 - p * 0.5), // 逐渐恢复直立
+        rx: hurdleLean * (1 - p * 0.3), // 更大的前倾，恢复更慢
       };
 
       pose.headGroup = {
-        rx: -lean * 0.55 * (1 - p * 0.5),
+        rx: -hurdleLean * 0.55 * (1 - p * 0.3),
       };
 
-      // 蹬地：腿从弯曲到伸直
+      // 跨栏腿部姿态：空中抬腿过栏
+      // 上升阶段：一条腿前抬（跨栏腿），一条腿后摆（蹬地腿）
+      // 下降阶段：双腿准备落地
       const legStraighten = easeOutCubic(Math.min(1, p / 0.4));
       const bend = clamp(0, 1.15, depth / 0.45);
+      const heightRatio = Math.max(0, y) / Math.max(0.01, jumpH); // 0~1 当前高度比例
 
-      pose.rightHip = { rx: -0.35 * bend * (1 - legStraighten) };
-      pose.leftHip = { rx: -0.35 * bend * (1 - legStraighten) };
-      pose.rightKnee = { rx: 1.1 * bend * (1 - legStraighten) };
-      pose.leftKnee = { rx: 1.1 * bend * (1 - legStraighten) };
-      pose.rightAnkle = { rx: -0.55 * bend * (1 - legStraighten) + legStraighten * 0.3 };
-      pose.leftAnkle = { rx: -0.55 * bend * (1 - legStraighten) + legStraighten * 0.3 };
+      if (heightRatio > 0.15) {
+        // 空中阶段：跨栏腿高抬，蹬地腿后摆
+        const airPhase = Math.min(1, (heightRatio - 0.15) / 0.7); // 0~1 空中姿态强度
+        const leadLegLift = 1.4 * airPhase * (1 - p * 0.5); // 前腿抬起（逐渐降低准备落地）
+        const trailLegSwing = -0.8 * airPhase * (1 - p * 0.3); // 后腿后摆
+
+        // 前腿（右腿）高抬过栏
+        pose.rightHip = { rx: -leadLegLift };
+        pose.rightKnee = { rx: 1.6 * airPhase * (1 - p * 0.4) }; // 膝盖弯曲抬高
+        pose.rightAnkle = { rx: -0.3 * airPhase }; // 脚踝放松
+
+        // 后腿（左腿）后摆蹬地
+        pose.leftHip = { rx: trailLegSwing };
+        pose.leftKnee = { rx: 0.4 * airPhase }; // 略微弯曲
+        pose.leftAnkle = { rx: 0.2 * airPhase }; // 脚尖下压
+      } else {
+        // 离地初期：双腿蹬直
+        pose.rightHip = { rx: -0.35 * bend * (1 - legStraighten) };
+        pose.leftHip = { rx: -0.35 * bend * (1 - legStraighten) };
+        pose.rightKnee = { rx: 1.1 * bend * (1 - legStraighten) };
+        pose.leftKnee = { rx: 1.1 * bend * (1 - legStraighten) };
+        pose.rightAnkle = { rx: -0.55 * bend * (1 - legStraighten) + legStraighten * 0.3 };
+        pose.leftAnkle = { rx: -0.55 * bend * (1 - legStraighten) + legStraighten * 0.3 };
+      }
 
       this._applyArms(pose, 1 - p * 0.3, y / this.jumpHeight);
 

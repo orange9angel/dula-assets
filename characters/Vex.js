@@ -19,7 +19,7 @@ export class Vex extends CharacterBase {
       'DragonPunch', 'RyuHurricaneKick', 'TatsumakiSenpuuKyaku',
       'Block', 'HitStagger', 'Dodge', 'DashForward',
       'Shrug', 'HandsOnHips', 'WaveHand',
-      'FightingStance', 'Crouch', 'FaceSurprised', 'FaceHappy',
+      'FightingStance', 'Crouch', 'CrouchJump', 'FlyPose', 'FaceSurprised', 'FaceHappy',
     ];
     this.allowedBodyAnimations = new Set(this.trustedBodyAnimations);
   }

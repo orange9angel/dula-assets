@@ -19,7 +19,7 @@ export class Rex extends CharacterBase {
       'Kick', 'SpinKick', 'JumpFlyingKick',
       'DragonPunch', 'RyuHurricaneKick', 'TatsumakiSenpuuKyaku',
       'Block', 'HitStagger', 'Dodge', 'DashForward',
-      'CrossArms', 'FightingStance', 'Crouch',
+      'CrossArms', 'FightingStance', 'Crouch', 'CrouchJump',
       'PointForward', 'Nod', 'FaceDetermined',
       'HandsOnHips', 'WaveHand', 'Think',
     ];

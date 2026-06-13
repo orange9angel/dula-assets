@@ -78,6 +78,7 @@ export { RollingThunder } from './RollingThunder.js';
 export { GalaxyWhirl } from './GalaxyWhirl.js';
 export { BlitzBall } from './BlitzBall.js';
 export { GenocideCutter } from './GenocideCutter.js';
+export { Chat } from './Chat.js';
 
 // === Facial Expression Library ===
 export { FaceAngry } from './FaceAngry.js';
@@ -179,6 +180,7 @@ import { RollingThunder } from './RollingThunder.js';
 import { GalaxyWhirl } from './GalaxyWhirl.js';
 import { BlitzBall } from './BlitzBall.js';
 import { GenocideCutter } from './GenocideCutter.js';
+import { Chat } from './Chat.js';
 
 // === Facial Expression Library ===
 import { FaceAngry } from './FaceAngry.js';
@@ -285,6 +287,7 @@ export const CommonAnimations = {
   GalaxyWhirl,
   BlitzBall,
   GenocideCutter,
+  Chat,
   // === Facial Expressions ===
   FaceAngry,
   FaceHappy,

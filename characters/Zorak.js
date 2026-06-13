@@ -20,6 +20,7 @@ export class Zorak extends CharacterBase {
       'Block', 'HitStagger', 'Dodge', 'DashForward',
       'PointForward', 'CrossArms', 'FightingStance', 'Crouch', 'TurnAround',
       'Bow', 'ReachOut', 'Nod', 'FaceDetermined', 'CrouchJump',
+      'WaveHand', 'HandsOnHips', 'Celebrate',
       'BroadcastStretch', 'BroadcastChestExpansion',
     ];
     this.allowedBodyAnimations = new Set(this.trustedBodyAnimations);
