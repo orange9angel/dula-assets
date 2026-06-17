@@ -241,6 +241,7 @@ import { SarayashikiRoofScene } from './scenes/SarayashikiRoofScene.js';
 import { SpaceStationScene } from './scenes/SpaceStationScene.js';
 import { AlienPlanetScene } from './scenes/AlienPlanetScene.js';
 import { StadiumScene } from './scenes/StadiumScene.js';
+import { LockerRoomScene } from './scenes/LockerRoomScene.js';
 
 // Camera moves
 import { CloseUp } from './camera/common/CloseUp.js';
@@ -528,6 +529,7 @@ export function registerAll() {
   registerScene('SpaceStationScene', SpaceStationScene);
   registerScene('AlienPlanetScene', AlienPlanetScene);
   registerScene('StadiumScene', StadiumScene);
+  registerScene('LockerRoomScene', LockerRoomScene);
   // Camera moves
   registerCameraMove('CloseUp', CloseUp);
   registerCameraMove('FollowCharacter', FollowCharacter);

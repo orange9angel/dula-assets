@@ -68,16 +68,20 @@ export class Doraemon extends CharacterBase {
     nose.position.set(0, 0.12, 0.68);
     headGroup.add(nose);
 
-    // Mouth (black ellipse)
-    const mouthGeo = new THREE.SphereGeometry(0.15, 32, 32);
+    // Mouth — cone jaw that opens naturally during lip-sync
+    // Base (wide part) faces up, tip points down; rotating x toward PI closes it,
+    // decreasing x opens the mouth.
+    const mouthGeo = new THREE.ConeGeometry(0.14, 0.28, 24);
     const mouth = new THREE.Mesh(mouthGeo, blackMat);
-    mouth.position.set(0, -0.15, 0.6);
-    mouth.scale.set(1.2, 0.3, 0.5);
+    mouth.position.set(0, -0.18, 0.62);
+    mouth.rotation.x = Math.PI; // closed resting pose
+    mouth.rotation.z = Math.PI; // make the seam face back so it looks like a smile line
     headGroup.add(mouth);
     this.mouth = mouth;
-    this.mouthBaseScaleX = mouth.scale.x;
-    this.mouthBaseScaleY = mouth.scale.y;
-    this.mouthBaseScaleZ = mouth.scale.z;
+    this.mouthBaseScaleX = 1;
+    this.mouthBaseScaleY = 1;
+    this.mouthBaseScaleZ = 1;
+    this.mouthBaseRotationX = Math.PI;
 
     // Whiskers (classic Doraemon: 3 left, 3 right, horizontal fan radiating outward)
     const whiskerGeo = new THREE.CylinderGeometry(0.003, 0.003, 0.28, 8);

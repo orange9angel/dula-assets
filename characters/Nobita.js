@@ -108,6 +108,8 @@ export class Nobita extends CharacterBase {
     rightBrow.position.set(0.12, 0.17, 0.30);
     rightBrow.rotation.z = Math.PI / 2 - 0.05;
     headGroup.add(rightBrow);
+    this.leftEyebrow = leftBrow;
+    this.rightEyebrow = rightBrow;
 
     // ========== GLASSES (big round frames, iconic Nobita style) ==========
     const frameRadius = 0.14; // smaller round glasses

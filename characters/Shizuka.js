@@ -140,6 +140,8 @@ export class Shizuka extends CharacterBase {
     rightBrow.position.set(0.11, 0.16, 0.29);
     rightBrow.rotation.z = -0.2;
     headGroup.add(rightBrow);
+    this.leftEyebrow = leftBrow;
+    this.rightEyebrow = rightBrow;
 
     // ========== MOUTH (smile curve + invisible sphere for speaking animation) ==========
     // Smile curve (visible, static)

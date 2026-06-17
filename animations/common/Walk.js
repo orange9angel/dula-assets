@@ -54,12 +54,12 @@ export class Walk extends AnimationBase {
     const rightForward = Math.max(0, -gait);
     const footfall = Math.abs(gait);
 
-    // In this rig negative hip rx swings the leg visually forward.
-    pose.leftHip = { rx: -gait * this.stride, rz: gait * 0.04 };
+    // Straight, natural gait: no side-to-side waddle, minimal hip roll/twist.
+    pose.leftHip = { rx: -gait * this.stride };
     pose.leftKnee = { rx: leftForward * this.legLift + (1 - leftForward) * 0.08 };
     pose.leftAnkle = { rx: -leftForward * 0.18 };
 
-    pose.rightHip = { rx: gait * this.stride, rz: -gait * 0.04 };
+    pose.rightHip = { rx: gait * this.stride };
     pose.rightKnee = { rx: rightForward * this.legLift + (1 - rightForward) * 0.08 };
     pose.rightAnkle = { rx: -rightForward * 0.18 };
 
@@ -70,13 +70,10 @@ export class Walk extends AnimationBase {
     };
 
     // Cross-body gait: left leg forward pairs with right arm forward.
-    pose.rightShoulder = { rx: -gait * this.armSwing, rz: -0.05 };
+    pose.rightShoulder = { rx: -gait * this.armSwing };
     pose.rightElbow = { rx: -0.25 - footfall * 0.1 };
-    pose.leftShoulder = { rx: gait * this.armSwing, rz: 0.05 };
+    pose.leftShoulder = { rx: gait * this.armSwing };
     pose.leftElbow = { rx: -0.25 - footfall * 0.1 };
-
-    // subtle hip twist for natural gait
-    pose.mesh.ry = -gait * 0.035;
 
     return pose;
   }
