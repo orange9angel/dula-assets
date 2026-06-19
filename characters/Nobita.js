@@ -64,50 +64,65 @@ export class Nobita extends CharacterBase {
 
     // ========== EYES ==========
     const eyeGeo = new THREE.SphereGeometry(0.055, 16, 16);
-
-    const leftEye = new THREE.Mesh(eyeGeo, eyeWhiteMat);
-    leftEye.position.set(-0.12, 0.04, 0.30);
-    leftEye.scale.set(1.05, 1.1, 0.42);
-    headGroup.add(leftEye);
-
-    const rightEye = new THREE.Mesh(eyeGeo, eyeWhiteMat);
-    rightEye.position.set(0.12, 0.04, 0.30);
-    rightEye.scale.set(1.05, 1.1, 0.42);
-    headGroup.add(rightEye);
-
     const pupilGeo = new THREE.SphereGeometry(0.028, 16, 16);
-    const leftPupil = new THREE.Mesh(pupilGeo, blackMat);
-    leftPupil.position.set(-0.12, 0.03, 0.32);
-    leftPupil.userData.baseX = leftPupil.position.x;
-    headGroup.add(leftPupil);
-    this.leftPupil = leftPupil;
-
-    const rightPupil = new THREE.Mesh(pupilGeo, blackMat);
-    rightPupil.position.set(0.12, 0.03, 0.32);
-    rightPupil.userData.baseX = rightPupil.position.x;
-    headGroup.add(rightPupil);
-    this.rightPupil = rightPupil;
-
-    // Highlights
     const hlGeo = new THREE.SphereGeometry(0.009, 8, 8);
-    const leftHl = new THREE.Mesh(hlGeo, eyeWhiteMat);
-    leftHl.position.set(-0.11, 0.055, 0.335);
-    headGroup.add(leftHl);
 
-    const rightHl = new THREE.Mesh(hlGeo, eyeWhiteMat);
-    rightHl.position.set(0.13, 0.055, 0.335);
-    headGroup.add(rightHl);
+    const createEye = (side) => {
+      const eyeGroup = new THREE.Group();
+      eyeGroup.position.set(side * 0.12, 0.04, 0.30);
 
-    // ========== EYEBROWS (thin, barely visible under the bangs) ==========
-    const browGeo = new THREE.CapsuleGeometry(0.003, 0.04, 4, 8);
+      const eye = new THREE.Mesh(eyeGeo, eyeWhiteMat);
+      eye.scale.set(1.05, 1.1, 0.42);
+      eyeGroup.add(eye);
+
+      const pupil = new THREE.Mesh(pupilGeo, blackMat);
+      pupil.position.set(0, -0.01, 0.025);
+      pupil.userData.baseX = 0;
+      pupil.userData.baseY = -0.01;
+      eyeGroup.add(pupil);
+      if (side === -1) this.leftPupil = pupil;
+      else this.rightPupil = pupil;
+
+      // Catchlight
+      const highlight = new THREE.Mesh(hlGeo, eyeWhiteMat);
+      highlight.position.set(side * 0.012, 0.018, 0.045);
+      eyeGroup.add(highlight);
+
+      // Eyelid (skin-toned half-sphere, hidden when open)
+      const eyelid = new THREE.Mesh(
+        new THREE.SphereGeometry(0.058, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
+        skinMat
+      );
+      eyelid.scale.set(1.05, 1.1, 0.42);
+      eyelid.visible = false;
+      eyeGroup.add(eyelid);
+      if (side === -1) this.leftEyelid = eyelid;
+      else this.rightEyelid = eyelid;
+
+      headGroup.add(eyeGroup);
+    };
+    createEye(-1);
+    createEye(1);
+
+    // Highlights on the lenses (classic anime glasses glare)
+    const leftLensHl = new THREE.Mesh(hlGeo, eyeWhiteMat);
+    leftLensHl.position.set(-0.11, 0.055, 0.335);
+    headGroup.add(leftLensHl);
+
+    const rightLensHl = new THREE.Mesh(hlGeo, eyeWhiteMat);
+    rightLensHl.position.set(0.13, 0.055, 0.335);
+    headGroup.add(rightLensHl);
+
+    // ========== EYEBROWS (thicker and lower so they read through the bangs) ==========
+    const browGeo = new THREE.CapsuleGeometry(0.006, 0.06, 4, 8);
     const leftBrow = new THREE.Mesh(browGeo, blackMat);
-    leftBrow.position.set(-0.12, 0.17, 0.30);
-    leftBrow.rotation.z = Math.PI / 2 + 0.05;
+    leftBrow.position.set(-0.12, 0.13, 0.31);
+    leftBrow.rotation.z = Math.PI / 2 + 0.08;
     headGroup.add(leftBrow);
 
     const rightBrow = new THREE.Mesh(browGeo, blackMat);
-    rightBrow.position.set(0.12, 0.17, 0.30);
-    rightBrow.rotation.z = Math.PI / 2 - 0.05;
+    rightBrow.position.set(0.12, 0.13, 0.31);
+    rightBrow.rotation.z = Math.PI / 2 - 0.08;
     headGroup.add(rightBrow);
     this.leftEyebrow = leftBrow;
     this.rightEyebrow = rightBrow;

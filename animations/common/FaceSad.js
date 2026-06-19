@@ -1,4 +1,4 @@
-﻿import { AnimationBase, PoseMatrix } from 'dula-engine';
+import { AnimationBase, PoseMatrix } from 'dula-engine';
 
 /**
  * FaceSad — 悲伤/沮丧表情
@@ -26,27 +26,26 @@ export class FaceSad extends AnimationBase {
     const ease = t < 0.3 ? t / 0.3 : 1;
     const pose = new PoseMatrix();
 
-    // Eyebrows: inner edges raise (sad arch / \ shape)
+    // Eyebrows: inner edges raise strongly (sad arch / \ shape)
     pose.eyebrows = {
-      left: { py: ease * 0.01, rz: -ease * 0.3 },
-      right: { py: ease * 0.01, rz: ease * 0.3 },
+      left: { py: ease * 0.022, rz: -ease * 0.55 },
+      right: { py: ease * 0.022, rz: ease * 0.55 },
     };
 
     // Eyelids: half-closed (droopy eyes)
     pose.eyelids = {
-      left: { visible: true, sy: -ease * 0.5 },
-      right: { visible: true, sy: -ease * 0.5 },
+      left: { visible: true, sy: -ease * 0.55 },
+      right: { visible: true, sy: -ease * 0.55 },
     };
 
     // Pupils: look down slightly
     pose.pupils = {
-      left: { py: -ease * 0.008 },
-      right: { py: -ease * 0.008 },
+      left: { py: -ease * 0.015 },
+      right: { py: -ease * 0.015 },
     };
 
-    // Mouth: curve down (frown)
-    // 注意：mouth 是 TubeGeometry，rz 旋转会导致"飞嘴"
-    pose.mouth = { tension: 0.3 };
+    // Mouth: smaller and slightly droopy (frown) when not speaking
+    pose.mouth = { tension: 0.0, sx: -ease * 0.15, sy: -ease * 0.25 };
 
     // Head: droop forward
     pose.headGroup = {

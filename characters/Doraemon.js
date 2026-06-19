@@ -38,30 +38,56 @@ export class Doraemon extends CharacterBase {
     head.castShadow = true;
     headGroup.add(head);
 
-    // Eyes
+    // Eyes — grouped so pupils/eyelids move together
     const eyeWhiteGeo = new THREE.SphereGeometry(0.18, 32, 32);
-    const leftEye = new THREE.Mesh(eyeWhiteGeo, whiteMat);
-    leftEye.position.set(-0.18, 0.35, 0.55);
-    leftEye.scale.z = 0.5;
-    headGroup.add(leftEye);
+    const pupilGeo = new THREE.SphereGeometry(0.045, 16, 16);
+    const highlightGeo = new THREE.SphereGeometry(0.018, 8, 8);
 
-    const rightEye = new THREE.Mesh(eyeWhiteGeo, whiteMat);
-    rightEye.position.set(0.18, 0.35, 0.55);
-    rightEye.scale.z = 0.5;
-    headGroup.add(rightEye);
+    for (const side of [-1, 1]) {
+      const eyeGroup = new THREE.Group();
+      eyeGroup.position.set(side * 0.18, 0.35, 0.55);
 
-    const pupilGeo = new THREE.SphereGeometry(0.04, 16, 16);
-    const leftPupil = new THREE.Mesh(pupilGeo, blackMat);
-    leftPupil.position.set(-0.18, 0.35, 0.64);
-    leftPupil.userData.baseX = leftPupil.position.x;
-    headGroup.add(leftPupil);
-    this.leftPupil = leftPupil;
+      const eyeWhite = new THREE.Mesh(eyeWhiteGeo, whiteMat);
+      eyeWhite.scale.z = 0.5;
+      eyeGroup.add(eyeWhite);
 
-    const rightPupil = new THREE.Mesh(pupilGeo, blackMat);
-    rightPupil.position.set(0.18, 0.35, 0.64);
-    rightPupil.userData.baseX = rightPupil.position.x;
-    headGroup.add(rightPupil);
-    this.rightPupil = rightPupil;
+      const pupil = new THREE.Mesh(pupilGeo, blackMat);
+      pupil.position.set(0, 0, 0.10);
+      pupil.scale.z = 0.6;
+      pupil.userData.baseX = 0;
+      pupil.userData.baseY = 0;
+      eyeGroup.add(pupil);
+      if (side === -1) this.leftPupil = pupil;
+      else this.rightPupil = pupil;
+
+      // Catchlight
+      const highlight = new THREE.Mesh(highlightGeo, whiteMat);
+      highlight.position.set(side * 0.03, 0.05, 0.12);
+      eyeGroup.add(highlight);
+
+      // Eyelid (blue half-sphere, hidden when open)
+      const eyelidMat = new THREE.MeshToonMaterial({ color: 0x0096e1, gradientMap: toonGradient });
+      const eyelidGeo = new THREE.SphereGeometry(0.19, 24, 24, 0, Math.PI * 2, 0, Math.PI * 0.5);
+      const eyelid = new THREE.Mesh(eyelidGeo, eyelidMat);
+      eyelid.visible = false;
+      eyeGroup.add(eyelid);
+      if (side === -1) this.leftEyelid = eyelid;
+      else this.rightEyelid = eyelid;
+
+      headGroup.add(eyeGroup);
+    }
+
+    // Eyebrows — thick black arcs that expression animations can raise/angle
+    const browGeo = new THREE.CapsuleGeometry(0.02, 0.16, 4, 8);
+    for (const side of [-1, 1]) {
+      const brow = new THREE.Mesh(browGeo, blackMat);
+      brow.position.set(side * 0.18, 0.52, 0.60);
+      brow.rotation.z = Math.PI / 2 + side * 0.25;
+      brow.rotation.x = -0.15;
+      headGroup.add(brow);
+      if (side === -1) this.leftEyebrow = brow;
+      else this.rightEyebrow = brow;
+    }
 
     // Nose
     const noseGeo = new THREE.SphereGeometry(0.08, 32, 32);
@@ -69,20 +95,38 @@ export class Doraemon extends CharacterBase {
     nose.position.set(0, 0.12, 0.68);
     headGroup.add(nose);
 
-    // Mouth — cone jaw that opens naturally during lip-sync
-    // Base (wide part) faces up, tip points down; rotating x toward PI closes it,
-    // decreasing x opens the mouth.
-    const mouthGeo = new THREE.ConeGeometry(0.14, 0.28, 24);
-    const mouth = new THREE.Mesh(mouthGeo, blackMat);
+    // Mouth — classic Doraemon crescent smile that opens naturally for lip-sync
+    // Structure: upper lip (smile curve), lower lip (small black sphere), cavity (dark red).
+    const mouth = new THREE.Group();
     mouth.position.set(0, -0.18, 0.62);
-    mouth.rotation.x = Math.PI; // closed resting pose
-    mouth.rotation.z = Math.PI; // make the seam face back so it looks like a smile line
+
+    const smileCurve = new THREE.QuadraticBezierCurve3(
+      new THREE.Vector3(-0.13, 0, 0),
+      new THREE.Vector3(0, -0.045, 0.01),
+      new THREE.Vector3(0.13, 0, 0)
+    );
+    const upperLipGeo = new THREE.TubeGeometry(smileCurve, 20, 0.012, 8, false);
+    const upperLip = new THREE.Mesh(upperLipGeo, blackMat);
+    mouth.add(upperLip);
+    this.upperLip = upperLip;
+
+    const lowerLip = new THREE.Mesh(new THREE.SphereGeometry(0.055, 16, 16), blackMat);
+    lowerLip.position.set(0, -0.025, 0.008);
+    lowerLip.scale.set(1.4, 0.45, 0.9);
+    mouth.add(lowerLip);
+    this.lowerLip = lowerLip;
+
+    const cavityMat = new THREE.MeshBasicMaterial({ color: 0x330000 });
+    const mouthCavity = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 16), cavityMat);
+    mouthCavity.position.set(0, -0.02, 0.005);
+    mouthCavity.scale.set(1.1, 0.55, 0.7);
+    mouthCavity.visible = false;
+    mouth.add(mouthCavity);
+    this.mouthCavity = mouthCavity;
+
     headGroup.add(mouth);
     this.mouth = mouth;
-    this.mouthBaseScaleX = 1;
-    this.mouthBaseScaleY = 1;
-    this.mouthBaseScaleZ = 1;
-    this.mouthBaseRotationX = Math.PI;
+    this.mouthBaseRotationX = 0;
 
     // Whiskers (classic Doraemon: 3 left, 3 right, horizontal fan radiating outward)
     const whiskerGeo = new THREE.CylinderGeometry(0.003, 0.003, 0.28, 8);

@@ -79,42 +79,45 @@ export class Shizuka extends CharacterBase {
 
     // ========== EYES ==========
     const eyeGeo = new THREE.SphereGeometry(0.06, 16, 16);
-
-    // Left eye white
-    const leftEye = new THREE.Mesh(eyeGeo, eyeWhiteMat);
-    leftEye.position.set(-0.11, 0.04, 0.28);
-    leftEye.scale.set(1, 1.15, 0.45);
-    headGroup.add(leftEye);
-
-    // Right eye white
-    const rightEye = new THREE.Mesh(eyeGeo, eyeWhiteMat);
-    rightEye.position.set(0.11, 0.04, 0.28);
-    rightEye.scale.set(1, 1.15, 0.45);
-    headGroup.add(rightEye);
-
-    // Pupils (larger for cute look)
     const pupilGeo = new THREE.SphereGeometry(0.032, 16, 16);
-    const leftPupil = new THREE.Mesh(pupilGeo, blackMat);
-    leftPupil.position.set(-0.11, 0.03, 0.31);
-    leftPupil.userData.baseX = leftPupil.position.x;
-    headGroup.add(leftPupil);
-    this.leftPupil = leftPupil;
-
-    const rightPupil = new THREE.Mesh(pupilGeo, blackMat);
-    rightPupil.position.set(0.11, 0.03, 0.31);
-    rightPupil.userData.baseX = rightPupil.position.x;
-    headGroup.add(rightPupil);
-    this.rightPupil = rightPupil;
-
-    // Highlights (small white dots for liveliness)
     const hlGeo = new THREE.SphereGeometry(0.009, 8, 8);
-    const leftHl = new THREE.Mesh(hlGeo, whiteMat);
-    leftHl.position.set(-0.1, 0.06, 0.33);
-    headGroup.add(leftHl);
 
-    const rightHl = new THREE.Mesh(hlGeo, whiteMat);
-    rightHl.position.set(0.12, 0.06, 0.33);
-    headGroup.add(rightHl);
+    const createEye = (side) => {
+      const eyeGroup = new THREE.Group();
+      eyeGroup.position.set(side * 0.11, 0.04, 0.28);
+
+      const eye = new THREE.Mesh(eyeGeo, eyeWhiteMat);
+      eye.scale.set(1, 1.15, 0.45);
+      eyeGroup.add(eye);
+
+      const pupil = new THREE.Mesh(pupilGeo, blackMat);
+      pupil.position.set(0, -0.01, 0.035);
+      pupil.userData.baseX = 0;
+      pupil.userData.baseY = -0.01;
+      eyeGroup.add(pupil);
+      if (side === -1) this.leftPupil = pupil;
+      else this.rightPupil = pupil;
+
+      // Catchlight
+      const highlight = new THREE.Mesh(hlGeo, whiteMat);
+      highlight.position.set(side * 0.01, 0.02, 0.055);
+      eyeGroup.add(highlight);
+
+      // Eyelid (skin-toned half-sphere, hidden when open)
+      const eyelid = new THREE.Mesh(
+        new THREE.SphereGeometry(0.063, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
+        skinMat
+      );
+      eyelid.scale.set(1, 1.15, 0.45);
+      eyelid.visible = false;
+      eyeGroup.add(eyelid);
+      if (side === -1) this.leftEyelid = eyelid;
+      else this.rightEyelid = eyelid;
+
+      headGroup.add(eyeGroup);
+    };
+    createEye(-1);
+    createEye(1);
 
     // Eyelashes (thin black cylinders above eyes)
     const lashGeo = new THREE.CylinderGeometry(0.002, 0.002, 0.05, 4);
@@ -131,14 +134,14 @@ export class Shizuka extends CharacterBase {
     headGroup.add(rightLash);
 
     // ========== EYEBROWS ==========
-    const browGeo = new THREE.CapsuleGeometry(0.0035, 0.055, 4, 8);
+    const browGeo = new THREE.CapsuleGeometry(0.005, 0.07, 4, 8);
     const leftBrow = new THREE.Mesh(browGeo, blackMat);
-    leftBrow.position.set(-0.11, 0.16, 0.29);
+    leftBrow.position.set(-0.11, 0.14, 0.30);
     leftBrow.rotation.z = 0.2;
     headGroup.add(leftBrow);
 
     const rightBrow = new THREE.Mesh(browGeo, blackMat);
-    rightBrow.position.set(0.11, 0.16, 0.29);
+    rightBrow.position.set(0.11, 0.14, 0.30);
     rightBrow.rotation.z = -0.2;
     headGroup.add(rightBrow);
     this.leftEyebrow = leftBrow;
