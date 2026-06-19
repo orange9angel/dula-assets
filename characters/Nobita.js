@@ -4,6 +4,7 @@ import { CharacterBase } from 'dula-engine';
 export class Nobita extends CharacterBase {
   constructor() {
     super('Nobita');
+    this.boundingRadius = 0.55;
   }
 
   build() {

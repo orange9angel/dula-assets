@@ -4,6 +4,7 @@ import { CharacterBase } from 'dula-engine';
 export class Shizuka extends CharacterBase {
   constructor() {
     super('Shizuka');
+    this.boundingRadius = 0.5;
   }
 
   build() {
@@ -310,5 +311,76 @@ export class Shizuka extends CharacterBase {
     rightLegGroup.add(rightShoe);
     this.mesh.add(rightLegGroup);
     this.rightLeg = rightLegGroup;
+
+    // Take-copter (bamboo-copter) prop — hidden by default
+    this.takeCopter = this.createTakeCopter();
+    this.takeCopter.visible = false;
+    this.headGroup.add(this.takeCopter);
+  }
+
+  createTakeCopter() {
+    const group = new THREE.Group();
+    group.position.y = 0.36; // on top of head
+
+    const toonGradient = (() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 4; canvas.height = 1;
+      const ctx = canvas.getContext('2d');
+      const g = ctx.createLinearGradient(0, 0, 4, 0);
+      g.addColorStop(0, '#aaa'); g.addColorStop(0.4, '#ccc'); g.addColorStop(0.7, '#eee'); g.addColorStop(1, '#fff');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, 4, 1);
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.magFilter = THREE.NearestFilter;
+      tex.minFilter = THREE.NearestFilter;
+      return tex;
+    })();
+
+    const yellowMat = new THREE.MeshToonMaterial({ color: 0xffd700, gradientMap: toonGradient });
+    const propMat = new THREE.MeshToonMaterial({ color: 0xdddddd, gradientMap: toonGradient });
+
+    // Base disc
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.025, 16), yellowMat);
+    group.add(base);
+
+    // Shaft
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.26, 8), propMat);
+    shaft.position.y = 0.14;
+    group.add(shaft);
+
+    // Blades (3 radiating flat ovals like a real bamboo-copter)
+    const bladeMat = new THREE.MeshToonMaterial({ color: 0xffcc33, gradientMap: toonGradient });
+    for (let i = 0; i < 3; i++) {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.012, 0.16), bladeMat);
+      blade.position.y = 0.28;
+      blade.rotation.y = (i / 3) * Math.PI * 2;
+      group.add(blade);
+    }
+
+    // Small cap on top
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 8), yellowMat);
+    cap.position.y = 0.30;
+    group.add(cap);
+
+    return group;
+  }
+
+  attachTakeCopter() {
+    if (this.takeCopter) {
+      this.takeCopter.visible = true;
+    }
+  }
+
+  detachTakeCopter() {
+    if (this.takeCopter) {
+      this.takeCopter.visible = false;
+    }
+  }
+
+  update(time, delta) {
+    super.update(time, delta);
+    if (this.takeCopter && this.takeCopter.visible) {
+      // Spin the blades
+      this.takeCopter.rotation.y += 15 * delta;
+    }
   }
 }

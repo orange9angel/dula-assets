@@ -5,6 +5,7 @@ export class Doraemon extends CharacterBase {
   constructor() {
     super('Doraemon');
     this.archetypes = ['round', 'tiny', 'robot'];
+    this.boundingRadius = 0.85;
   }
 
   build() {

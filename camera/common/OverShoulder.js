@@ -4,6 +4,11 @@ import { CameraMoveBase } from 'dula-engine';
 /**
  * Over-the-shoulder shot: camera sits behind one character's shoulder,
  * looking at another character. Creates a cinematic dialogue feel.
+ *
+ * Anti-clipping enhancements:
+ * - target == shooter is detected and automatically remapped to a different shooter
+ * - camera is kept outside both characters' bounding spheres
+ * - minimum distance to the target is enforced
  */
 export class OverShoulder extends CameraMoveBase {
   constructor(options = {}) {
@@ -17,11 +22,13 @@ export class OverShoulder extends CameraMoveBase {
     this.shoulderOffset = options.shoulderOffset ?? 0.6;
     this.height = options.height ?? 1.8;
     this.lookAtHeight = options.lookAtHeight ?? 1.6;
+    this.minMargin = options.minMargin ?? 0.35;
   }
 
   start(camera, context) {
     super.start(camera, context);
     this.startPos = camera.position.clone();
+    this._validateRoles(context);
   }
 
   update(t, camera, context) {
@@ -33,7 +40,12 @@ export class OverShoulder extends CameraMoveBase {
     const subjectPos = subjectChar.mesh.position.clone();
 
     // Direction from over-char to subject
-    const dir = new THREE.Vector3().subVectors(subjectPos, overPos).normalize();
+    const dir = new THREE.Vector3().subVectors(subjectPos, overPos);
+    if (dir.lengthSq() < 0.001) {
+      // Fallback if characters are at the same position: look toward +Z
+      dir.set(0, 0, 1);
+    }
+    dir.normalize();
 
     // Camera sits slightly behind and to the side of the over-char's shoulder
     const side = new THREE.Vector3(-dir.z, 0, dir.x).normalize().multiplyScalar(this.shoulderOffset);
@@ -44,11 +56,61 @@ export class OverShoulder extends CameraMoveBase {
 
     const lookAt = subjectPos.clone().add(new THREE.Vector3(0, this.lookAtHeight, 0));
 
+    // Enforce minimum distance from subject's head/face
+    const subjectRadius = subjectChar.boundingRadius || 0.5;
+    const minSubjectDist = subjectRadius * 0.6 + this.minMargin;
+    const toSubject = new THREE.Vector3().subVectors(this.endPos, subjectPos);
+    toSubject.y = 0;
+    const distToSubject = toSubject.length();
+    if (distToSubject < minSubjectDist && distToSubject > 0.001) {
+      toSubject.normalize().multiplyScalar(minSubjectDist);
+      this.endPos.x = subjectPos.x + toSubject.x;
+      this.endPos.z = subjectPos.z + toSubject.z;
+    }
+
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     const desiredPos = new THREE.Vector3().lerpVectors(this.startPos, this.endPos, eased);
     // Clamp camera above ground
     desiredPos.y = Math.max(0.5, desiredPos.y);
+
+    // Final anti-clipping pass: push camera out of all characters
+    this._resolveCharacterCollisions(desiredPos, context);
+
     camera.position.copy(desiredPos);
     camera.lookAt(lookAt);
+  }
+
+  _validateRoles(context) {
+    if (this.subject === this.over) {
+      console.warn(`[OverShoulder] target and shooter are both "${this.subject}". ` +
+        `This places the camera inside the character. Auto-remapping shooter.`);
+      const others = Array.from(context.characters.keys()).filter((name) => name !== this.subject);
+      if (others.length > 0) {
+        this.over = others[0];
+      } else {
+        // No other character available: fall back to looking over the subject's shoulder at +Z
+        this.over = this.subject;
+      }
+    }
+  }
+
+  _resolveCharacterCollisions(cameraPos, context) {
+    if (!context || !context.characters) return;
+    const chars = Array.from(context.characters.values()).filter((c) => c && c.mesh && c.mesh.visible !== false);
+
+    for (const c of chars) {
+      const radius = c.boundingRadius || 0.5;
+      const center = new THREE.Vector3();
+      c.mesh.getWorldPosition(center);
+      center.y += radius;
+
+      const toCam = new THREE.Vector3().subVectors(cameraPos, center);
+      const dist = toCam.length();
+      const minDist = radius + this.minMargin;
+      if (dist < minDist && dist > 0.001) {
+        toCam.normalize().multiplyScalar(minDist);
+        cameraPos.copy(center).add(toCam);
+      }
+    }
   }
 }
