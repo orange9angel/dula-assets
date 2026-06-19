@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CameraMoveBase } from 'dula-engine';
+import { CameraMoveBase, CameraCollisionGuard } from 'dula-engine';
 import { parseVecOption } from '../utils.js';
 
 /**
@@ -13,11 +13,16 @@ export class Static extends CameraMoveBase {
     this.lookAt = parseVecOption(options.lookAt);
   }
 
-  _apply(camera) {
+  _apply(camera, context) {
     if (this.position) {
       camera.position.copy(this.position);
-      // Clamp camera above ground
-      camera.position.y = Math.max(0.5, camera.position.y);
+      // Resolve clipping against characters and scene geometry
+      if (context) {
+        CameraCollisionGuard.resolve(camera.position, context, { margin: 0.4 });
+      } else {
+        // Clamp camera above ground
+        camera.position.y = Math.max(0.5, camera.position.y);
+      }
     }
     if (this.lookAt) {
       camera.lookAt(this.lookAt);
@@ -26,10 +31,10 @@ export class Static extends CameraMoveBase {
 
   start(camera, context) {
     super.start(camera, context);
-    this._apply(camera);
+    this._apply(camera, context);
   }
 
   update(t, camera, context) {
-    this._apply(camera);
+    this._apply(camera, context);
   }
 }

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CameraMoveBase } from 'dula-engine';
+import { CameraMoveBase, CameraCollisionGuard } from 'dula-engine';
 
 /**
  * Close-up shot on a character's face.
@@ -75,37 +75,9 @@ export class CloseUp extends CameraMoveBase {
       this.startPos = camera.position.clone();
     }
 
-    // Anti-clipping: push start/end camera positions out of all character bounding spheres
-    this._resolveCharacterCollisions(context);
-  }
-
-  _resolveCharacterCollisions(context) {
-    if (!context || !context.characters) return;
-    const chars = Array.from(context.characters.values()).filter((c) => c && c.mesh && c.mesh.visible !== false);
-
-    for (const c of chars) {
-      const radius = c.boundingRadius || 0.5;
-      const center = new THREE.Vector3();
-      c.mesh.getWorldPosition(center);
-      center.y += radius; // approximate torso/head center
-
-      // Push end position out
-      const toEnd = new THREE.Vector3().subVectors(this.endPos, center);
-      const distEnd = toEnd.length();
-      const minDistEnd = radius + this.minMargin;
-      if (distEnd < minDistEnd && distEnd > 0.001) {
-        toEnd.normalize().multiplyScalar(minDistEnd);
-        this.endPos.copy(center).add(toEnd);
-      }
-
-      // Push start position out so the interpolation path does not begin inside a character
-      const toStart = new THREE.Vector3().subVectors(this.startPos, center);
-      const distStart = toStart.length();
-      const minDistStart = radius + this.minMargin;
-      if (distStart < minDistStart && distStart > 0.001) {
-        toStart.normalize().multiplyScalar(minDistStart);
-        this.startPos.copy(center).add(toStart);
-      }
+    // Anti-clipping: push start/end camera positions out of characters and scene geometry
+    if (context) {
+      CameraCollisionGuard.resolvePath(this.startPos, this.endPos, context, { margin: this.minMargin });
     }
   }
 }

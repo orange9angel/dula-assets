@@ -232,6 +232,31 @@ export class ParkScene extends SceneBase {
     fountainGroup.add(water);
     this.scene.add(fountainGroup);
 
+    // Camera collision proxies
+    this.registerCameraObstacle({ type: 'sphere', center: new THREE.Vector3(0, 0.8, 0), radius: 2.4 });
+    for (const [lx, lz] of [[-3, 3], [3, -3], [-15, -8], [15, 8]]) {
+      this.registerCameraObstacle({
+        type: 'capsule',
+        start: new THREE.Vector3(lx, 0, lz),
+        end: new THREE.Vector3(lx, 3.8, lz),
+        radius: 0.25,
+      });
+    }
+    for (const [x, y, z] of treePositions) {
+      const scale = 0.7 + Math.random() * 0.6;
+      this.registerCameraObstacle({
+        type: 'capsule',
+        start: new THREE.Vector3(x, y, z),
+        end: new THREE.Vector3(x, y + 3.5 * scale, z),
+        radius: 1.7 * scale,
+      });
+    }
+    for (const [bx, by, bz, br] of benchPositions) {
+      this.registerCameraObstacle({ type: 'box', center: new THREE.Vector3(bx, 0.6, bz), size: new THREE.Vector3(2.8, 1.2, 1.0), rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), br) });
+    }
+    this.registerCameraObstacle({ type: 'box', center: new THREE.Vector3(-8, 1.0, -12), size: new THREE.Vector3(3.0, 3.5, 2.0) });
+    this.registerCameraObstacle({ type: 'box', center: new THREE.Vector3(10, 1.2, -10), size: new THREE.Vector3(2.0, 3.0, 4.0) });
+
     // ---- Clouds (more variety) ----
     const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.85, roughness: 1.0 });
     const cloudPositions = [

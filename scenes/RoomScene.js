@@ -216,6 +216,14 @@ export class RoomScene extends SceneBase {
     rug.receiveShadow = true;
     this.scene.add(rug);
 
+    // Camera collision proxies for major furniture
+    this.registerCameraObstacle({ type: 'box', center: new THREE.Vector3(0, 0.9, -3), size: new THREE.Vector3(3.4, 1.8, 1.8) });
+    this.registerCameraObstacle({ type: 'box', center: new THREE.Vector3(0, 0.9, -1.5), size: new THREE.Vector3(1.2, 1.8, 1.2) });
+    this.registerCameraObstacle({ type: 'box', center: new THREE.Vector3(-9.85, 1.75, 2), size: new THREE.Vector3(0.5, 3.6, 2.7) });
+    this.registerCameraObstacle({ type: 'box', center: new THREE.Vector3(7, 0.6, -1), size: new THREE.Vector3(2.4, 1.2, 3.3) });
+    this.registerCameraObstacle({ type: 'box', center: new THREE.Vector3(-7, 2.0, -4.3), size: new THREE.Vector3(2.7, 4.0, 1.4) });
+    this.registerCameraObstacle({ type: 'box', center: new THREE.Vector3(-9.85, 2, 2), size: new THREE.Vector3(0.3, 3.9, 2.2) });
+
     // Window
     const windowFrameGeo = new THREE.BoxGeometry(4, 3, 0.1);
     const frameMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.4 });

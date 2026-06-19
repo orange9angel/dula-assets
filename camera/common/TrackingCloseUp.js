@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CameraMoveBase } from 'dula-engine';
+import { CameraMoveBase, CameraCollisionGuard } from 'dula-engine';
 
 /**
  * Tracking close-up: follows a moving character while maintaining a tight face shot.
@@ -37,6 +37,11 @@ export class TrackingCloseUp extends CameraMoveBase {
 
     const camPos = lookAt.clone().add(camDir.multiplyScalar(this.distance));
     camPos.y = Math.max(0.5, lookAt.y + 0.02);
+
+    // Anti-clipping pass for moving characters / scene obstacles
+    if (context) {
+      CameraCollisionGuard.resolve(camPos, context, { margin: 0.35 });
+    }
 
     camera.position.copy(camPos);
     camera.lookAt(lookAt);

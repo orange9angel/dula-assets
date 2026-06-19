@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CameraMoveBase } from 'dula-engine';
+import { CameraMoveBase, CameraCollisionGuard } from 'dula-engine';
 
 /**
  * Over-the-shoulder shot: camera sits behind one character's shoulder,
@@ -73,8 +73,10 @@ export class OverShoulder extends CameraMoveBase {
     // Clamp camera above ground
     desiredPos.y = Math.max(0.5, desiredPos.y);
 
-    // Final anti-clipping pass: push camera out of all characters
-    this._resolveCharacterCollisions(desiredPos, context);
+    // Final anti-clipping pass: push camera out of all characters and scene geometry
+    if (context) {
+      CameraCollisionGuard.resolve(desiredPos, context, { margin: this.minMargin });
+    }
 
     camera.position.copy(desiredPos);
     camera.lookAt(lookAt);
@@ -94,23 +96,4 @@ export class OverShoulder extends CameraMoveBase {
     }
   }
 
-  _resolveCharacterCollisions(cameraPos, context) {
-    if (!context || !context.characters) return;
-    const chars = Array.from(context.characters.values()).filter((c) => c && c.mesh && c.mesh.visible !== false);
-
-    for (const c of chars) {
-      const radius = c.boundingRadius || 0.5;
-      const center = new THREE.Vector3();
-      c.mesh.getWorldPosition(center);
-      center.y += radius;
-
-      const toCam = new THREE.Vector3().subVectors(cameraPos, center);
-      const dist = toCam.length();
-      const minDist = radius + this.minMargin;
-      if (dist < minDist && dist > 0.001) {
-        toCam.normalize().multiplyScalar(minDist);
-        cameraPos.copy(center).add(toCam);
-      }
-    }
-  }
 }
