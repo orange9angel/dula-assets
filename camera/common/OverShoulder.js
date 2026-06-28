@@ -18,16 +18,21 @@ export class OverShoulder extends CameraMoveBase {
     // - story DSL: target (who we're looking at) / shooter (whose shoulder we're over)
     this.subject = options.subject ?? options.target ?? 'Shizuka';
     this.over = options.over ?? options.shooter ?? 'Nobita';
-    this.distance = options.distance ?? 2.5;
+    this.distance = options.distance ?? 0.8;
     this.shoulderOffset = options.shoulderOffset ?? 0.6;
     this.height = options.height ?? 1.8;
     this.lookAtHeight = options.lookAtHeight ?? 1.6;
     this.minMargin = options.minMargin ?? 0.35;
+    this.fov = options.fov ?? options.FOV ?? null; // degrees; null keeps current FOV
   }
 
   start(camera, context) {
     super.start(camera, context);
     this.startPos = camera.position.clone();
+    if (this.fov != null) {
+      camera.fov = this.fov;
+      camera.updateProjectionMatrix();
+    }
     this._validateRoles(context);
   }
 
@@ -50,7 +55,7 @@ export class OverShoulder extends CameraMoveBase {
     // Camera sits slightly behind and to the side of the over-char's shoulder
     const side = new THREE.Vector3(-dir.z, 0, dir.x).normalize().multiplyScalar(this.shoulderOffset);
     this.endPos = overPos.clone()
-      .add(dir.multiplyScalar(-0.8)) // slightly behind
+      .add(dir.multiplyScalar(-this.distance)) // behind the shoulder character
       .add(side)
       .add(new THREE.Vector3(0, this.height, 0));
 
@@ -78,6 +83,10 @@ export class OverShoulder extends CameraMoveBase {
       CameraCollisionGuard.resolve(desiredPos, context, { margin: this.minMargin });
     }
 
+    if (this.fov != null) {
+      camera.fov = this.fov;
+      camera.updateProjectionMatrix();
+    }
     camera.position.copy(desiredPos);
     camera.lookAt(lookAt);
   }

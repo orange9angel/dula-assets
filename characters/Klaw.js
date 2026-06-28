@@ -55,8 +55,10 @@ export class Klaw extends CharacterBase {
     snout.scale.set(1, 1.3, 0.7);
     headGroup.add(snout);
 
-    // Lower jaw — separate hinged jaw, pronounced underbite
-    const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.07, 0.22), scaleDarkMat);
+    // Lower jaw — rounded hinged jaw, less blocky
+    const jaw = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, 0.16, 4, 10), scaleDarkMat);
+    jaw.rotation.x = Math.PI / 2;
+    jaw.scale.set(1.05, 0.55, 1.0);
     jaw.position.set(0, -0.22, 0.26);
     headGroup.add(jaw);
     this.jaw = jaw;

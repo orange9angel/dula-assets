@@ -13,7 +13,7 @@ export class Shizuka extends CharacterBase {
       canvas.width = 4; canvas.height = 1;
       const ctx = canvas.getContext('2d');
       const g = ctx.createLinearGradient(0, 0, 4, 0);
-      g.addColorStop(0, '#aaa'); g.addColorStop(0.4, '#ccc'); g.addColorStop(0.7, '#eee'); g.addColorStop(1, '#fff');
+      g.addColorStop(0, '#888'); g.addColorStop(0.4, '#aaa'); g.addColorStop(0.7, '#d0d0d0'); g.addColorStop(1, '#e0e0e0');
       ctx.fillStyle = g; ctx.fillRect(0, 0, 4, 1);
       const tex = new THREE.CanvasTexture(canvas);
       tex.magFilter = THREE.NearestFilter;
@@ -253,33 +253,77 @@ export class Shizuka extends CharacterBase {
     rightSleeve.scale.set(1, 0.85, 1);
     this.mesh.add(rightSleeve);
 
-    // ========== ARMS + HANDS ==========
+    // ========== ARMS + HANDS (带关节细节) ==========
     const handGeo = new THREE.SphereGeometry(0.065, 16, 16);
+    const jointMat = new THREE.MeshToonMaterial({ color: 0xff6b8a, gradientMap: toonGradient });
 
     const addArm = (sx, sy, sz, hx, hy, hz, isRight) => {
-      const group = new THREE.Group();
-      group.position.set(sx, sy, sz);
-      group.lookAt(hx, hy, hz);
-      group.rotateX(-Math.PI / 2);
+      const shoulder = new THREE.Group();
+      shoulder.position.set(sx, sy, sz);
+      shoulder.lookAt(hx, hy, hz);
+      shoulder.rotateX(-Math.PI / 2);
 
       const len = Math.sqrt((hx - sx) ** 2 + (hy - sy) ** 2 + (hz - sz) ** 2);
-      const capLen = Math.max(0.01, len - 0.13);
-      const armMesh = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, capLen, 4, 16), skinMat);
-      armMesh.position.y = -len / 2;
-      group.add(armMesh);
+      const upperLen = len * 0.5;
+      const lowerLen = len * 0.5;
+
+      // 上臂
+      const upperArm = new THREE.Mesh(
+        new THREE.CapsuleGeometry(0.05, Math.max(0.01, upperLen - 0.12), 4, 14),
+        skinMat
+      );
+      upperArm.position.y = -upperLen / 2;
+      shoulder.add(upperArm);
+
+      // 肘关节
+      const elbow = new THREE.Group();
+      elbow.position.y = -upperLen;
+      shoulder.add(elbow);
+
+      const elbowRing = new THREE.Mesh(
+        new THREE.TorusGeometry(0.052, 0.009, 8, 16),
+        jointMat
+      );
+      elbowRing.rotation.x = Math.PI / 2;
+      elbow.add(elbowRing);
+
+      // 前臂 + 袖口
+      const lowerArm = new THREE.Mesh(
+        new THREE.CapsuleGeometry(0.045, Math.max(0.01, lowerLen - 0.14), 4, 14),
+        skinMat
+      );
+      lowerArm.position.y = -lowerLen / 2;
+      elbow.add(lowerArm);
+
+      const cuff = new THREE.Mesh(
+        new THREE.TorusGeometry(0.048, 0.008, 8, 16),
+        whiteMat
+      );
+      cuff.position.y = -lowerLen + 0.04;
+      cuff.rotation.x = Math.PI / 2;
+      elbow.add(cuff);
+
+      // 手腕/手
+      const wrist = new THREE.Group();
+      wrist.position.y = -lowerLen;
+      elbow.add(wrist);
 
       const handMesh = new THREE.Mesh(handGeo, skinMat);
-      handMesh.position.y = -len;
-      group.add(handMesh);
+      handMesh.position.y = -0.02;
+      wrist.add(handMesh);
 
-      this.mesh.add(group);
+      this.mesh.add(shoulder);
       if (isRight) {
-        this.rightArm = group;
+        this.rightArm = shoulder;
+        this.rightElbow = elbow;
+        this.rightWrist = wrist;
         this.rightArmLength = len;
-        this.rightArmBaseZ = group.rotation.z;
+        this.rightArmBaseZ = shoulder.rotation.z;
       } else {
-        this.leftArm = group;
-        this.leftArmBaseZ = group.rotation.z;
+        this.leftArm = shoulder;
+        this.leftElbow = elbow;
+        this.leftWrist = wrist;
+        this.leftArmBaseZ = shoulder.rotation.z;
       }
     };
 
@@ -287,33 +331,67 @@ export class Shizuka extends CharacterBase {
     addArm(-0.3, 1.35, 0, -0.38, 0.82, 0, false);
     addArm(0.3, 1.35, 0, 0.38, 0.82, 0, true);
 
-    // ========== LEGS + SHOES ==========
+    // ========== LEGS + SHOES (带膝关节) ==========
     const legGeo = new THREE.CylinderGeometry(0.065, 0.065, 0.38, 16);
     const shoeGeo = new THREE.SphereGeometry(0.095, 16, 16);
 
-    const leftLegGroup = new THREE.Group();
-    leftLegGroup.position.set(-0.12, 0.58, 0);
-    const leftLegMesh = new THREE.Mesh(legGeo, skinMat);
-    leftLegMesh.position.y = -0.19;
-    leftLegGroup.add(leftLegMesh);
-    const leftShoe = new THREE.Mesh(shoeGeo, shoeMat);
-    leftShoe.position.set(0, -0.38, 0.04);
-    leftShoe.scale.set(1, 0.6, 1.5);
-    leftLegGroup.add(leftShoe);
-    this.mesh.add(leftLegGroup);
-    this.leftLeg = leftLegGroup;
+    const addLeg = (x, isRight) => {
+      const hip = new THREE.Group();
+      hip.position.set(x, 0.58, 0);
 
-    const rightLegGroup = new THREE.Group();
-    rightLegGroup.position.set(0.12, 0.58, 0);
-    const rightLegMesh = new THREE.Mesh(legGeo, skinMat);
-    rightLegMesh.position.y = -0.19;
-    rightLegGroup.add(rightLegMesh);
-    const rightShoe = new THREE.Mesh(shoeGeo, shoeMat);
-    rightShoe.position.set(0, -0.38, 0.04);
-    rightShoe.scale.set(1, 0.6, 1.5);
-    rightLegGroup.add(rightShoe);
-    this.mesh.add(rightLegGroup);
-    this.rightLeg = rightLegGroup;
+      const thighLen = 0.2;
+      const shinLen = 0.2;
+
+      const thigh = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.065, 0.055, thighLen, 16),
+        skinMat
+      );
+      thigh.position.y = -thighLen / 2;
+      hip.add(thigh);
+
+      // 膝关节
+      const knee = new THREE.Group();
+      knee.position.y = -thighLen;
+      hip.add(knee);
+
+      const kneeRing = new THREE.Mesh(
+        new THREE.TorusGeometry(0.058, 0.008, 8, 16),
+        jointMat
+      );
+      kneeRing.rotation.x = Math.PI / 2;
+      knee.add(kneeRing);
+
+      const shin = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.055, 0.05, shinLen, 16),
+        skinMat
+      );
+      shin.position.y = -shinLen / 2;
+      knee.add(shin);
+
+      // 脚踝/鞋
+      const ankle = new THREE.Group();
+      ankle.position.y = -shinLen;
+      knee.add(ankle);
+
+      const shoe = new THREE.Mesh(shoeGeo, shoeMat);
+      shoe.position.set(0, -0.04, 0.04);
+      shoe.scale.set(1, 0.6, 1.5);
+      ankle.add(shoe);
+
+      this.mesh.add(hip);
+      if (isRight) {
+        this.rightLeg = hip;
+        this.rightKnee = knee;
+        this.rightAnkle = ankle;
+      } else {
+        this.leftLeg = hip;
+        this.leftKnee = knee;
+        this.leftAnkle = ankle;
+      }
+    };
+
+    addLeg(-0.12, false);
+    addLeg(0.12, true);
 
     // Take-copter (bamboo-copter) prop — hidden by default
     this.takeCopter = this.createTakeCopter();
@@ -330,7 +408,7 @@ export class Shizuka extends CharacterBase {
       canvas.width = 4; canvas.height = 1;
       const ctx = canvas.getContext('2d');
       const g = ctx.createLinearGradient(0, 0, 4, 0);
-      g.addColorStop(0, '#aaa'); g.addColorStop(0.4, '#ccc'); g.addColorStop(0.7, '#eee'); g.addColorStop(1, '#fff');
+      g.addColorStop(0, '#888'); g.addColorStop(0.4, '#aaa'); g.addColorStop(0.7, '#d0d0d0'); g.addColorStop(1, '#e0e0e0');
       ctx.fillStyle = g; ctx.fillRect(0, 0, 4, 1);
       const tex = new THREE.CanvasTexture(canvas);
       tex.magFilter = THREE.NearestFilter;

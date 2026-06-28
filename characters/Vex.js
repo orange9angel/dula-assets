@@ -27,11 +27,65 @@ export class Vex extends CharacterBase {
   build() {
     const toonGradient = this.createToonGradient();
 
+    // 复眼六边形网格纹理
+    const createCompoundEyeTexture = () => {
+      const size = 256;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#061126';
+      ctx.fillRect(0, 0, size, size);
+
+      const r = 10;
+      const w = r * Math.sqrt(3);
+      const h = r * 1.5;
+      const cols = Math.ceil(size / w) + 1;
+      const rows = Math.ceil(size / h) + 1;
+
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const cx = col * w + (row % 2) * (w / 2);
+          const cy = row * h;
+          ctx.beginPath();
+          for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i;
+            const px = cx + r * Math.cos(angle);
+            const py = cy + r * Math.sin(angle);
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          const grad = ctx.createRadialGradient(cx, cy, 1, cx, cy, r);
+          grad.addColorStop(0, '#66ffcc');
+          grad.addColorStop(1, '#1a4a5a');
+          ctx.fillStyle = grad;
+          ctx.fill();
+          ctx.strokeStyle = '#0a2a3a';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      return tex;
+    };
+
     // Materials
     const shellMat = new THREE.MeshToonMaterial({ color: 0x1a3a6a, gradientMap: toonGradient });
     const shellLightMat = new THREE.MeshToonMaterial({ color: 0x2a5a9a, gradientMap: toonGradient });
     const shellDarkMat = new THREE.MeshToonMaterial({ color: 0x0f1f3f, gradientMap: toonGradient });
-    const eyeMat = new THREE.MeshToonMaterial({ color: 0x66ffcc, gradientMap: toonGradient });
+    const eyeTex = createCompoundEyeTexture();
+    const eyeMat = new THREE.MeshStandardMaterial({
+      color: 0x113344,
+      map: eyeTex,
+      emissive: 0x44ffcc,
+      emissiveMap: eyeTex,
+      emissiveIntensity: 0.75,
+      roughness: 0.35,
+      metalness: 0.15,
+    });
     const wingMat = new THREE.MeshBasicMaterial({
       color: 0x88ccff, transparent: true, opacity: 0.25, side: THREE.DoubleSide,
     });
@@ -291,60 +345,54 @@ export class Vex extends CharacterBase {
   addInsectEyes(headGroup, eyeMat) {
     // Four eyes in diamond pattern — larger, more prominent
     const eyePositions = [
-      [-0.08, 0.07, 0.2],   // upper left
-      [0.08, 0.07, 0.2],    // upper right
-      [-0.09, -0.03, 0.19], // lower left
-      [0.09, -0.03, 0.19],  // lower right
+      [-0.085, 0.075, 0.2],   // upper left
+      [0.085, 0.075, 0.2],    // upper right
+      [-0.095, -0.035, 0.19], // lower left
+      [0.095, -0.035, 0.19],  // lower right
     ];
+
+    const wireMat = new THREE.MeshBasicMaterial({
+      color: 0x88ffee,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.35,
+    });
+    const socketRimMat = new THREE.MeshToonMaterial({ color: 0x0a1a3a });
 
     for (let i = 0; i < 4; i++) {
       const [ex, ey, ez] = eyePositions[i];
-      // Eye socket — larger
+      const eyeGroup = new THREE.Group();
+      eyeGroup.position.set(ex, ey, ez);
+      headGroup.add(eyeGroup);
+
+      // Eye socket backing
       const socket = new THREE.Mesh(
-        new THREE.SphereGeometry(0.055, 14, 14),
-        new THREE.MeshToonMaterial({ color: 0x0a1a3a })
+        new THREE.SphereGeometry(0.06, 16, 16),
+        socketRimMat
       );
-      socket.position.set(ex, ey, ez);
-      socket.scale.set(1.15, 1.15, 0.55);
-      headGroup.add(socket);
+      socket.scale.set(1.2, 1.2, 0.55);
+      eyeGroup.add(socket);
 
-      // Compound eye — larger
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.05, 14, 14), eyeMat);
-      eye.position.set(ex, ey, ez + 0.025);
-      eye.scale.set(1, 1, 0.5);
-      headGroup.add(eye);
+      // Compound eye dome with hex texture
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.056, 24, 24), eyeMat);
+      eye.scale.set(1, 1, 0.52);
+      eye.rotation.y = (ex > 0 ? -1 : 1) * 0.15;
+      eyeGroup.add(eye);
 
-      // Facet pattern — more segments (hex-like arrangement)
-      const facetCount = 9;
-      for (let f = 0; f < facetCount; f++) {
-        const angle = (f / facetCount) * Math.PI * 2;
-        const radius = f % 2 === 0 ? 0.025 : 0.015;
-        const facet = new THREE.Mesh(
-          new THREE.SphereGeometry(0.007, 4, 4),
-          new THREE.MeshBasicMaterial({ color: 0x44ffcc, transparent: true, opacity: 0.6 })
-        );
-        facet.position.set(
-          ex + Math.cos(angle) * radius,
-          ey + Math.sin(angle) * radius,
-          ez + 0.045
-        );
-        headGroup.add(facet);
-      }
+      // Wireframe overlay for extra grid readability
+      const wire = new THREE.Mesh(new THREE.SphereGeometry(0.058, 12, 12), wireMat);
+      wire.scale.set(1, 1, 0.54);
+      wire.rotation.y = eye.rotation.y;
+      eyeGroup.add(wire);
 
-      // Inner facet ring
-      for (let f = 0; f < 5; f++) {
-        const angle = (f / 5) * Math.PI * 2 + 0.3;
-        const facet = new THREE.Mesh(
-          new THREE.SphereGeometry(0.005, 4, 4),
-          new THREE.MeshBasicMaterial({ color: 0x66ffee, transparent: true, opacity: 0.7 })
-        );
-        facet.position.set(
-          ex + Math.cos(angle) * 0.01,
-          ey + Math.sin(angle) * 0.01,
-          ez + 0.048
-        );
-        headGroup.add(facet);
-      }
+      // Raised socket rim
+      const rim = new THREE.Mesh(
+        new THREE.TorusGeometry(0.05, 0.006, 6, 18),
+        socketRimMat
+      );
+      rim.position.z = 0.015;
+      rim.scale.set(1.25, 1.25, 1);
+      eyeGroup.add(rim);
 
       if (i === 0) this.leftPupil = eye;
       if (i === 1) this.rightPupil = eye;

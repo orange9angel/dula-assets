@@ -127,13 +127,13 @@ export class Rex extends CharacterBase {
     this.mouthBaseScaleY = 1;
     this.mouthBaseScaleZ = 1;
 
-    // Chin crystal
+    // Chin crystal — small rounded sphere instead of a blocky octahedron
     const chin = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.08, 0),
+      new THREE.SphereGeometry(0.05, 12, 12),
       crystalDarkMat
     );
-    chin.position.set(0, -0.25, 0.1);
-    chin.scale.set(0.8, 0.6, 0.7);
+    chin.position.set(0, -0.26, 0.12);
+    chin.scale.set(0.9, 0.55, 0.75);
     headGroup.add(chin);
 
     // Side crystals (like ears but angular)
