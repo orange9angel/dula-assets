@@ -32,6 +32,14 @@ export class Wipe extends TransitionBase {
         uniform vec2 uDirection;
         varying vec2 vUv;
 
+        float easeInQuad(float t) {
+          return t * t;
+        }
+
+        float easeOutQuad(float t) {
+          return 1.0 - (1.0 - t) * (1.0 - t);
+        }
+
         void main() {
           // Project UV onto wipe direction
           float proj = dot(vUv - 0.5, uDirection) + 0.5;
@@ -40,10 +48,10 @@ export class Wipe extends TransitionBase {
           float threshold;
           if (uProgress < 0.5) {
             float t = uProgress * 2.0;
-            threshold = mix(-0.2, 1.2, TransitionBase.easeInQuad(t));
+            threshold = mix(-0.2, 1.2, easeInQuad(t));
           } else {
             float t = (uProgress - 0.5) * 2.0;
-            threshold = mix(1.2, -0.2, TransitionBase.easeOutQuad(t));
+            threshold = mix(1.2, -0.2, easeOutQuad(t));
           }
 
           float alpha = smoothstep(threshold - 0.05, threshold + 0.05, proj);
