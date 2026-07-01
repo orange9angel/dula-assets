@@ -26,29 +26,49 @@ dula-story    ← 内容仓库（剧本 + 配置 + 素材）
 dula-assets/
 ├── index.js              # 统一入口：export registerAll()
 ├── package.json
-├── characters/           # 角色实现
-│   ├── Doraemon.js
-│   ├── Nobita.js
-│   └── Shizuka.js
+├── characters/           # 角色实现（30+）
+│   ├── Doraemon.js / Nobita.js / Shizuka.js
+│   ├── SheRa / Adora.js / Catra.js / Hordak.js / ShadowWeaver.js / Klaw.js / Vex.js
+│   ├── Seiya.js / Shiryu.js / Hyoga.js / Shun.js / Ikki.js / Aiolos.js
+│   ├── Yusuke.js / Kuwabara.js
+│   ├── RockLee.js
+│   ├── Ultraman.js
+│   ├── Xiaoyue.js / Xingzai.js / Yokai.js / Shota.js / Gabura.js / Rex.js / Zorak.js
+│   └── Cameraman.js / Cameraman2.js / Cameraman3.js / Reporter.js
 ├── animations/           # 动画实现
 │   ├── common/           # 通用动画（所有角色可用）
 │   ├── doraemon/         # 哆啦A梦专属
 │   ├── nobita/           # 大雄专属
-│   └── shizuka/          # 小静专属
-├── scenes/               # 场景实现
-│   ├── RoomScene.js
-│   ├── ParkScene.js
-│   └── SkyScene.js
+│   ├── shizuka/          # 小静专属
+│   ├── rocklee/          # 洛克李专属
+│   ├── shera/            # She-Ra 主题
+│   ├── ultraman/         # 奥特曼主题
+│   ├── xiaoyue/ / xingzai/  # 原创角色
+│   └── yuyuhakusho/      # 幽游白书主题
+├── scenes/               # 场景实现（20+）
+│   ├── RoomScene.js / ParkScene.js / SkyScene.js
+│   ├── BeachScene.js / CityScene.js / NightStreetScene.js
+│   ├── BasketballArenaScene.js / StadiumScene.js / LockerRoomScene.js
+│   ├── AlienPlanetScene.js / BrightMoonScene.js / StarSkyScene.js / SpaceStationScene.js
+│   ├── FrightZoneScene.js / WhisperingWoodsScene.js / DestroyedCityScene.js
+│   ├── SarayashikiRoofScene.js / NightRoomScene.js
+│   └── GLTFArenaScene.js
 ├── camera/               # 运镜实现
-│   └── common/
+│   ├── common/           # 通用运镜
+│   ├── ultraman/         # 奥特曼主题运镜
+│   ├── yuyuhakusho/      # 幽游白书主题运镜
+│   └── utils.js
+├── transitions/          # 场景转场实现
+│   └── Wipe.js
 ├── voices/               # 配音配置
-│   ├── DoraemonVoice.js
-│   ├── NobitaVoice.js
-│   └── ShizukaVoice.js
+│   ├── DoraemonVoice.js / NobitaVoice.js / ShizukaVoice.js
+│   ├── RockLeeVoice.js
+│   ├── YusukeVoice.js / KuwabaraVoice.js
+│   └── ...
 ├── lib/
 │   └── CourtDirector.js  # 网球场语义化站位与球轨迹计算
 └── audio-registry/       # 音频资产元数据注册表
-    ├── bgm/              # BGM 元数据（5 主题）
+    ├── bgm/              # BGM 元数据（9 主题）
     ├── ambient/          # 环境音元数据（4 条目）
     ├── sfx/              # 音效元数据（5 条目）
     ├── download.py       # 按场景过滤生成下载计划

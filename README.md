@@ -30,15 +30,14 @@ registerAll(); // registers all characters, animations, scenes, camera moves, vo
 
 | Category | Items |
 |----------|-------|
-| **Characters** | Doraemon, Nobita, Shizuka |
+| **Characters** | 30+ 角色，覆盖多个主题宇宙：哆啦A梦（Doraemon / Nobita / Shizuka）、She-Ra（Adora / SheRa / Catra / Hordak / ShadowWeaver / Klaw / Vex）、圣斗士星矢（Seiya / Shiryu / Hyoga / Shun / Ikki / Aiolos）、幽游白书（Yusuke / Kuwabara）、火影忍者（RockLee）、奥特曼（Ultraman），以及 Xiaoyue、Xingzai、Yokai、Shota、Gabura、Rex、Zorak、Reporter、Cameraman 等原创/辅助角色 |
 | **Animations (common)** | Walk, Run, Jump, WaveHand, Bow, Nod, ShakeHead, TurnToCamera, SwingRacket, SitDown, CrossArms, and 16 more |
-| **Animations (Doraemon)** | Float, Spin, PanicSpin, PullOutRacket, TakeOutFromPocket, NoseBlink, WaddleWalk |
-| **Animations (Nobita)** | Cry, LazyStretch, Grovel, StudyDespair, TriumphPose, RunAway |
-| **Animations (Shizuka)** | Curtsy, Giggle, PlayViolin, Scold, Blush, Baking |
-| **Scenes** | RoomScene, ParkScene (with tennis court, net, ball, racket) |
-| **Camera Moves** | Static, ZoomIn, ZoomOut, Pan, Orbit, Shake, FollowCharacter, LowAngle |
-| **Voices** | Doraemon, Nobita, Shizuka TTS configs (edge-tts) |
+| **Animations (theme)** | doraemon, nobita, shizuka, rocklee, shera, ultraman, xiaoyue, xingzai, yuyuhakusho 等角色/主题专属动画 |
+| **Scenes** | RoomScene, ParkScene (tennis court), SkyScene, BeachScene, CityScene, NightStreetScene, BasketballArenaScene, StadiumScene, AlienPlanetScene, BrightMoonScene, FrightZoneScene, WhisperingWoodsScene, DestroyedCityScene, SpaceStationScene, StarSkyScene, SarayashikiRoofScene, NightRoomScene, LockerRoomScene, GLTFArenaScene 等 |
+| **Camera Moves** | common（Static / ZoomIn / ZoomOut / Pan / Orbit / Shake / FollowCharacter / LowAngle / CloseUp / OverShoulder / TwoShot / TrackingCloseUp / WhipPan / ReactionShot），ultraman、yuyuhakusho 主题运镜 |
+| **Voices** | Doraemon, Nobita, Shizuka, RockLee, Yusuke, Kuwabara TTS configs（edge-tts） |
 | **Utilities** | CourtDirector — semantic tennis court positioning & ball-flight computation |
+| **Transitions** | Fade, Flash, Iris, Wipe, Dissolve, Pixelate |
 
 ## Peer Dependencies
 
