@@ -129,6 +129,7 @@ import { DragonPunch } from './animations/common/DragonPunch.js';
 import { BackFist } from './animations/common/BackFist.js';
 import { CounterStance } from './animations/common/CounterStance.js';
 import { FightingStance } from './animations/common/FightingStance.js';
+import { HoldPlasmaRifle } from './animations/common/HoldPlasmaRifle.js';
 import { SweepKick } from './animations/common/SweepKick.js';
 import { KneeStrike } from './animations/common/KneeStrike.js';
 import { HeadStomp } from './animations/common/HeadStomp.js';
@@ -450,6 +451,7 @@ export function registerAll() {
   registerAnimation('BackFist', BackFist);
   registerAnimation('CounterStance', CounterStance);
   registerAnimation('FightingStance', FightingStance);
+  registerAnimation('HoldPlasmaRifle', HoldPlasmaRifle);
   registerAnimation('SweepKick', SweepKick);
   registerAnimation('KneeStrike', KneeStrike);
   registerAnimation('HeadStomp', HeadStomp);

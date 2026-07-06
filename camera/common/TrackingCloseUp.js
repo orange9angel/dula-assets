@@ -1,6 +1,11 @@
 import * as THREE from 'three';
 import { CameraMoveBase, CameraCollisionGuard } from 'dula-engine';
 
+function getNow() {
+  if (typeof performance !== 'undefined' && performance.now) return performance.now();
+  return Date.now();
+}
+
 /**
  * Tracking close-up: follows a moving character while maintaining a tight face shot.
  * Similar to FollowCharacter but much closer and focused on the head.
@@ -12,6 +17,12 @@ export class TrackingCloseUp extends CameraMoveBase {
     this.distance = options.distance ?? 2.8;
     this.heightOffset = options.heightOffset ?? 0.05;
     this.sideAngle = (options.sideAngle ?? 10) * (Math.PI / 180);
+    // Low-pass smoothing for the head target so speaking nods / eye micro-movements
+    // remain visible on the character without shaking the whole frame.
+    this.smoothing = options.smoothing !== false;
+    this.cutoff = options.cutoff ?? 8.0;
+    this._lastTime = null;
+    this._smoothedHeadPos = null;
   }
 
   update(t, camera, context) {
@@ -25,13 +36,27 @@ export class TrackingCloseUp extends CameraMoveBase {
       headPos.copy(char.mesh.position).add(new THREE.Vector3(0, 1.9, 0));
     }
 
-    const lookAt = headPos.clone().add(new THREE.Vector3(0, this.heightOffset, 0));
+    // Smooth the target so high-frequency head motion (jitter) is filtered out
+    // while slower acting (nods, CrossArms body sway) still comes through.
+    if (this.smoothing) {
+      const now = getNow();
+      if (this._lastTime === null) {
+        this._smoothedHeadPos = headPos.clone();
+      } else {
+        const dt = Math.min(0.1, (now - this._lastTime) / 1000);
+        const alpha = 1 - Math.exp(-dt * this.cutoff);
+        this._smoothedHeadPos.lerp(headPos, alpha);
+      }
+      this._lastTime = now;
+    } else {
+      this._smoothedHeadPos = headPos;
+    }
 
-    // Use world forward projected onto XZ plane so lookAt() tilts don't break framing
-    const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(char.mesh.quaternion);
-    forward.y = 0;
-    if (forward.lengthSq() < 0.001) forward.set(0, 0, 1);
-    forward.normalize();
+    const lookAt = this._smoothedHeadPos.clone().add(new THREE.Vector3(0, this.heightOffset, 0));
+
+    // Use yaw-only forward so body animations (CrossArms lean, hit reactions, etc.)
+    // don't swing the camera around and cause visible jitter in close-ups.
+    const forward = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), char.mesh.rotation.y);
     const side = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
     const camDir = forward.clone().multiplyScalar(Math.cos(this.sideAngle)).add(side.multiplyScalar(Math.sin(this.sideAngle)));
 
