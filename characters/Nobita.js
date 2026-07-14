@@ -172,11 +172,11 @@ export class Nobita extends CharacterBase {
     headGroup.add(nose);
 
     // ========== MOUTH ==========
-    // Smile: black ellipse mouth for clear lip-sync animation
-    const mouthGeo = new THREE.SphereGeometry(0.06, 16, 16);
+    // Small closed-mouth line; thin in Z so it doesn't read as a balloon from the side.
+    const mouthGeo = new THREE.SphereGeometry(0.045, 16, 16);
     const mouth = new THREE.Mesh(mouthGeo, blackMat);
-    mouth.position.set(0, -0.18, 0.28);
-    mouth.scale.set(1.2, 0.25, 0.6);
+    mouth.position.set(0, -0.18, 0.29);
+    mouth.scale.set(1.0, 0.16, 0.22);
     headGroup.add(mouth);
     this.mouth = mouth;
     this.mouthBaseScaleX = mouth.scale.x;
