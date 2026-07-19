@@ -1,0 +1,34 @@
+{
+  "name": "pan_clatter",
+  "category": "sfx",
+  "description": "Metal frying pan clattering and rattling on the floor. Secondary metallic accent for kitchen crashes.",
+  "mood": ["clatter", "pan", "metal", "kitchen", "comic"],
+  "suggested_scenes": ["CartoonKitchenScene"],
+  "trigger_hints": ["{Event:DishesCrash}", "frying pan fall", "metal impact"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Pan Clatter / Metal Impact Sound Effect",
+      "author": "Search on Pixabay",
+      "url": "https://pixabay.com/zh/sound-effects/search/pan%20clatter/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'pan', 'clatter', 'metal impact'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: pan clatter, metal impact",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=pan+clatter",
+      "license": "Varies",
+      "notes": "Look for short metal pan hit and rattle."
+    }
+  ],
+  "local_filename": "pan_clatter.wav",
+  "format": "wav",
+  "loop": false,
+  "mixing_notes": {
+    "sfx_volume": 0.60,
+    "fade_in": "0s",
+    "fade_out": "0.3s"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "cloche_lift",
+  "category": "sfx",
+  "description": "Metallic dome cloche lifted from a serving plate. Light shimmer and soft ring for cake reveal.",
+  "mood": ["reveal", "shiny", "kitchen", "lift", "anticipation"],
+  "suggested_scenes": ["CartoonKitchenScene"],
+  "trigger_hints": ["{Event:RevealCake}", "cake reveal", "cloche removal"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Cloche / Bell / Shiny Reveal Sound Effect",
+      "author": "Search on Pixabay",
+      "url": "https://pixabay.com/zh/sound-effects/search/bell%20shiny/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'bell', 'shiny', 'reveal', 'cloche'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: cloche, bell, reveal",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=bell+reveal",
+      "license": "Varies",
+      "notes": "Look for short metallic lift or shimmer sound."
+    }
+  ],
+  "local_filename": "cloche_lift.wav",
+  "format": "wav",
+  "loop": false,
+  "mixing_notes": {
+    "sfx_volume": 0.55,
+    "fade_in": "0s",
+    "fade_out": "0.3s"
+  }
+}

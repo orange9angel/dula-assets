@@ -1,0 +1,35 @@
+{
+  "name": "cake_splat",
+  "category": "sfx",
+  "description": "Wet cake and frosting splattering against a face or surface. Cartoon pie-in-the-face impact.",
+  "mood": ["splat", "cake", "pie", "slapstick", "wet"],
+  "suggested_scenes": ["CartoonKitchenScene"],
+  "trigger_hints": ["{Event:CakeSplatTom}", "pie in face", "cake impact"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Pie Splat / Wet Impact Sound Effect",
+      "author": "Search on Pixabay",
+      "url": "https://pixabay.com/zh/sound-effects/search/pie%20splat/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'splat', 'pie', 'wet impact', 'cake'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: splat, pie, wet impact",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=pie+splat",
+      "license": "Varies",
+      "notes": "Look for short wet squishy impact."
+    }
+  ],
+  "local_filename": "cake_splat.wav",
+  "format": "wav",
+  "loop": false,
+  "mixing_notes": {
+    "sfx_volume": 0.70,
+    "fade_in": "0s",
+    "fade_out": "0.3s",
+    "duck_bgm": "reduce BGM by 6 dB for 1 second"
+  }
+}

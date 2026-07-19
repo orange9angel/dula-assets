@@ -9,6 +9,9 @@ export class RoomScene extends SceneBase {
   build() {
     super.build();
 
+    // Light wall color as scene background so open front wall never reads as black
+    this.scene.background = new THREE.Color(0xf5f5dc);
+
     // Floor
     const floorGeo = new THREE.PlaneGeometry(20, 20);
     const floorMat = new THREE.MeshStandardMaterial({ color: 0xd9a066, roughness: 0.8 });
@@ -46,6 +49,13 @@ export class RoomScene extends SceneBase {
     rightWall.position.set(10, 5, 0);
     rightWall.receiveShadow = true;
     this.scene.add(rightWall);
+
+    // Front wall (open side facing the camera) — keeps the room from reading as a black void
+    const frontWall = new THREE.Mesh(wallGeo, wallMat);
+    frontWall.position.set(0, 5, 5);
+    frontWall.rotation.y = Math.PI;
+    frontWall.receiveShadow = true;
+    this.scene.add(frontWall);
 
     // Desk
     const deskTopGeo = new THREE.BoxGeometry(3, 0.15, 1.5);

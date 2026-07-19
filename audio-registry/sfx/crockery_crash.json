@@ -1,0 +1,35 @@
+{
+  "name": "crockery_crash",
+  "category": "sfx",
+  "description": "Stack of dishes, cups, and plates crashing to the floor. Classic kitchen chaos for slapstick climax.",
+  "mood": ["crash", "dishes", "crockery", "chaos", "slapstick"],
+  "suggested_scenes": ["CartoonKitchenScene"],
+  "trigger_hints": ["{Event:DishesCrash}", "plate stack collapse", "kitchen disaster"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Dishes Crash / Crockery Break Sound Effect",
+      "author": "Search on Pixabay",
+      "url": "https://pixabay.com/zh/sound-effects/search/dishes%20crash/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'dishes crash', 'crockery', 'plate break'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: dishes crash, crockery",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=dishes+crash",
+      "license": "Varies",
+      "notes": "Look for layered porcelain and ceramic crash."
+    }
+  ],
+  "local_filename": "crockery_crash.wav",
+  "format": "wav",
+  "loop": false,
+  "mixing_notes": {
+    "sfx_volume": 0.75,
+    "fade_in": "0s",
+    "fade_out": "0.5s",
+    "duck_bgm": "reduce BGM by 8 dB for 1.5 seconds"
+  }
+}

@@ -372,6 +372,26 @@ export class Nobita extends CharacterBase {
     }
   }
 
+  attachStoneHat() {
+    if (!this.stoneHat) {
+      // Flattish gray stone that sits clearly on top of the hair.
+      const hatGeo = new THREE.SphereGeometry(0.22, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.55);
+      const stoneMat = new THREE.MeshToonMaterial({ color: 0x999999, roughness: 0.9 });
+      this.stoneHat = new THREE.Mesh(hatGeo, stoneMat);
+      // Position on top of the bowl-cut hair so it reads as a worn hat.
+      this.stoneHat.position.set(0, 0.42, 0);
+      this.stoneHat.scale.set(1.15, 0.45, 1.15);
+      if (this.headGroup) this.headGroup.add(this.stoneHat);
+    }
+    this.stoneHat.visible = true;
+  }
+
+  detachStoneHat() {
+    if (this.stoneHat) {
+      this.stoneHat.visible = false;
+    }
+  }
+
   update(time, delta) {
     super.update(time, delta);
     if (this.takeCopter && this.takeCopter.visible) {

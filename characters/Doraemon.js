@@ -126,6 +126,10 @@ export class Doraemon extends CharacterBase {
 
     headGroup.add(mouth);
     this.mouth = mouth;
+    this.mouthBaseScaleX = mouth.scale.x;
+    this.mouthBaseScaleY = mouth.scale.y;
+    this.mouthBaseScaleZ = mouth.scale.z;
+    this.mouthBaseY = mouth.position.y;
     this.mouthBaseRotationX = 0;
 
     // Whiskers (classic Doraemon: 3 left, 3 right, horizontal fan radiating outward)

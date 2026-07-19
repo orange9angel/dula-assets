@@ -1,0 +1,34 @@
+{
+  "name": "clock_tick",
+  "category": "sfx",
+  "description": "Dry mechanical wall clock tick. Used to establish midnight quiet and comedic timing pauses.",
+  "mood": ["tick", "clock", "quiet", "timing", "midnight"],
+  "suggested_scenes": ["CartoonKitchenScene", "RoomScene"],
+  "trigger_hints": ["{SFX:Play|name=clock_tick}", "wall clock", "midnight stillness"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Clock Ticking Sound Effect",
+      "author": "Search on Pixabay",
+      "url": "https://pixabay.com/zh/sound-effects/search/clock%20tick/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'clock tick', 'ticking'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: clock tick, ticking",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=clock+tick",
+      "license": "Varies",
+      "notes": "Look for clean, dry tick-tock loop."
+    }
+  ],
+  "local_filename": "clock_tick.wav",
+  "format": "wav",
+  "loop": true,
+  "mixing_notes": {
+    "sfx_volume": 0.20,
+    "fade_in": "0.5s",
+    "fade_out": "0.5s"
+  }
+}

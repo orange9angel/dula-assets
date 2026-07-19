@@ -1,0 +1,34 @@
+{
+  "name": "kitchen_roomtone",
+  "category": "sfx",
+  "description": "Quiet enclosed kitchen room tone. Subtle refrigerator hum and air conditioning for midnight stillness.",
+  "mood": ["quiet", "indoor", "roomtone", "midnight", "stillness"],
+  "suggested_scenes": ["CartoonKitchenScene", "RoomScene"],
+  "trigger_hints": ["{SFX:Play|name=kitchen_roomtone}", "midnight kitchen ambience", "loop under entire scene"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Room Tone / Quiet Indoor Ambience",
+      "author": "Search on Pixabay",
+      "url": "https://pixabay.com/zh/sound-effects/search/room%20tone%20quiet/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'room tone', 'quiet indoor', 'refrigerator hum'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: room tone, refrigerator hum",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=room+tone",
+      "license": "Varies",
+      "notes": "Look for long, seamless low-level indoor ambience."
+    }
+  ],
+  "local_filename": "kitchen_roomtone.wav",
+  "format": "wav",
+  "loop": true,
+  "mixing_notes": {
+    "sfx_volume": 0.18,
+    "fade_in": "1s",
+    "fade_out": "1s"
+  }
+}

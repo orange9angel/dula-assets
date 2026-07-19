@@ -1,0 +1,34 @@
+{
+  "name": "plate_wobble",
+  "category": "sfx",
+  "description": "Porcelain plate wobbling and spinning on a hard surface. Comic instability for rolling cake moments.",
+  "mood": ["wobble", "plate", "porcelain", "comic", "unstable"],
+  "suggested_scenes": ["CartoonKitchenScene"],
+  "trigger_hints": ["{Event:CakeRoll}", "rolling cake", "plate spin"],
+  "sources": [
+    {
+      "platform": "pixabay",
+      "title": "Plate Wobble / Spin Sound Effect",
+      "author": "Search on Pixabay",
+      "url": "https://pixabay.com/zh/sound-effects/search/plate%20wobble/",
+      "license": "Pixabay Content License",
+      "notes": "Search Pixabay SFX for 'plate', 'wobble', 'spin', 'porcelain'."
+    },
+    {
+      "platform": "freesound",
+      "title": "Search: plate wobble, porcelain spin",
+      "author": "Various",
+      "url": "https://freesound.org/search/?q=plate+wobble",
+      "license": "Varies",
+      "notes": "Look for short ceramic wobble or spin sound."
+    }
+  ],
+  "local_filename": "plate_wobble.wav",
+  "format": "wav",
+  "loop": false,
+  "mixing_notes": {
+    "sfx_volume": 0.45,
+    "fade_in": "0s",
+    "fade_out": "0.2s"
+  }
+}
