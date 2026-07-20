@@ -36,6 +36,12 @@ import { Rex } from './characters/Rex.js';
 // Characters - Disco Worm
 import { DiscoWorm } from './characters/DiscoWorm.js';
 
+// Characters - Original mascots
+import { Gulu } from './characters/Gulu.js';
+import { Yuki } from './characters/Yuki.js';
+import { Mochi } from './characters/Mochi.js';
+import { Kenta } from './characters/Kenta.js';
+
 // Characters - Reporter & Cameraman
 import { Reporter } from './characters/Reporter.js';
 import { Cameraman } from './characters/Cameraman.js';
@@ -340,6 +346,10 @@ export function registerAll() {
   registerCharacter('Vex', Vex);
   registerCharacter('Rex', Rex);
   registerCharacter('DiscoWorm', DiscoWorm);
+  registerCharacter('Gulu', Gulu);
+  registerCharacter('Yuki', Yuki);
+  registerCharacter('Mochi', Mochi);
+  registerCharacter('Kenta', Kenta);
   registerCharacter('Reporter', Reporter);
   registerCharacter('Cameraman', Cameraman);
   registerCharacter('Cameraman2', Cameraman2);
