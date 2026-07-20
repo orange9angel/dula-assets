@@ -3,7 +3,7 @@ import { CharacterBase } from 'dula-engine';
 
 /**
  * Mochi (年糕) — fat orange tabby cat, deadpan comedy role.
- * Design (per docs/skills/character-modeler):
+ * Design (per dula-skills/character-modeler):
  *   - Silhouette: one big loaf — body and head merge, stubby paws, cone ears
  *   - Signature: permanently half-lidded smug eyes, fat tail that sways
  *   - Quadruped mapping: front paws = arms, hind legs = legs (CharacterBase contract)

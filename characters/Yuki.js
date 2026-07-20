@@ -3,7 +3,7 @@ import { CharacterBase } from 'dula-engine';
 
 /**
  * Yuki (ユキ) — anime girl, classic capsule-and-ball primitive build.
- * Design (per docs/skills/character-modeler):
+ * Design (per dula-skills/character-modeler):
  *   - Silhouette: twin-tails + pleated skirt — readable at any distance
  *   - Proportions: 3-heads anime chibi, total height ≈ 1.6
  *   - Palette: brown hair / blue eyes / white sailor top / navy skirt / red neckerchief

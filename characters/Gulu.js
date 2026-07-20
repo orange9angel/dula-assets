@@ -3,7 +3,7 @@ import { CharacterBase } from 'dula-engine';
 
 /**
  * Gulu (咕噜) — chibi robot mascot, procedurally "hand-drawn" with primitives.
- * Design (per docs/skills/character-modeler):
+ * Design (per dula-skills/character-modeler):
  *   - Silhouette: circle — round white body + big round head (2-heads chibi)
  *   - Signature: dark face screen with glowing cyan LED eyes/mouth, antenna
  *   - Palette: white / sky blue / cyan glow / dark navy / yellow accent

@@ -3,7 +3,7 @@ import { CharacterBase } from 'dula-engine';
 
 /**
  * Kenta (健太) — timid bespectacled boy, the "cat book" consultant.
- * Design (per docs/skills/character-modeler):
+ * Design (per dula-skills/character-modeler):
  *   - Silhouette: short cap hair + big round glasses (the two things you read first)
  *   - Proportions: 3-heads, height ≈ 1.45 (slightly shorter than Yuki)
  *   - Palette: black hair / teal tee / khaki shorts / gray sneakers
