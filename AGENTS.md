@@ -167,4 +167,4 @@ python audio-registry/download.py <episode_path> --scene RoomScene,ParkScene,Sky
 
 ## 7. 已知约束
 
-- `CourtDirector.js` 目前被 `dula-engine/storyboard/Storyboard.js` 硬编码 `import`。长期应改为动态注入或从 Registry 获取，使 engine 彻底不依赖 assets。
+- `CourtDirector.js` 通过 `registerDirector('CourtDirector', ...)` 注册到 engine 的 `DirectorRegistry`，`Storyboard.js` 动态查询获取——engine 已不直接 import assets，反向依赖已解除。
