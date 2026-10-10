@@ -66,7 +66,8 @@ dula-assets/
 │   ├── YusukeVoice.js / KuwabaraVoice.js
 │   └── ...
 ├── lib/
-│   └── CourtDirector.js  # 网球场语义化站位与球轨迹计算
+│   ├── CourtDirector.js  # 网球场语义化站位与球轨迹计算
+│   └── craft3d/          # 程序化三维积木：曲面肢体/关节手/两骨 IK/有限步态/toon 材质与描边助手（viewer 链直接 import，不走 Registry）
 └── audio-registry/       # 音频资产元数据注册表
     ├── bgm/              # BGM 元数据（9 主题）
     ├── ambient/          # 环境音元数据（4 条目）
