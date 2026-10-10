@@ -34,7 +34,8 @@ dula-assets/
 │   ├── RockLee.js
 │   ├── Ultraman.js
 │   ├── Xiaoyue.js / Xingzai.js / Yokai.js / Shota.js / Gabura.js / Rex.js / Zorak.js
-│   └── Cameraman.js / Cameraman2.js / Cameraman3.js / Reporter.js
+│   ├── Cameraman.js / Cameraman2.js / Cameraman3.js / Reporter.js
+│   └── bioarmor/           # 《9章》系列：雷晓/轰刚/观察者，craft3d 工艺，canvas 动画头（viewer 链直接 import）
 ├── animations/           # 动画实现
 │   ├── common/           # 通用动画（所有角色可用）
 │   ├── doraemon/         # 哆啦A梦专属
