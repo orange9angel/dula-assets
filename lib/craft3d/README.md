@@ -39,10 +39,10 @@ Registry、不进 `dula-assets/index.js` 的 `registerAll()`。浏览器页面�
 | | `jointInk` | 开口关节轮廓材质（按顶点 `contour` 加权，端环不描） |
 | `hand.js` | `ArticulatedHand(sign,material,outlineMaterial)` | 五指关节手：MarchingCubes 连续掌面 + 真实指骨蒙皮；`setGesture({point,fist,open})`、`stats()`、`validateDeformation()`、`validatePointIsolation()` |
 | `pose.js` | `twoBone(start,end,pole,a,b)` | 两骨 IK：返回肘/膝位置；骨长不拉伸，不可达即抛错 |
-| `locomotion.js` | `walkingFeet(walk,rootX,rootZ,yaw,half,footY,stride)` | 有限落脚步行：落脚点不滑、摆动脚抬升弧、髋部起伏/摆臂量输出 |
+| `locomotion.js` | `walkingFeet(walk,rootX,rootZ,yaw,half,footY,stride)` | 有限落脚步行：落脚点不滑、摆动脚抬升弧、髋部起伏/摆臂量输出；支撑期足踝滚动（脚跟触地→放平→前掌蹬离，绕踝俯仰带触地支点补偿） |
 | | `turningFeet(turn,rootX,rootZ,yaw,half,footY)` | 换脚转身：按角增量分步 |
 | | `angleDelta(a,b)` | 最短角差 |
-| | `createLocomotion(params)` | 定制步态风格量（抬脚/俯仰/摆臂/转身步角等），默认值=S1E2 已验收值 |
+| | `createLocomotion(params)` | 定制步态风格量（抬脚/俯仰/摆臂/转身步角/`heelStrike`/`toeOff` 等），默认值=S1E2 已验收值 + P19 足踝滚动 |
 | `look.js` | `outlined(parent,geometry,material,width)` | 法线外扩壳描边（宽度分级：躯干/头 .0014、四肢 .0010、细节 .0006） |
 | | `coolShadowRamp()` | 共享 4 阶冷阴影 toon ramp（阴影阶偏蓝紫、受光阶偏暖） |
 | | `skinMaterial(base)` | 肤色平涂材质缓存（按基色取；逆光兜底件，颜色需预调暗 ×0.85–0.92） |
