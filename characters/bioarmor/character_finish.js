@@ -21,6 +21,7 @@ export function clothMaterial(color){
 }
 
 export function finishSleeveRoot(sleeve,arm,kind){
+  sleeve.mesh.userData.attachmentRings=Math.ceil(sleeve.rings*.30);
   const p=sleeve.geometry.attributes.position,shoulder=arm[0];
   const outward=new THREE.Vector3(shoulder.x,0,shoulder.z).normalize();
   const inset=kind==='hong'?.048:.035;

@@ -49,7 +49,7 @@ export class LeiXiaoCraft {
       this.sleeves[side+'Roll']=new LimbSurface(this.mesh,shirt,[[0,.061],[.5,.057],[1,.050]],{start:.45,end:.54});
       const hand=new ArticulatedHand(sign,skin,jointInk);hand.scale.setScalar(.78);this.mesh.add(hand);this.hands[side]=hand;
     }
-    mesh(this.body,ringsGeometry([[.78,.127,.096],[.88,.140,.102],[.97,.143,.103],[1.06,.127,.091],[1.18,.138,.099],[1.30,.149,.105],[1.38,.130,.090],[1.43,.064,.058]]),shirt);
+    this.torso=mesh(this.body,ringsGeometry([[.78,.127,.096],[.88,.140,.102],[.97,.143,.103],[1.06,.127,.091],[1.18,.138,.099],[1.30,.149,.105],[1.38,.130,.090],[1.43,.064,.058]]),shirt);
     // The sleeve root blends inside the chest; no separate ball-shaped shoulder cover.
     // 领口开襟
     const strap=new THREE.Mesh(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(
@@ -260,7 +260,7 @@ export class HongGangCraft {
       this.mesh.add(hand);this.hands[side]=hand;
     }
     // 灰 tee + 敞开校服外套（前襟两片+背片+肩）；tee 收腰出胸、外套盖住胸廓
-    mesh(this.body,ringsGeometry([[.90,.170,.118],[1.00,.184,.126],[1.10,.180,.121],[1.18,.169,.113],[1.32,.204,.138],[1.44,.207,.136],[1.52,.172,.116],[1.57,.092,.080]]),tee);
+    this.torso=mesh(this.body,ringsGeometry([[.90,.170,.118],[1.00,.184,.126],[1.10,.180,.121],[1.18,.169,.113],[1.32,.204,.138],[1.44,.207,.136],[1.52,.172,.116],[1.57,.092,.080]]),tee);
     for(const sign of [-1,1]){
       const flap=mesh(this.body,ringsGeometry([[.95,.07,.145],[1.25,.085,.150],[1.52,.065,.122]]),jacket);
       flap.position.x=sign*.152;
