@@ -4,6 +4,7 @@ import * as THREE from 'three';
 export const SKIN={
   lei:{base:'#f2d3bc',inner:'#dfb59f',line:'#aa7967'},
   hong:{base:'#e4b899',inner:'#cd9a7f',line:'#986850'},
+  aoi:{base:'#f2d3bc',inner:'#dfb59f',line:'#aa7967'},
 };
 const skinMaterials=new Map(),clothMaterials=new Map();
 export function skinMaterial(kind){

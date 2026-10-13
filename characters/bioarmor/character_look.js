@@ -154,7 +154,7 @@ function rearHairLock(parent,strong,a0,a1,start,end,width,color){
   const mesh=new THREE.Mesh(g,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide}));parent.add(mesh);
 }
 
-function paintFace(ctx,strong,emotion,blink,lip,acting,gaze){
+function paintFace(ctx,strong,emotion,blink,lip,acting,gaze,kind){
   const g=ctx;g.setTransform(2,0,0,2,0,0);g.clearRect(0,0,512,512);
   const fear=clamp(acting?.fear??(emotion==='scared'?.8:emotion==='worry'?.35:0));
   const focus=clamp(acting?.focus??(['determined','declare','angry'].includes(emotion)?.75:0));
@@ -177,7 +177,7 @@ function paintFace(ctx,strong,emotion,blink,lip,acting,gaze){
       eyeShade.addColorStop(0,'#d9c9bc');eyeShade.addColorStop(.55,'#fff7e8');
       eyeShade.addColorStop(1,'#fff7e8');g.fillStyle=eyeShade;g.fillRect(-58,-48,116,90);
       const ix=gazeX*side*16-3,iy=gazeY*10,ir=strong?16:23;
-      const iris=g.createLinearGradient(0,-24,0,25);iris.addColorStop(0,strong?'#594139':'#594642');iris.addColorStop(.52,strong?'#91603d':'#a67944');iris.addColorStop(1,strong?'#d39a51':'#ddb469');
+      const iris=g.createLinearGradient(0,-24,0,25);iris.addColorStop(0,kind==='aoi'?'#244846':strong?'#594139':'#594642');iris.addColorStop(.52,kind==='aoi'?'#467e70':strong?'#91603d':'#a67944');iris.addColorStop(1,kind==='aoi'?'#97bea1':strong?'#d39a51':'#ddb469');
       g.fillStyle=iris;g.beginPath();g.ellipse(ix,iy,ir,strong?26:34,0,0,TAU);g.fill();
       g.strokeStyle='#4d3734';g.lineWidth=2.3;g.stroke();
       g.fillStyle='#302b34';g.beginPath();g.ellipse(ix,iy-1,(strong?7:10)*(acting?.pupil??1),strong?18:23,0,0,TAU);g.fill();
@@ -240,6 +240,18 @@ export function animatedHead(body,kind,height){
     const inner=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),new THREE.MeshBasicMaterial({color:SKIN[kind].inner}));
     inner.scale.set(.002,.016,.006);inner.position.set(side*(strong?.141:.127),.045,-.013);head.add(inner);
   }
+  if(kind==='aoi'){
+    const cap=hairGeometry(false),colors=cap.attributes.color;
+    for(let i=0;i<colors.count;i++)colors.setXYZ(i,.035,.085,.10);
+    outlined(head,cap,new THREE.MeshBasicMaterial({vertexColors:true}),.0007);
+    for(const side of [-1,1])hairPanel(head,false,side*1.35,side*1.62,2.30,.26,'#24393e');
+    for(const [a,b,t,w] of [[-.86,-.98,1.65,.27],[-.43,-.7,1.5,.25],[.02,-.35,1.42,.26],[.45,.69,1.55,.23]])
+      hairPanel(head,false,a,b,t,w,'#294348');
+    for(let i=0;i<11;i++){const a=1.72+i*.285;rearHairLock(head,false,a-.14,a,.65,2.52,.19,'#24393e');}
+    // Hair clip is rigidly attached above the temple; no hanging accessory.
+    const clip=new THREE.Mesh(new THREE.BoxGeometry(.028,.008,.009),new THREE.MeshBasicMaterial({color:'#d4b96e'}));
+    clip.position.set(.092,.139,.091);clip.rotation.z=-.35;head.add(clip);
+  }else{
   outlined(head,hairGeometry(strong),new THREE.MeshBasicMaterial({vertexColors:true}),.0007);
   if(strong){
     // A close-cropped, flatter silhouette. The hairline is part of the cap;
@@ -263,11 +275,12 @@ export function animatedHead(body,kind,height){
     sweptTuft(head,[-.025,.237,-.008],[.021,.285,-.010],[.066,.262,.005],.018,'#5c4042');
     sweptTuft(head,[-.047,.222,-.039],[-.024,.274,-.035],[.015,.261,-.028],.014,'#51383e');
   }
+  }
   let emotion='neutral',blink=0,lip={jaw:0,width:1},acting=null,last='';
   const gaze={x:0,y:0};
   function draw(){
     const key=JSON.stringify([emotion,blink,lip,acting,gaze]);if(key===last)return;last=key;
-    paintFace(ctx,strong,emotion,blink,lip,acting,gaze);texture.needsUpdate=true;
+    paintFace(ctx,strong,emotion,blink,lip,acting,gaze,kind);texture.needsUpdate=true;
   }
   draw();
   return {head,skull,
