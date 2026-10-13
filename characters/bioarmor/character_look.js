@@ -13,14 +13,18 @@ function outlined(parent,geometry,material,width=.0014){
   ink.customProgramCacheKey=()=>`portrait-outline-${width}`;
   mesh.add(new THREE.Mesh(geometry,ink));return mesh;
 }
-function headProfile(strong){
+function headProfile(strong,kind){
+  // Aoi: wider rounded chin, higher cheeks, shallower face; not Lei's recolour.
+  if(kind==='aoi')return [[-.073,.038,.052,.032,.024],[-.055,.063,.074,.050,.015],
+    [-.021,.088,.096,.080,.004],[.038,.105,.114,.111,0],[.105,.107,.119,.118,0],
+    [.164,.095,.108,.112,0],[.211,.052,.068,.072,0],[.231,.001,.001,.001,0]];
   return strong?
     [[-.077,.050,.069,.034,.033],[-.058,.081,.087,.06,.023],[-.018,.111,.112,.099,.004],[.042,.128,.132,.119,0],[.105,.126,.131,.128,0],[.166,.108,.112,.12,0],[.212,.065,.077,.083,0],[.232,.001,.001,.001,0]]:
     [[-.073,.025,.058,.025,.032],[-.055,.052,.080,.048,.019],[-.021,.079,.106,.082,.006],[.038,.108,.125,.112,0],[.105,.112,.125,.12,0],[.164,.095,.108,.112,0],[.211,.052,.068,.072,0],[.231,.001,.001,.001,0]];
 }
-function surface(strong){
+function surface(strong,kind){
   // y, half width, front depth, back depth, forward chin offset.
-  const profile=headProfile(strong);
+  const profile=headProfile(strong,kind);
   const positions=[],uv=[],indices=[],n=40,rows=(profile.length-1)*6;
   // Duplicate the two side seams. No triangle may interpolate from the front
   // face artwork across to a constant rear-head UV (that smears facial features).
@@ -38,7 +42,7 @@ function surface(strong){
     for(let j=0;j<=n;j++){
       const angle=-Math.PI/2+half*Math.PI+j/n*Math.PI,c=Math.cos(angle),x=rx*Math.sin(angle);
       const front=clamp(c),plane=c>=0?(c*.78+Math.sin(c*Math.PI/2)*.22):c;
-      const nose=Math.exp(-((x/(strong?.016:.014))**2))*
+      const nose=(kind==='aoi'?.65:1)*Math.exp(-((x/(strong?.016:.014))**2))*
         (.016*Math.exp(-(((y-.045)/.019)**2))+.004*Math.exp(-(((y-.083)/.039)**2)))*front**12;
       const lip=.003*Math.exp(-((x/.022)**2)-((y-.004)/.017)**2)*front**8;
       const jawLift=.028*Math.max(0,1-row/6)**2*(1-c)*.5;
@@ -158,16 +162,16 @@ function paintFace(ctx,strong,emotion,blink,lip,acting,gaze,kind){
   const g=ctx;g.setTransform(2,0,0,2,0,0);g.clearRect(0,0,512,512);
   const fear=clamp(acting?.fear??(emotion==='scared'?.8:emotion==='worry'?.35:0));
   const focus=clamp(acting?.focus??(['determined','declare','angry'].includes(emotion)?.75:0));
-  const smile=emotion==='laugh'?1:0,close=clamp(acting?.blink??blink);
-  const palette=SKIN[strong?'hong':'lei'],skin=palette.base;
+  const smile=emotion==='laugh'?1:clamp(acting?.smile??0),close=clamp(acting?.blink??blink);
+  const aoi=kind==='aoi',palette=SKIN[kind],skin=palette.base;
   g.fillStyle=skin;g.fillRect(0,0,512,512);
   // The prior fixed forehead/cheek polygons looked like different skin patches.
   // Keep a single base here; silhouette, eyes and nose provide the form.
-  const eyeY=strong?242:244,dx=strong?95:90;
+  const eyeY=strong?242:aoi?251:244,dx=strong?95:aoi?87:90;
   const gazeX=clamp(acting?.gazeX??gaze.x,-1,1),gazeY=clamp(acting?.gazeY??gaze.y,-1,1);
   for(const side of [-1,1]){
     const cx=256+side*dx,openness=1-close;
-    const h=(strong?24:32)*(1+.20*fear-.23*focus),upper=h*openness,lower=h*.45*openness;
+    const h=(strong?24:aoi?23:32)*(1+.20*fear-.23*focus),upper=h*openness,lower=h*(aoi?.34:.45)*openness;
     const isClosed=openness<.045||smile>.5;
     g.save();g.translate(cx,eyeY);g.scale(side,1);
     const eye=()=>{g.beginPath();g.moveTo(-51,1);g.bezierCurveTo(-26,-upper,20,-upper*1.05,53,-7*openness);g.quadraticCurveTo(28,lower,-22,lower*.86);g.quadraticCurveTo(-41,lower*.55,-51,1);g.closePath();};
@@ -176,7 +180,7 @@ function paintFace(ctx,strong,emotion,blink,lip,acting,gaze,kind){
       const eyeShade=g.createLinearGradient(0,-h,0,5);
       eyeShade.addColorStop(0,'#d9c9bc');eyeShade.addColorStop(.55,'#fff7e8');
       eyeShade.addColorStop(1,'#fff7e8');g.fillStyle=eyeShade;g.fillRect(-58,-48,116,90);
-      const ix=gazeX*side*16-3,iy=gazeY*10,ir=strong?16:23;
+      const ix=gazeX*side*16-3,iy=gazeY*10,ir=strong?16:aoi?19:23;
       const iris=g.createLinearGradient(0,-24,0,25);iris.addColorStop(0,kind==='aoi'?'#244846':strong?'#594139':'#594642');iris.addColorStop(.52,kind==='aoi'?'#467e70':strong?'#91603d':'#a67944');iris.addColorStop(1,kind==='aoi'?'#97bea1':strong?'#d39a51':'#ddb469');
       g.fillStyle=iris;g.beginPath();g.ellipse(ix,iy,ir,strong?26:34,0,0,TAU);g.fill();
       g.strokeStyle='#4d3734';g.lineWidth=2.3;g.stroke();
@@ -195,9 +199,9 @@ function paintFace(ctx,strong,emotion,blink,lip,acting,gaze,kind){
     }
     g.restore();
     // Brows are tapered shapes, with independently controlled inner and outer ends.
-    const by=eyeY-(strong?40:51)-(fear*3),asym=(acting?.browAsym??.08)*side*6;
+    const by=eyeY-(strong?40:aoi?40:51)-(fear*3),asym=(acting?.browAsym??.08)*side*6;
     const inner=by+focus*17-fear*19+asym,outer=by-3+fear*6;
-    g.fillStyle=strong?'#343039':'#644339';g.beginPath();
+    g.fillStyle=aoi?'#294348':strong?'#343039':'#644339';g.beginPath();
     g.moveTo(256+side*(dx-43),inner);g.quadraticCurveTo(cx,by-8,256+side*(dx+51),outer);
     g.lineTo(256+side*(dx+48),outer+(strong?8:4));
     g.quadraticCurveTo(cx,by+(strong?9:1),256+side*(dx-41),inner+(strong?12:7));g.closePath();g.fill();
@@ -206,8 +210,8 @@ function paintFace(ctx,strong,emotion,blink,lip,acting,gaze,kind){
   g.strokeStyle=palette.line;g.lineWidth=1.8;g.lineCap='round';
   g.beginPath();g.moveTo(262,312);g.quadraticCurveTo(268,319,259,321);g.stroke();
   const jaw=clamp(Math.max(lip.jaw??0,acting?.jawOverride??0));
-  const w=(strong?30:27)*clamp(lip.width??1,.7,1.35),my=378;
-  const corner=smile?-8:focus?2:fear?3:0;
+  const w=(strong?30:aoi?24:27)*clamp(lip.width??1,.7,1.35),my=aoi?370:378;
+  const corner=smile?-8*smile:focus?2:fear?3:0;
   if(jaw<.035){
     g.strokeStyle=strong?'#8d5b4f':'#a16e61';g.lineWidth=2.6;g.beginPath();g.moveTo(256-w,my+corner);g.quadraticCurveTo(256,my+(smile?4:fear?-2:0),256+w,my+corner);g.stroke();
   }else{
@@ -233,7 +237,7 @@ export function animatedHead(body,kind,height){
   const ctx=canvas.getContext('2d'),texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=8;
   // A normal-expanded hull also outlines the concave nose/cheek boundary inside
   // the face. Keep the skin contour clean instead of drawing that false crease.
-  const skull=new THREE.Mesh(surface(strong),new THREE.MeshBasicMaterial({map:texture}));head.add(skull);skull.castShadow=true;
+  const skull=new THREE.Mesh(surface(strong,kind),new THREE.MeshBasicMaterial({map:texture}));head.add(skull);skull.castShadow=true;
   for(const side of [-1,1]){
     const ear=new THREE.Mesh(new THREE.SphereGeometry(1,32,24),skin);
     ear.scale.set(.019,.032,.014);ear.position.set(side*(strong?.124:.110),.043,-.020);head.add(ear);

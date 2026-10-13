@@ -39,6 +39,7 @@ Registry、不进 `dula-assets/index.js` 的 `registerAll()`。浏览器页面�
 | | `jointInk` | 开口关节轮廓材质（按顶点 `contour` 加权，端环不描） |
 | `hand.js` | `ArticulatedHand(sign,material,outlineMaterial)` | 五指关节手：MarchingCubes 连续掌面 + 真实指骨蒙皮；`setGesture({point,fist,open})`、`stats()`、`validateDeformation()`、`validatePointIsolation()` |
 | `pose.js` | `twoBone(start,end,pole,a,b)` | 两骨 IK：返回肘/膝位置；骨长不拉伸，不可达即抛错 |
+| `supported-performance.js` | `torsoFrame`, `transformPoint`, `applySupportedPerformance` | 腰部支点的躯干、袖臂和手同步变换；腿 IK 独立接世界落脚点。仅适配裸手对话姿态，武器与附加前臂物件尚未联动。S1E4 R2 数值试验，非美术验收样例。 |
 | `locomotion.js` | `walkingFeet(walk,rootX,rootZ,yaw,half,footY,stride)` | 有限落脚步行：落脚点不滑、摆动脚抬升弧、髋部起伏/摆臂量输出；支撑期足踝滚动（脚跟触地→放平→前掌蹬离，绕踝俯仰带触地支点补偿） |
 | | `turningFeet(turn,rootX,rootZ,yaw,half,footY)` | 换脚转身：按角增量分步 |
 | | `angleDelta(a,b)` | 最短角差 |

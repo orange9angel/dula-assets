@@ -1,5 +1,5 @@
 // Biology-club student: fitted short sleeves, trousers, short hair, no loose coat.
-// Same craft3d pose interface as LeiXiaoCraft; authored for bounded standing acting.
+// Same pose interface, with its own shorter stature, shoulder/waist and hand shape.
 import * as THREE from 'three';
 import {LimbSurface,ringsGeometry,mesh,shoeGeometry,jointInk} from '../../lib/craft3d/surface.js';
 import {ArticulatedHand} from '../../lib/craft3d/hand.js';
@@ -12,25 +12,25 @@ export class QianTangKuiCraft {
     this.body=new THREE.Group();this.mesh.add(this.body);
     this.limbs={};this.sleeves={};this.hands={};this.feet={};
     const skin=skinMaterial('aoi'),shirt=clothMaterial('#648b82'),pants=clothMaterial('#424653');
-    this.torso=mesh(this.body,ringsGeometry([[.78,.127,.096],[.88,.140,.102],[.97,.143,.103],
-      [1.06,.127,.091],[1.18,.138,.099],[1.30,.149,.105],[1.38,.130,.090],[1.43,.064,.058]]),shirt);
+    this.torso=mesh(this.body,ringsGeometry([[.75,.132,.094],[.85,.139,.099],[.94,.125,.093],
+      [1.02,.109,.083],[1.11,.120,.092],[1.22,.137,.099],[1.30,.121,.084],[1.35,.057,.053]]),shirt);
     this.torso.name='aoi_torso';
     for(const [side,sign] of [['left',-1],['right',1]]){
       const leg=this.limbs[side+'Leg']=new LimbSurface(this.mesh,pants,[[0,.082],[.4,.064],[.8,.045],[1,.04]],{depth:.94});
       leg.mesh.name=`aoi_${side}_leg`;
-      const skinArm=this.limbs[side+'Arm']=new LimbSurface(this.mesh,skin,[[0,.048],[.3,.044],[.6,.034],[1,.026]],{depth:.88});
+      const skinArm=this.limbs[side+'Arm']=new LimbSurface(this.mesh,skin,[[0,.043],[.3,.039],[.6,.030],[1,.023]],{depth:.88});
       const start=Math.floor(skinArm.rings*.43);
       skinArm.geometry.setDrawRange(start*skinArm.sides*6,(skinArm.rings-start)*skinArm.sides*6);
       this.sleeves[side]=new LimbSurface(this.mesh,shirt,[[0,.063],[.8,.055],[1,.050]],{end:.51});
       this.sleeves[side+'Roll']=new LimbSurface(this.mesh,clothMaterial('#d3ded2'),[[0,.061],[.5,.057],[1,.050]],{start:.45,end:.54});
-      const hand=this.hands[side]=new ArticulatedHand(sign,skin,jointInk);hand.scale.setScalar(.78);this.mesh.add(hand);
+      const hand=this.hands[side]=new ArticulatedHand(sign,skin,jointInk);hand.scale.setScalar(.72);this.mesh.add(hand);
       const shoe=this.feet[side]=new THREE.Group();this.mesh.add(shoe);
       mesh(shoe,shoeGeometry(),'#333a40');
       const sole=mesh(shoe,shoeGeometry(),'#d8d4c7');sole.scale.y=.13;sole.position.y=-.08447;
     }
-    for(const y of [1.03,1.15,1.28]){const button=mesh(this.body,new THREE.SphereGeometry(.008,10,8),'#c7ba85',false);button.position.set(0,y,.105);}
-    const badge=mesh(this.body,new THREE.BoxGeometry(.045,.065,.005),'#e4ddc5',false);badge.position.set(.068,1.27,.102);
-    this.face=animatedHead(this.body,'aoi',1.485);this.headGroup=this.face.head;this.mouth=this.face.mouth;
+    for(const y of [.99,1.10,1.22]){const button=mesh(this.body,new THREE.SphereGeometry(.008,10,8),'#c7ba85',false);button.position.set(0,y,y<1.05?.085:.101);}
+    const badge=mesh(this.body,new THREE.BoxGeometry(.045,.065,.005),'#e4ddc5',false);badge.position.set(.062,1.20,.096);
+    this.face=animatedHead(this.body,'aoi',1.405);this.headGroup=this.face.head;this.mouth=this.face.mouth;
   }
   setEmotion(e,b){this.face.setEmotion(e,b);}
   setPose(p){
