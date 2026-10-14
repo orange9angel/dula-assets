@@ -13,7 +13,7 @@ const CONFIG={
 export function applyTripoDrawnLook(actor,key,{directPaint=false}={}){
   const base={...CONFIG[key],irisArt:new URL('./textures/drawn-face-reference.png',import.meta.url).href};
   const config=directPaint&&key==='aoi'?aoiGeneratedFace(base):base;
-  const body=illustrateImportedBody(actor,{kind:key,headCut:config.headCut,keepHair:false,skin:config.skin});
+  const body=illustrateImportedBody(actor,{kind:key,headCut:config.headCut,keepHair:false,skin:config.skin,refineNeck:!!config.neckProfile});
   const face=createDrawnHead(actor,config);face.apply();
   return {face,body};
 }
