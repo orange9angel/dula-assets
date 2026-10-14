@@ -1,8 +1,8 @@
 import {addGraphicHair} from '../../lib/craft3d/graphic-hair.js';
 import * as THREE from 'three';
 
-/** S1E4 unaccepted look-development candidate. Hairline separation still leaves
- * fragments; the original clip and secondary hair motion need restoration. */
+/** S1E4 broad-lock candidates. Refined version is paired with the drawn head;
+ * the earlier material-only comparison remains available with refined=false. */
 export function addAoiGraphicHair(actor,{refined=false}={}){
   // The imported cel material has already classified head-weighted hair.
   // Remove those triangles from the visible mesh and its shadow together.
@@ -13,21 +13,21 @@ export function addAoiGraphicHair(actor,{refined=false}={}){
     }g.setIndex(keep);
   }
   if(refined){
-    const widths=[[0,.45],[.20,1],[.50,.82],[.78,.42],[1,.008]];
-    const root=addGraphicHair(actor,{center:[0,1.505,-.023],radii:[.113,.140,.112],flat:true,tailPivot:[.086,1.607,-.082],
+    const widths=[[0,.30],[.18,1],[.49,.78],[.78,.35],[1,.008]];
+    const root=addGraphicHair(actor,{center:[0,1.505,-.023],radii:[.113,.140,.112],flat:true,tailPivot:[.073,1.591,-.074],
+      cel:{shadow:'#162b35',light:'#689c96',bandY:1.582},
       hem:[[-180,1.398],[-110,1.410],[-82,1.460],[-60,1.500],[-35,1.530],[0,1.548],[38,1.535],[65,1.487],[85,1.457],[110,1.410],[180,1.398]],
-      colors:['#294a4b','#3c6060','#213d41','#527471'],locks:[
-        {points:[[.043,1.634,.030],[.006,1.617,.060],[-.049,1.572,.090],[-.085,1.519,.078],[-.102,1.491,.050]],width:.043,widths,color:0,depth:.55},
-        {points:[[.040,1.638,.021],[-.020,1.623,.052],[-.085,1.565,.082],[-.112,1.511,.055]],width:.028,widths,color:1,depth:.65},
+      colors:['#294c50','#355f62','#203b46','#527471'],locks:[
+        {points:[[.043,1.634,.030],[.006,1.617,.060],[-.049,1.572,.090],[-.085,1.519,.078],[-.102,1.491,.050]],width:.034,widths,color:0,depth:.55},
+        {points:[[.040,1.638,.021],[-.020,1.623,.052],[-.085,1.565,.082],[-.112,1.511,.055]],width:.026,widths,color:1,depth:.55},
+        {points:[[.044,1.624,.038],[.010,1.601,.079],[-.028,1.556,.101],[-.049,1.523,.093]],width:.018,widths,color:0,depth:.38},
         {points:[[.046,1.626,.036],[.084,1.592,.058],[.099,1.552,.052],[.077,1.513,.069]],width:.030,widths,color:0,depth:.75},
-        {points:[[-.098,1.548,.033],[-.109,1.490,.045],[-.100,1.432,.052],[-.089,1.405,.059]],width:.012,widths,color:2},
-        {points:[[.078,1.610,-.083],[.126,1.627,-.093],[.164,1.518,-.104],[.161,1.405,-.070],[.182,1.323,-.015],[.207,1.316,.013]],width:.041,widths,color:2,depth:.56,tail:true},
-        {points:[[.082,1.614,-.078],[.133,1.613,-.070],[.155,1.509,-.064],[.146,1.411,-.035],[.166,1.336,.012],[.184,1.322,.027]],width:.030,widths,color:0,depth:.39,tail:true},
-        {points:[[.090,1.601,-.059],[.127,1.574,-.039],[.141,1.490,-.036],[.130,1.401,-.010],[.149,1.358,.030]],width:.017,widths,color:1,depth:.28,tail:true},
-        // Narrow authored highlight follows the sweep, never a floating plane.
-        {points:[[.016,1.623,.071],[-.015,1.604,.086],[-.052,1.573,.098],[-.070,1.546,.090]],width:.004,widths,color:1,depth:.08,outline:0},
+        {points:[[-.098,1.548,.033],[-.109,1.490,.045],[-.100,1.432,.052],[-.089,1.405,.059]],width:.012,widths,color:2,lift:true},
+        {points:[[.073,1.591,-.074],[.137,1.630,-.093],[.177,1.510,-.104],[.169,1.397,-.065],[.199,1.322,-.005],[.222,1.329,.022]],width:.037,widths,color:2,depth:.46,tail:true},
+        {points:[[.073,1.591,-.074],[.137,1.606,-.070],[.158,1.509,-.064],[.148,1.401,-.032],[.168,1.317,.016],[.195,1.284,.033]],width:.030,widths,color:0,depth:.39,tail:true},
+        {points:[[.073,1.591,-.074],[.127,1.574,-.039],[.140,1.490,-.036],[.125,1.403,-.010],[.142,1.340,.030],[.161,1.323,.033]],width:.021,widths,color:1,depth:.28,tail:true},
       ]});
-    const clip=new THREE.Group();clip.position.set(.081,1.560,.099);clip.rotation.set(-.12,.38,-.45);root.add(clip);
+    const clip=new THREE.Group();clip.position.set(.080,1.558,.059);clip.rotation.set(-.12,.38,-.45);root.add(clip);
     for(const [x,y,angle] of [[-.008,0,-.5],[.006,.010,.6],[.003,-.010,1.5]]){
       const shape=new THREE.Shape();shape.moveTo(0,-.014);shape.quadraticCurveTo(-.012,0,0,.014);shape.quadraticCurveTo(.012,0,0,-.014);
       const leaf=new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshBasicMaterial({color:'#9dbd8b',side:THREE.DoubleSide,toneMapped:false}));leaf.position.set(x,y,0);leaf.rotation.z=angle;clip.add(leaf);
