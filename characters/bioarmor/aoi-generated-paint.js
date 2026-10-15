@@ -1,14 +1,16 @@
 import {paintGeneratedFace} from '../../lib/craft3d/generated-face-paint.js';
 import {addPaintedHairShell} from '../../lib/craft3d/painted-hair-shell.js';
+// Authored oblique correction in Aoi's metre frame, shared with overlying hair.
+const AOI_OBLIQUE_FACE_SUPPORT={"width":0.018,"depth":0.024,"outerEyeFold":0.020,"lowerCheek":0.0035};
 
 export function aoiGeneratedFace(base){
   return {...base,textureSize:2048,skin:'#ffddbf',paintFace:paintGeneratedFace,
     irisArt:new URL('./textures/aoi-painted-face-v1.png',import.meta.url).href,
     paint:{originX:642,originY:658,anchorY:1.473,pixelsPerMetre:3300,
       eyes:[[500,656,458,600,85,111],[785,655,743,599,85,111]],mouth:[641,852]},
-    cheekFullness:.045,neckZ:.012,neckTopZ:.008,neckRadius:.034,earZ:-.043,
+    cheekFullness:.045,neckZ:.012,neckTopZ:.008,neckRadius:.034,earZ:-.015,earY:1.467,
     neckProfile:[[1.300,.034,.041,-.030],[1.335,.032,.041,-.028],[1.375,.032,.036,-.036],[1.415,.037,.032,-.050],[1.452,.046,.024,-.063]],
-    drawnEar:true,
+    drawnEar:true,obliqueFaceSupport:AOI_OBLIQUE_FACE_SUPPORT,
     faceRoundness:1.45,noseDepth:0,
     // Keep the profile iris compression without pushing the eye region into
     // the face: the old 14 mm recess hid the far eye on oblique views.
@@ -20,6 +22,7 @@ export function aoiGeneratedFace(base){
 }
 export function addAoiGeneratedHair(actor,{profileFit=true}={}){
   return addPaintedHairShell(actor,{
+    obliqueFaceSupport:AOI_OBLIQUE_FACE_SUPPORT,
     url:new URL('./textures/aoi-painted-hair-v1.png',import.meta.url).href,
     backUrl:new URL('./textures/aoi-painted-back-v1.png',import.meta.url).href,
     originX:615,originY:654,anchorY:1.473,pixelsPerMetre:3186,
