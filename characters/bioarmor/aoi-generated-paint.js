@@ -11,7 +11,7 @@ export function aoiGeneratedFace(base){
       eyes:[[500,656,458,600,85,111],[785,655,743,599,85,111]],mouth:[641,852]},
     cheekFullness:.045,neckZ:.012,neckTopZ:.008,neckRadius:.034,earZ:.006,earY:1.460,
     earScale:[.011,.032,.022],
-    jawDefinition:{rootY:1.445,rootZ:.008,power:3.0,ink:'#876052',shadow:'#edb394'},
+    jawDefinition:{rootY:1.445,rootZ:.008,power:3.0,obliqueRootY:1.435,obliquePower:1.8,ink:'#876052',shadow:'#edb394'},
     neckInk:true,
     neckProfile:[[1.300,.043,.060,-.035],[1.322,.039,.056,-.038],[1.335,.034,.048,-.040],[1.375,.032,.040,-.047],[1.397,.033,.055,-.052],[1.415,.036,.053,-.057],[1.452,.044,.031,-.067]],
     drawnEar:true,obliqueFaceSupport:AOI_OBLIQUE_FACE_SUPPORT,
