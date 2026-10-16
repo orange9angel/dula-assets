@@ -3,7 +3,7 @@ import {addPaintedHairShell} from '../../lib/craft3d/painted-hair-shell.js';
 // Authored oblique correction in Aoi's metre frame, shared with overlying hair.
 // No shallow projected-cheek override: it inflated the 20–35 degree transition.
 // Keep the cheek target/envelope together until the profile takes over near 80°.
-const AOI_OBLIQUE_FACE_SUPPORT={"width":0.01,"depth":0.018,"outerEyeFold":0.016,"lowerCheek":0.01,"deepCheek":0.006,"cheekSupport":0.55,"eyeClip":true,"farEyeRelax":0.28,"profileStart":45,"cheekCenter":1.41,"cheekSpread":0.032,"cheekUpperIndent":0,"eyeFoldTop":[1.485,1.55],"cheekTop":[1.44,1.46],"eyeFoldBottom":[1.45,1.475],"farCheekCurve":{"topY":1.46,"top":0.1062,"slope":0,"quadratic":0,"cubic":8,"points":[[1.376,0.0776,0.5],[1.39,0.085,0.62],[1.41,0.098,0.55],[1.43,0.105,0.13],[1.46,0.1062,0.02]]},"noseGraphicRecess":0.01,"earlyEyeClip":true,"hairTempleRoundness":0.012,"orbitCheekEdge":[[1.41,0.098,0.55],[1.43,0.1044,0.05],[1.45,0.1049,0.015],[1.46,0.105,0.04],[1.47,0.106,0.16],[1.48,0.108,0.23],[1.49,0.1106,0.24],[1.5,0.1123,0.1]],"farEyeWhite":{"centerX":0.0365,"centerY":1.47375,"radiusX":0.01288,"radiusY":0.01682,"margin":0.0018},"profileEyeShape":{"shear":-0.18,"irisSlope":0.06,"temporalDepth":0.5},"lateCheekSupport":0.0035,"noseProfileRetain":0.5,"cheekReleaseStart":80};
+const AOI_OBLIQUE_FACE_SUPPORT={"width":0.01,"depth":0.018,"outerEyeFold":0.016,"lowerCheek":0.01,"deepCheek":0.006,"cheekSupport":0.55,"eyeClip":true,"farEyeRelax":0.28,"profileStart":45,"cheekCenter":1.41,"cheekSpread":0.032,"cheekUpperIndent":0,"eyeFoldTop":[1.485,1.55],"cheekTop":[1.44,1.46],"eyeFoldBottom":[1.45,1.475],"farCheekCurve":{"topY":1.46,"top":0.1062,"slope":0,"quadratic":0,"cubic":8,"points":[[1.376,0.0776,0.5],[1.39,0.085,0.62],[1.41,0.098,0.55],[1.43,0.105,0.13],[1.46,0.1062,0.02]]},"noseGraphicRecess":0.01,"earlyEyeClip":true,"hairTempleRoundness":0.012,"orbitCheekEdge":[[1.41,0.098,0.55],[1.43,0.1044,0.05],[1.45,0.1049,0.015],[1.46,0.105,0.04],[1.47,0.106,0.16],[1.48,0.108,0.23],[1.49,0.1106,0.24],[1.5,0.1123,0.1]],"farEyeWhite":{"centerX":0.0365,"centerY":1.47375,"radiusX":0.01288,"radiusY":0.01682,"margin":0.0018},"profileEyeShape":{"shear":-0.18,"irisSlope":0.06,"temporalDepth":0.5},"lateCheekSupport":0.0035,"noseProfileRetain":0.5,"cheekReleaseStart":80,"nearEyeObliqueSlope":0.16};
 
 export function aoiGeneratedFace(base){
   return {...base,textureSize:2048,skin:'#ffddbf',paintFace:paintGeneratedFace,
@@ -13,7 +13,7 @@ export function aoiGeneratedFace(base){
       eyes:[[500,656,458,600,85,111],[785,655,743,599,85,111]],mouth:[641,852]},
     cheekFullness:.045,neckZ:.012,neckTopZ:.008,neckRadius:.034,earZ:.006,earY:1.460,
     earScale:[.011,.032,.022],
-    jawDefinition:{rootY:1.445,rootZ:.008,power:3.0,obliqueRootY:1.435,obliquePower:1.8,ink:'#876052',shadow:'#edb394'},
+    jawDefinition:{rootY:1.445,rootZ:.008,power:3.0,obliqueRootY:1.435,obliquePower:1.8,profileChin:{depth:.0035,centerY:1.386,spread:.016,start:60},ink:'#876052',shadow:'#edb394'},
     neckInk:true,
     neckProfile:[[1.300,.043,.060,-.035],[1.322,.039,.056,-.038],[1.335,.034,.048,-.040],[1.375,.032,.040,-.047],[1.397,.033,.055,-.052],[1.415,.036,.053,-.057],[1.452,.044,.031,-.067]],
     drawnEar:true,earRootDefinition:true,earShape:'attached',obliqueFaceSupport:AOI_OBLIQUE_FACE_SUPPORT,
@@ -38,6 +38,8 @@ export function addAoiGeneratedHair(actor,{profileFit=true}={}){
     originX:615,originY:654,anchorY:1.473,pixelsPerMetre:3186,
     projectionRadii:[.166,.163,.142],templeWrap:.065,profileFit,
     ...(profileFit?{
+      // Far-side ponytail needs a connected root-to-tip path, not a low-tip offset.
+      tailFlow:{"farPaths":[[[0.045,1.627,-0.077],[0.022,1.583,-0.146],[0.02,1.478,-0.21],[0.037,1.374,-0.22],[0.003,1.307,-0.245]],[[0.046,1.628,-0.078],[0.039,1.572,-0.139],[0.04,1.456,-0.182],[0.058,1.361,-0.197],[0.07,1.327,-0.219]],[[0.048,1.629,-0.076],[0.01,1.571,-0.151],[0.003,1.447,-0.209],[0.013,1.351,-0.237],[-0.017,1.322,-0.255]]],"start":5,"end":60,"radiusScale":0.96,"tipRadius":0.5,"tipStart":0.5,"roundness":0.95,"tipCoverage":[1.34,1.42]},
       tailDepth:-.060,napeDrop:.014,napeWrap:.80,templeCurve:true,naturalTempleLocks:true,
       sidePaint:{url:new URL('./textures/aoi-profile-hair-atlas-v1.png',import.meta.url).href,
         scale:1030,right:[690,590],left:[201,182],anchorY:1.473},
