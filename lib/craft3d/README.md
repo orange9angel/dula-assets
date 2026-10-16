@@ -73,3 +73,23 @@ Registry、不进 `dula-assets/index.js` 的 `registerAll()`。浏览器页面�
 | `HybridRiver` | `craft_trial/environment3d.js` | 剧集环境件（河岸/阵风/飞鸟），非角色积木，超出本次晋升范围 |
 | `clothMaterial`、`finishSleeveRoot`、S1E2 肤色板 `SKIN{lei,hong}` | S1E2 `character_finish.js` | 剧集专属调色与袖口修型，暂留本地 |
 | 小雪五指手之外的 E08 派生手 | `cat_leads_e08_drifting_page/hybrid/` | E08 本地派生，未回改 craft_trial，不并入 |
+
+## Aoi 绘制角色的斜面与耳发接口
+
+角色参数正本是[`aoi-generated-paint.js`](../../characters/bioarmor/aoi-generated-paint.js)。
+`aoiGeneratedFace()`提供脸部、耳部与视角修型配置，`addAoiGeneratedHair()`接入绘画发壳。
+本次实现提交`c6d8934`；这是待继续精修的角色配置，不是所有人物的通用脸型模板。
+
+- `drawn-head.js`消费`externalContour:[60,70]`，用stencil区分外轮廓与脸内描边。
+  消费方应以`new THREE.WebGLRenderer({stencil:true,...})`创建渲染器；未启用时
+  回退旧描边，不能期待同样的深斜面清线效果。S1E4的face lab和viewer已启用。
+- `oblique-face-support.js`共享脸、眼及覆盖层的GPU视角修型；`createDrawnHead()`返回的
+  `apply(next)`同步注视参数。CPU原始网格探针不包含这些变形，须以实际渲染复核。
+- `drawn-ear.js`的`attachedLobe`分支配合变形前`earChartPosition`，减少短耳垂
+  纹理挤压；`painted-hair-shell.js`限制马尾侧面调整并让鬓发渐细、不等长分叉。
+  几何收尖仍受`profile-hair-paint.js`透明轮廓影响，不能只凭参数判断发梢完整。
+
+当前仍有后发壳感、耳根简化与颈领碎边。实际证据在内容仓库S1E4的
+`storyboard/hybrid_character/current/`；接口经验读技能库character-modeler的
+`references/multiview-character-fit.md`。后续修改保留已认可脸型，核对邻接转角、
+左右侧、表情与逆序取帧；程序一致性通过不等于美术验收。
