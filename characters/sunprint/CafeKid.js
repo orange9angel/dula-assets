@@ -6,6 +6,7 @@ import {createDrawnHead} from '../../lib/craft3d/drawn-head.js';
 import {paintGeneratedPortrait} from '../../lib/craft3d/generated-portrait-paint.js';
 import {addPaintedHairShell} from '../../lib/craft3d/painted-hair-shell.js';
 import {addCafeRearHair,applyCafeSidePainting} from './CafeRearHair.js';
+import {fitCafeHeadEnvelope} from './CafeHairIntegration.js';
 import {paintCafeFeatures,integrateCafeHead} from './CafeFaceIntegration.js';
 
 const V=p=>new THREE.Vector3(p.x,p.y,p.z??0),P=(x,y,z=0)=>({x,y,z});
@@ -34,6 +35,9 @@ function featureRecipe(kind){
   const girl=kind==='Girl',originX=girl?658:679,originY=girl?441:457,anchorY=girl?1.575:1.690,ppm=girl?2400:2700;
   const eye=(x0,x1,y0,y1,cy)=>({irisCentre:[(x0+x1)/2,cy],irisRadii:[girl?30:24,girl?38:26],upper:[[x0,y0],[x0+(x1-x0)*.24,y0-(girl?30:15)],[x0+(x1-x0)*.77,y0-(girl?25:17)],[x1,y0+3]],lower:[[x0,y0],[x0+(x1-x0)*.23,y1],[x0+(x1-x0)*.77,y1],[x1,y0+3]],closed:[[x0,y0+10],[x0+(x1-x0)*.3,y0+23],[x0+(x1-x0)*.7,y0+24],[x1,y0+12]],gazePixels:[6,3],pinMargin:17,clear:{rect:[x0-8,y0-35,x1-x0+16,y1-y0+49],sampleTop:y0-36,sampleBottom:y1+15,sampleX:[x0+4,x1-4],feather:6},upperBand:{above:7,below:8,inkMin:95,inkMax:175},lowerBand:{above:2,below:3,inkMin:95,inkMax:170}});
   const eyes=girl?[eye(503,611,420,490,446),eye(717,829,420,490,446)]:[eye(525,643,446,487,459),eye(715,836,446,487,459)];
+  // Sampling a whole row above the eyelid included brows/fringe, stretching
+  // their dark pixels down the cheek during a blink. Use clean skin anchors.
+  eyes.forEach((e,i)=>Object.assign(e.clear,{samplePointTop:[originX,girl?500:515],samplePointBottom:[originX+(i?38:-38),girl?554:573]}));
   const mouthY=girl?577:600,mouthX=girl?658:680,mouthW=girl?66:91;
   const facePath=girl?[
     ['M',501,310],['C',528,198,789,198,830,320],['L',830,493],['Q',824,560,775,609],['Q',716,650,658,666],['Q',602,651,549,607],['Q',494,555,487,493],['Z']
@@ -96,7 +100,7 @@ export class CafeKid {
       root.traverse(o=>{if(o.isMesh&&o.geometry.attributes.position){const a=o.geometry.attributes.position;if(girl)for(let i=0;i<a.count;i++){const y=a.getY(i),w=1-smooth(1.25,1.51,y);if(y<1.51)a.setXYZ(i,a.getX(i)*(1-.25*w),1.51+(y-1.51)*2.3,a.getZ(i)-.025*w);}a.needsUpdate=true;o.geometry.computeVertexNormals();this.hairRest.push({mesh:o,base:a.array.slice()});}});
       if(rearHairUrl){const texture=await new THREE.TextureLoader().loadAsync(rearHairUrl);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=8;const mesh=addCafeRearHair(root,texture,{girl,dy});this.hairRest.push({mesh,base:mesh.geometry.attributes.position.array.slice()});}
       if(sideHairUrl){const texture=await new THREE.TextureLoader().loadAsync(sideHairUrl);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=8;applyCafeSidePainting(root,texture);}
-    })]);
+    })]).then(()=>fitCafeHeadEnvelope(this));
   }
   setPose(p){
     const s=this.scale;this.mesh.position.set(p.x??0,0,p.z??0);this.mesh.rotation.y=p.yaw??0;

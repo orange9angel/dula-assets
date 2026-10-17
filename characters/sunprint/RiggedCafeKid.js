@@ -17,9 +17,10 @@ export class RiggedCafeKid extends CafeKid{
   this.bodyAudit=illustrateImportedBody(b,{kind:girl?'aoi':'lei',headCut:girl?1.385:1.493,keepHair:false,skin:'#ffdcba',refineNeck:true});
   const cloth=await new THREE.TextureLoader().loadAsync(clothingUrl);cloth.colorSpace=THREE.SRGBColorSpace;
   for(const mesh of b.skins){
-   const g=mesh.geometry,rest=g.attributes.performerRest,j=g.attributes.skinIndex,w=g.attributes.skinWeight,uv=new Float32Array(rest.count*2),legWeights=new Float32Array(rest.count),bare=new Float32Array(rest.count);
+   const g=mesh.geometry,rest=g.attributes.performerRest,j=g.attributes.skinIndex,w=g.attributes.skinWeight,uv=new Float32Array(rest.count*2),legWeights=new Float32Array(rest.count),armWeights=new Float32Array(rest.count),bare=new Float32Array(rest.count);
    for(let v=0;v<rest.count;v++){
     const x=rest.getX(v),y=rest.getY(v),armWeight=[0,1,2,3].reduce((a,k)=>a+(/arm|hand|thumb|index|middle|ring|pinky/i.test(mesh.skeleton.bones[j.array[v*4+k]].name)?w.array[v*4+k]:0),0);
+    armWeights[v]=armWeight;
     legWeights[v]=[0,1,2,3].reduce((a,k)=>a+(/upleg|leg|foot/i.test(mesh.skeleton.bones[j.array[v*4+k]].name)?w.array[v*4+k]:0),0);
     let px=512+x*(girl?850:820),py=girl?650-(y-.95)*940:705-(y-.98)*870;
     if(armWeight>.45&&y>.60){
@@ -42,8 +43,9 @@ export class RiggedCafeKid extends CafeKid{
      if(yy!==y||zz!==z){const v=new THREE.Vector3(x,yy,zz).applyMatrix4(inv);pos.setXYZ(i,v.x,v.y,v.z);rest.setXYZ(i,x,yy,zz);}
     }pos.needsUpdate=true;rest.needsUpdate=true;g.computeVertexNormals();
    }
-   g.setAttribute('cafePaintUV',new THREE.BufferAttribute(uv,2));g.setAttribute('cafeLeg',new THREE.BufferAttribute(legWeights,1));g.setAttribute('cafeBare',new THREE.BufferAttribute(bare,1));
+   g.setAttribute('cafePaintUV',new THREE.BufferAttribute(uv,2));g.setAttribute('cafeLeg',new THREE.BufferAttribute(legWeights,1));g.setAttribute('cafeBare',new THREE.BufferAttribute(bare,1));g.setAttribute('cafeArm',new THREE.BufferAttribute(armWeights,1));
    const m=mesh.material,compile=m.onBeforeCompile;m.onBeforeCompile=shader=>{compile(shader);
+    shader.vertexShader='attribute float cafeArm;varying float vCafeArm;\n'+shader.vertexShader;shader.fragmentShader='varying float vCafeArm;\n'+shader.fragmentShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvCafeArm=cafeArm;');
     shader.uniforms.cafeCloth={value:cloth};shader.vertexShader='attribute vec2 cafePaintUV;attribute float cafeLeg;varying vec2 vCafePaintUV;varying float vCafeLeg;\n'+shader.vertexShader;
     shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvCafePaintUV=cafePaintUV;vCafeLeg=cafeLeg;');shader.fragmentShader='uniform sampler2D cafeCloth;varying vec2 vCafePaintUV;varying float vCafeLeg;\n'+shader.fragmentShader;
     shader.vertexShader='attribute float cafeBare;varying float vCafeBare;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvCafeBare=cafeBare;');shader.fragmentShader='varying float vCafeBare;\n'+shader.fragmentShader;
@@ -55,8 +57,8 @@ export class RiggedCafeKid extends CafeKid{
       vec4 painted=texture2D(cafeCloth,vCafePaintUV);float frontPaint=smoothstep(-.01,.055,vPerformerRest.z);bool shirtZone=y>${girl?'.98':'.98'};
       if(!skinPixel&&painted.a>.92&&((shirtZone&&painted.r>.48&&painted.g>.35)||${girl?'false':'(!shirtZone&&painted.r<.40&&painted.b>painted.r*.90)'}))outgoingLight=mix(outgoingLight,painted.rgb*mix(.86,1.0,lit),frontPaint);
       if(vCafeBare>.55)outgoingLight=drawn_skin*mix(.93,1.0,skinLit);
-      ${girl?'if(x<.28&&y>.58&&y<1.04&&vCafeBare<.5)discard;':''}
-      ${girl?'if(x<.28&&y>.52&&y<.60&&vDrawnCloth.x<.2)discard;':''}
+      ${girl?'if(x<.28&&y>.58&&y<1.04&&vCafeBare<.5&&vCafeArm<.15)discard;':''}
+      ${girl?'if(x<.28&&y>.52&&y<.60&&vDrawnCloth.x<.2&&vCafeArm<.15)discard;':''}
       if(skinPixel&&x<.065&&y>${girl?'1.32':'1.405'})discard;`);
   };m.customProgramCacheKey=()=>`sunprint-imported-body-${this.kind}`;}
   b.mesh.traverse(o=>{if(o.name==='illustrated-body-outline')o.visible=false;});
@@ -86,9 +88,9 @@ export class RiggedCafeKid extends CafeKid{
   const contacts={};
   for(const [side,screenSide] of [['left','right'],['right','left']]){
    const targetW=this.mesh.localToWorld(V(p[screenSide+'Wrist'])),targetF=this.mesh.localToWorld(V(p[screenSide+'Foot']));targetF.y+=a.neutral[side+'foot'].y*s-.074*this.scale;
-   const sign=side==='left'?1:-1,armPole=V({x:sign,y:-.3,z:-.5}).transformDirection(this.mesh.matrixWorld),legPole=V({x:0,y:0,z:1}).transformDirection(this.mesh.matrixWorld);
+   const sign=side==='left'?1:-1,armPole=V(p[screenSide+'ElbowPole']??{x:sign,y:-.3,z:-.5}).transformDirection(this.mesh.matrixWorld),legPole=V({x:0,y:0,z:1}).transformDirection(this.mesh.matrixWorld);
    a.solve([side+'arm',side+'forearm',side+'hand'],targetW,armPole);
-   if(p[screenSide+'Palm'])aimAnatomicalHand(a,side,V(p[screenSide+'Palm']).transformDirection(this.mesh.matrixWorld),V(p[screenSide+'Direction']).transformDirection(this.mesh.matrixWorld),1,{maxBend:1.0});
+   if(p[screenSide+'Palm']){const direction=p.naturalWrist?a.bones[side+'hand'].getWorldPosition(new THREE.Vector3()).sub(a.bones[side+'forearm'].getWorldPosition(new THREE.Vector3())).normalize():V(p[screenSide+'Direction']).transformDirection(this.mesh.matrixWorld);aimAnatomicalHand(a,side,V(p[screenSide+'Palm']).transformDirection(this.mesh.matrixWorld),direction,1,{maxBend:p.naturalWrist?.28:1.0});}
    const grip=p[screenSide+'Grip']??0;
    if(grip>0){const palm=a.anatomicalHands[side].palm.clone().applyQuaternion(a.bones[side+'hand'].getWorldQuaternion(new THREE.Quaternion()));for(const finger of ['index','middle','ring','pinky'])for(let n=1;n<=3;n++){const b=a.bones[side+'hand'+finger+n],child=b?.children.find(c=>c.isBone);if(!child)continue;const axis=child.getWorldPosition(new THREE.Vector3()).sub(b.getWorldPosition(new THREE.Vector3())).normalize().cross(palm).normalize(),q=new THREE.Quaternion().setFromAxisAngle(axis,grip*(n===1?.7:1.1)).multiply(b.getWorldQuaternion(new THREE.Quaternion()));a.setWorldQuaternion(b,q);}}
    a.solve([side+'upleg',side+'leg',side+'foot'],targetF,legPole);

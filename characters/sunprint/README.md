@@ -9,6 +9,7 @@
 | `RiggedCafeKid.js` | 蒙皮身体、手脚 IK、衣料投影、实际鞋底采样、裙面与腿部连接 |
 | `CafeKid.js` | 曲面头脸、五官与前发、表情及基础姿态接口 |
 | `CafeFaceIntegration.js` | 五官绘画与头、耳、颈肤色响应的衔接 |
+| `CafeHairIntegration.js` | 共同深度映射收回后脑/后发，保留原画 XY/UV；颈侧发束回绕候选 |
 | `CafeRearHair.js` | 侧后发曲面与绘画覆盖 |
 | `CafeSkirt.js` | 随实际髋膝更新的褶裙、腰带、格纹和有限腿部胶囊拟合 |
 | `IllustratedCafeKid.js` | 历史整图变形路线，非当前三维入口 |
@@ -32,7 +33,7 @@ const evidence = actor.setPose(pose);
 
 完整接入例子是内容仓
 [`craft3d/bootstrap.js`](../../../dula-story/episodes/cat_leads_cafe_musical/craft3d/bootstrap.js)，
-姿态谱见同集 `craft3d/dialogue-v4.js` 和 `craft3d/dance-v3.js`。
+姿态谱见同集 `craft3d/dialogue-v4.js` 和 `craft3d/dance-v5.js`。
 坐标的画面左右与导入骨架左右在适配层明确转换；换身体时须重新标定，不能直接套数值。
 
 ## 约束与证据
@@ -46,3 +47,8 @@ V4 角色代码基线为 `f3c9242`（包含 `fd0d0f5` 的面部及坐姿修订�
 保留首次 seek 异常、独立复查和审美限制；
 [工艺复盘](../../../dula-skills/character-modeler/references/sunprint-dance-revision.md)
 记录面具感、旧裙删除造成断腿、坐姿后摆和动作融合问题。
+
+V5 候选追加裙腰重叠、保护低位手臂不被旧裙裁切、有限腕弯和后脑共同深度映射。
+首次独立后发重建被用户否定颜值，现已撤回；当前仍有侧发折片、强侧面拉伸等限制。
+见 [V5 记录](../../../dula-story/episodes/cat_leads_cafe_musical/craft3d/INTEGRATION_V5.md)。
+不要把首轮实验或新候选写成已通过用户美术验收的样板。

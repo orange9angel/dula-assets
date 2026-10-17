@@ -26,14 +26,16 @@ export class CafeSkirt{
  }
  update(p){
   const a=this.actor,hip=point(a,'hips'),legs=['left','right'].map(side=>[point(a,side+'upleg'),point(a,side+'leg'),point(a,side+'foot')]);
-  const knee=legs[0][1].clone().add(legs[1][1]).multiplyScalar(.5),seat=clamp(-(p.bob??0)/.385,0,1),waist=hip.y+.086;
+  const knee=legs[0][1].clone().add(legs[1][1]).multiplyScalar(.5),seat=clamp(-(p.bob??0)/.385,0,1),waist=hip.y+.137;
   const capsules=legs.flatMap(([h,k,f])=>[{a:h,b:k,r:.062},{a:k,b:f,r:.046}]);
   const pos=this.mesh.geometry.attributes.position;let corrected=0,maxPush=0,minClearance=Infinity;
   for(let r=0;r<=this.rows;r++)for(let j=0;j<=this.sides;j++){
    const u=r/this.rows,theta=j/this.sides*Math.PI*2+(p.hairLag??0)*u*u*.45,front=smooth(Math.cos(theta),-.6,.6);
    const pleat=(.003+.012*u)*Math.cos(theta*16)*smooth(u,.055,.2),rx=.131+.091*Math.pow(u,.82),rz=.086+.062*u;
-   const q=new THREE.Vector3(hip.x+Math.sin(theta)*(rx+pleat),waist-.392*u,hip.z+Math.cos(theta)*(rz+pleat));
-   q.y+=seat*(.392*u+(knee.y-.025+.093*front-waist)*u+(.012+.053*front)*Math.sin(Math.PI*u));
+   // Extend the waistband into the actual shirt hem, preserving the hem height.
+   // The previous top was below the discarded source-cloth boundary.
+   const q=new THREE.Vector3(hip.x+Math.sin(theta)*(rx+pleat),waist-.443*u,hip.z+Math.cos(theta)*(rz+pleat));
+   q.y+=seat*(.443*u+(knee.y-.025+.093*front-waist)*u+(.012+.053*front)*Math.sin(Math.PI*u));
    q.z+=seat*front*u*Math.max(0,knee.z-hip.z)*.97;
    q.x+=(p.roll??0)*u*.23;q.y+=u*u*(.0035*Math.cos(theta*16)+.004*Math.sin(theta*2));
    const before=q.clone();
