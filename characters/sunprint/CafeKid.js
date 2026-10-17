@@ -5,6 +5,7 @@ import {twoBone} from '../../lib/craft3d/pose.js';
 import {createDrawnHead} from '../../lib/craft3d/drawn-head.js';
 import {paintGeneratedPortrait} from '../../lib/craft3d/generated-portrait-paint.js';
 import {addPaintedHairShell} from '../../lib/craft3d/painted-hair-shell.js';
+import {addCafeRearHair,applyCafeSidePainting} from './CafeRearHair.js';
 
 const V=p=>new THREE.Vector3(p.x,p.y,p.z??0),P=(x,y,z=0)=>({x,y,z});
 const smooth=(a,b,x)=>THREE.MathUtils.smoothstep(x,a,b);
@@ -42,9 +43,9 @@ function featureRecipe(kind){
 /** Original long-haired/white-shirt Sunprint cast. This is a viewer actor,
  * composed from shared craft3d geometry and generated portrait painting.
  * Asset URLs are supplied by the episode; there are no cross-episode imports.
- * Current validation scope is frontal to modest three-quarter views. */
+ * Optional rear/side production paintings complete the turning candidate. */
 export class CafeKid {
-  constructor(kind,{portraitUrl,hairUrl,neckBase,headScale=1.18,headDrop=.045}){
+  constructor(kind,{portraitUrl,hairUrl,rearHairUrl,sideHairUrl,neckBase,headScale=1.18,headDrop=.045}){
     this.kind=kind;this.girl=kind==='Girl';this.headScale=headScale;this.headDrop=headDrop;const girl=this.girl;
     this.mesh=new THREE.Group();this.mesh.name=kind;this.poseRoot=new THREE.Group();this.mesh.add(this.poseRoot);
     this.scale=girl?1:1.07;const s=this.scale;
@@ -79,12 +80,15 @@ export class CafeKid {
     const profiles=[[1.481,.001,.095,.068],[1.490,.021,.102,.040],[1.508,.043,.105,.008],[1.530,.064,.105,-.035],[1.555,.079,.102,-.065],[1.578,.088,.100,-.082],[1.615,.093,.10,-.10],[1.661,.091,.082,-.107],[1.710,.065,.042,-.090],[1.748,.001,-.025,-.026]].map(shift);
     const config={profiles,centerX:0,centerY:1.61+dy,range:.205,headCut:1.475+dy,eyes:[[-.042,eyeY],[.042,eyeY]],brows:[[-.042,eyeY+.032],[.042,eyeY+.032]],mouth:[0,1.518+dy],noseY:1.547+dy,noseDepth:.004,faceRoundness:.62,skin:'#ffdcba',contour:'#765647',irisArt:portraitUrl,textureSize:1024,paintFace:paintGeneratedPortrait,paint,earY:eyeY-.006,earZ:.002,earScale:[.012,.025,.019],drawnEar:true,earShape:'attached',neckRadius:.035,neckProfile:[[1.395+dy,.044,.048,-.033],[1.433+dy,.036,.045,-.037],[1.480+dy,.033,.039,-.044],[1.52+dy,.037,.038,-.047]],neckShading:{start:1.475+dy,end:1.49+dy,color:'#ecb392'}};
     if(neckBase!=null)config.neckProfile[0][0]=neckBase;
+    if(rearHairUrl){config.profileContour=[[1.481,.075],[1.493,.091],[1.512,.103],[1.526,.105],[1.540,.103],[1.549,.111],[1.565,.103],[1.595,.101],[1.630,.095],[1.675,.069],[1.748,-.025]].map(p=>[p[0]+dy,p[1]]);config.noseDepth=.004;config.contourWidth=.022;}
     this.face=createDrawnHead(this,config);
     const hc=girl?{originX:658,originY:441,pixelsPerMetre:2400}: {originX:676,originY:783,pixelsPerMetre:4510};
     const capY=1.631+dy;
-    this.ready=Promise.all([this.face.ready,addPaintedHairShell(this,{url:hairUrl,...hc,anchorY:eyeY,cores:[],baseColor:girl?'#223978':'#343440',edgeColor:girl?'#233472':'#302f37',cap:{center:[0,capY,-.015],radii:[.105,.123,.115],hem:[[-180,1.51+dy],[-110,1.54+dy],[-60,1.63+dy],[0,1.70+dy],[60,1.63+dy],[110,1.54+dy],[180,1.51+dy]]},capCrop:girl?[470,92,180,180]:[450,175,240,240],projectionRadii:[.131,.17,.125],surface:{fringeY:[eyeY+.015,eyeY+.11],fringeX:[.075,.12],fringeDepth:.115,fringeSlope:.15,offset:.004,templeX:[.08,.12],templeY:[eyeY,eyeY+.06],templeDepth:.010,thickness:.001}}).then(root=>{
+    this.ready=Promise.all([this.face.ready,addPaintedHairShell(this,{url:hairUrl,backUrl:rearHairUrl,rearOnFrontBack:false,rearMap:girl?{originX:512,originY:32,anchorY:1.755,pixelsPerMetre:1770,spanX:300}:{originX:627,originY:85,anchorY:1.754+dy,pixelsPerMetre:4150,spanX:470},...hc,anchorY:eyeY,cores:[],baseColor:girl?'#223978':'#343440',edgeColor:girl?'#233472':'#302f37',cap:{center:[0,capY,-.015],radii:[.105,.123,.115],hem:[[-180,1.51+dy],[-110,1.54+dy],[-60,1.63+dy],[0,1.70+dy],[60,1.63+dy],[110,1.54+dy],[180,1.51+dy]]},capCrop:girl?[470,92,180,180]:[450,175,240,240],projectionRadii:rearHairUrl?[.119,.125,.125]:[.131,.17,.125],surface:{headClearance:girl&&rearHairUrl?.003:undefined,fringeY:[eyeY+.015,eyeY+.11],fringeX:[.075,.12],fringeDepth:.115,fringeSlope:.15,offset:.004,templeX:girl&&rearHairUrl?[.043,.085]:[.08,.12],templeY:[eyeY,eyeY+.06],templeDepth:girl&&rearHairUrl?-.005:.010,thickness:.001}}).then(async root=>{
       this.hairRoot=root;this.hairRest=[];
       root.traverse(o=>{if(o.isMesh&&o.geometry.attributes.position){const a=o.geometry.attributes.position;if(girl)for(let i=0;i<a.count;i++){const y=a.getY(i),w=1-smooth(1.25,1.51,y);if(y<1.51)a.setXYZ(i,a.getX(i)*(1-.25*w),1.51+(y-1.51)*2.3,a.getZ(i)-.025*w);}a.needsUpdate=true;o.geometry.computeVertexNormals();this.hairRest.push({mesh:o,base:a.array.slice()});}});
+      if(rearHairUrl){const texture=await new THREE.TextureLoader().loadAsync(rearHairUrl);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=8;const mesh=addCafeRearHair(root,texture,{girl,dy});this.hairRest.push({mesh,base:mesh.geometry.attributes.position.array.slice()});}
+      if(sideHairUrl){const texture=await new THREE.TextureLoader().loadAsync(sideHairUrl);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=8;applyCafeSidePainting(root,texture);}
     })]);
   }
   setPose(p){
@@ -109,7 +113,8 @@ export class CafeKid {
     // World-independent sway below the attached crown; no accumulated state.
     if(this.hairRest)for(const {mesh,base} of this.hairRest){const a=mesh.geometry.attributes.position;for(let i=0;i<a.count;i++){
       const x=base[i*3],y=base[i*3+1],z=base[i*3+2],w=this.girl?1-smooth(1.28,1.56,y):0;
-      a.setXYZ(i,x+(p.hairSway??0)*w,y,z+Math.abs(p.hairSway??0)*w*.4);
+      const lag=p.hairLag??0,theta=lag*w,c=Math.cos(theta),sn=Math.sin(theta);
+      a.setXYZ(i,c*x+sn*z+(p.hairSway??0)*w,y,-sn*x+c*z+Math.abs(p.hairSway??0)*w*.4);
     }a.needsUpdate=true;}
     return records;
   }

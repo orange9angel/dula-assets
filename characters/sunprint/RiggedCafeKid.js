@@ -48,7 +48,7 @@ export class RiggedCafeKid extends CafeKid{
       if(!skinPixel)outgoingLight*=mix(.88,1.03,clamp(dot(raw,vec3(.299,.587,.114))*1.4,0.0,1.0));
       ${girl?`if(y>.60&&y<.98&&!skinPixel){float lines=max(1.0-smoothstep(.018,.036,abs(fract(x*25.0)-.5)),1.0-smoothstep(.018,.036,abs(fract(y*28.0)-.5)));outgoingLight=mix(outgoingLight,vec3(.24,.28,.32),lines*.5);}if(vCafeLeg>.60&&y>.43&&y<.58)outgoingLight=drawn_skin*mix(.80,1.0,skinLit);`:''}
       vec4 painted=texture2D(cafeCloth,vCafePaintUV);float frontPaint=smoothstep(-.01,.055,vPerformerRest.z);bool shirtZone=y>${girl?'.98':'.98'};
-      if(!skinPixel&&painted.a>.92&&((shirtZone&&painted.r>.48&&painted.g>.35)||${girl?'false':'(!shirtZone&&painted.b>.025)'}))outgoingLight=mix(outgoingLight,painted.rgb*mix(.86,1.0,lit),frontPaint);
+      if(!skinPixel&&painted.a>.92&&((shirtZone&&painted.r>.48&&painted.g>.35)||${girl?'false':'(!shirtZone&&painted.r<.40&&painted.b>painted.r*.90)'}))outgoingLight=mix(outgoingLight,painted.rgb*mix(.86,1.0,lit),frontPaint);
       if(skinPixel&&x<.065&&y>${girl?'1.32':'1.405'})discard;`);
   };m.customProgramCacheKey=()=>`sunprint-imported-body-${this.kind}`;}
   b.mesh.traverse(o=>{if(o.name==='illustrated-body-outline')o.visible=false;});
@@ -71,7 +71,7 @@ export class RiggedCafeKid extends CafeKid{
    a.solve([side+'upleg',side+'leg',side+'foot'],targetF,legPole);
    const foot=a.bones[side+'foot'],neutral=a.neutralQuaternion[side+'foot'].clone();
    const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(p[screenSide+'FootPitch']??0,(p.yaw??0)+(p[screenSide+'FootYaw']??0),0));a.setWorldQuaternion(foot,q.multiply(neutral));
-   contacts[screenSide]={actual:foot.getWorldPosition(new THREE.Vector3()).toArray(),target:targetF.toArray(),planted:p.stance?.[screenSide]};
+   contacts[screenSide]={actual:foot.getWorldPosition(new THREE.Vector3()).toArray(),target:targetF.toArray(),planted:p.stance?.[screenSide],wristActual:a.bones[side+'hand'].getWorldPosition(new THREE.Vector3()).toArray(),wristTarget:targetW.toArray(),footQuaternion:foot.getWorldQuaternion(new THREE.Quaternion()).toArray()};
   }
   this.mesh.updateMatrixWorld(true);for(const mesh of a.skins)mesh.skeleton.update();const feet=[];
   for(const [side,screenSide] of [['right','left'],['left','right']]){const samples=this.soleSamples[side].map(({mesh,index})=>mesh.getVertexPosition(index,new THREE.Vector3()).applyMatrix4(mesh.matrixWorld));const centre=samples.reduce((a,b)=>a.add(b),new THREE.Vector3()).multiplyScalar(1/Math.max(1,samples.length));feet.push({x:centre.x,y:Math.min(...samples.map(v=>v.y)),z:centre.z,planted:p.stance?.[screenSide],samples:samples.length});}
