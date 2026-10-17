@@ -47,6 +47,7 @@ Registry、不进 `dula-assets/index.js` 的 `registerAll()`。浏览器页面�
 | `look.js` | `outlined(parent,geometry,material,width)` | 法线外扩壳描边（宽度分级：躯干/头 .0014、四肢 .0010、细节 .0006） |
 | | `coolShadowRamp()` | 共享 4 阶冷阴影 toon ramp（阴影阶偏蓝紫、受光阶偏暖） |
 | | `skinMaterial(base)` | 肤色平涂材质缓存（按基色取；逆光兜底件，颜色需预调暗 ×0.85–0.92） |
+| `continuous-backdrop.js` | `continuousBackdrop(texture,{center,cylinderRadius,cylinderHeight,radius,repeat,offset,zenith})` | 连续天空背景板：低仰角保持圆柱投影构图，高处把源图上方色带连续过渡到天顶色；含 fract 方位 UV 接缝的 textureGrad 周期解缠（晋升自 S1E2 R16 已验收实现） |
 
 ## 从 episode 迁移：只需改 import 路径
 
