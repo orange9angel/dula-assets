@@ -3,6 +3,8 @@ import {CafeKid} from './CafeKid.js';
 import {ImportedPerformer} from '../../lib/craft3d/imported-performer.js';
 import {illustrateImportedBody} from '../../lib/craft3d/illustrated-import.js';
 import {calibrateHands,aimAnatomicalHand} from '../../lib/craft3d/anatomical-hand.js';
+import {LimbSurface} from '../../lib/craft3d/surface.js';
+import {CafeSkirt} from './CafeSkirt.js';
 const V=p=>new THREE.Vector3(p.x,p.y,p.z??0);
 /** Imported, skinned body base adapted to the original cafe cast. Its source
  * wardrobe is a candidate adaptation; generated face/hair remain independent. */
@@ -60,7 +62,11 @@ export class RiggedCafeKid extends CafeKid{
   b.mesh.traverse(o=>{if(o.name==='illustrated-body-outline')o.visible=false;});
   this.torso.visible=false;for(const item of Object.values(this.limbs))item.mesh.visible=false;for(const item of Object.values(this.sleeves))item.mesh.visible=false;for(const item of Object.values(this.socks))item.mesh.visible=false;for(const item of Object.values(this.hands))item.visible=false;for(const item of Object.values(this.feet))item.visible=false;
   b.mesh.scale.setScalar(s);this.mesh.add(b.mesh);this.soleSamples={left:[],right:[]};
-  if(girl){this.poseRoot.add(this.skirt);this.skirt.visible=true;this.skirtRest=this.skirt.geometry.attributes.position.array.slice();}
+  if(girl){this.skirt.visible=false;this.fittedSkirt=new CafeSkirt(this);
+   // The source skirt and its hem were fused with the upper-leg shell. Its
+   // removal needs a continuous skin bridge, driven by the actual solved rig.
+   this.thighSurfaces={};for(const side of ['left','right']){const surface=new LimbSurface(this.mesh,'#ffdcba',[[0,.054],[.35,.048],[.50,.040],[.65,.035],[1,.028]],{start:.36,end:.61,depth:.92});surface.mesh.material=this.skin;surface.mesh.children[0].visible=false;this.thighSurfaces[side]=surface;}
+  }
   // Two folded collar leaves overlap the neck base; the neck remains a real
   // continuous surface, rather than ending as a visible rectangular patch.
   this.cleanCollar=new THREE.Group();this.poseRoot.add(this.cleanCollar);
@@ -76,10 +82,6 @@ export class RiggedCafeKid extends CafeKid{
   const prior=super.setPose(p);if(!this.body)return prior;
   const a=this.body,s=this.bodyScale;a.reset();this.mesh.updateMatrixWorld(true);
   this.cleanCollar.position.y=p.bob??0;this.cleanCollar.rotation.z=(p.roll??0)*.45;
-  if(this.girl){const seat=THREE.MathUtils.clamp(-(p.bob??0)/.385,0,1),pos=this.skirt.geometry.attributes.position;
-   for(let i=0;i<pos.count;i++){const x=this.skirtRest[i*3],y=this.skirtRest[i*3+1],z=this.skirtRest[i*3+2],u=THREE.MathUtils.clamp((.96-y)/.32,0,1),standY=y+.15*(1-u),seatY=1.11-.145*u+.08*Math.sin(Math.PI*u);pos.setXYZ(i,x,THREE.MathUtils.lerp(standY,seatY,seat),z*(1-.35*seat)+.50*seat*u);}
-   pos.needsUpdate=true;this.skirt.geometry.computeVertexNormals();this.skirt.position.y=p.bob??0;this.skirt.rotation.z=p.roll??0;
-  }
   const hips=a.bones.hips,world=hips.getWorldPosition(new THREE.Vector3());world.y+=p.bob??0;hips.position.copy(hips.parent.worldToLocal(world));a.rotateLocalFrame(hips,[0,0,(p.roll??0)*.45]);
   const contacts={};
   for(const [side,screenSide] of [['left','right'],['right','left']]){
@@ -94,8 +96,11 @@ export class RiggedCafeKid extends CafeKid{
    const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(p[screenSide+'FootPitch']??0,(p.yaw??0)+(p[screenSide+'FootYaw']??0),0));a.setWorldQuaternion(foot,q.multiply(neutral));
    contacts[screenSide]={actual:foot.getWorldPosition(new THREE.Vector3()).toArray(),target:targetF.toArray(),planted:p.stance?.[screenSide],wristActual:a.bones[side+'hand'].getWorldPosition(new THREE.Vector3()).toArray(),wristTarget:targetW.toArray(),grip:a.bones[side+'handindex1'].getWorldPosition(new THREE.Vector3()).lerp(a.bones[side+'handthumb2'].getWorldPosition(new THREE.Vector3()),.5).toArray(),footQuaternion:foot.getWorldQuaternion(new THREE.Quaternion()).toArray()};
   }
-  this.mesh.updateMatrixWorld(true);for(const mesh of a.skins)mesh.skeleton.update();const feet=[];
+  this.mesh.updateMatrixWorld(true);
+  if(this.thighSurfaces)for(const side of ['left','right'])this.thighSurfaces[side].update(['upleg','leg','foot'].map(part=>this.mesh.worldToLocal(a.bones[side+part].getWorldPosition(new THREE.Vector3()))));
+  const garment=this.fittedSkirt?.update(p);
+  for(const mesh of a.skins)mesh.skeleton.update();const feet=[];
   for(const [side,screenSide] of [['right','left'],['left','right']]){const samples=this.soleSamples[side].map(({mesh,index})=>mesh.getVertexPosition(index,new THREE.Vector3()).applyMatrix4(mesh.matrixWorld));const centre=samples.reduce((a,b)=>a.add(b),new THREE.Vector3()).multiplyScalar(1/Math.max(1,samples.length));feet.push({x:centre.x,y:Math.min(...samples.map(v=>v.y)),z:centre.z,planted:p.stance?.[screenSide],samples:samples.length});}
-  return{route:'skinned-three-dimensional-body-and-painted-head',joints:contacts,feet};
+  return{route:'skinned-three-dimensional-body-and-painted-head',joints:contacts,feet,garment};
  }
 }
