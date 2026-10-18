@@ -36,6 +36,7 @@ dula-assets/
 │   ├── Xiaoyue.js / Xingzai.js / Yokai.js / Shota.js / Gabura.js / Rex.js / Zorak.js
 │   ├── Cameraman.js / Cameraman2.js / Cameraman3.js / Reporter.js
 │   └── bioarmor/           # 《9章》系列：雷晓/轰刚/观察者，craft3d 工艺，canvas 动画头（viewer 链直接 import）
+│   └── stardust/           # 《星屑战壳》系列：阿鏊/小凿/大釜/赫斯提亚/阿箸，华丽战壳生长体系（viewer 链直接 import）
 ├── animations/           # 动画实现
 │   ├── common/           # 通用动画（所有角色可用）
 │   ├── doraemon/         # 哆啦A梦专属
@@ -54,6 +55,7 @@ dula-assets/
 │   ├── FrightZoneScene.js / WhisperingWoodsScene.js / DestroyedCityScene.js
 │   ├── SarayashikiRoofScene.js / NightRoomScene.js
 │   └── GLTFArenaScene.js
+│   └── stardust/           # 《星屑战壳》三场景（圣殿/柱廊/火山口；applyHybrid 纹理基路径参数化，纹理归调用剧集）
 ├── camera/               # 运镜实现
 │   ├── common/           # 通用运镜
 │   ├── ultraman/         # 奥特曼主题运镜
