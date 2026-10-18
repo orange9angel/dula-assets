@@ -326,17 +326,18 @@ function buildOrnateClad(host,cfg){
       seamTorus(p,g,rr+.003,.0028,[0,0,.08]);
       // 漏勺花窗盘（打孔阵保留：盘贴臂板+孔阵+银丝框）
       if(cfg.strainer){
+        const unit=new THREE.Group();g.add(unit);
         const disc=new THREE.Mesh(new THREE.CircleGeometry(.066,24),phong('#e8f2fa',140));
-        disc.position.set(sign*(rr+.006),0,.08);disc.rotation.y=sign*Math.PI/2;g.add(disc);
+        disc.position.set(sign*(rr+.006),0,.08);disc.rotation.y=sign*Math.PI/2;unit.add(disc);
         const holeMat=new THREE.MeshBasicMaterial({color:'#10161c'});
         for(const [hx,hz] of [[0,0],[.03,0],[-.03,0],[0,.03],[0,-.03],[.021,.021],[-.021,-.021],[.021,-.021],[-.021,.021]]){
           const h=new THREE.Mesh(new THREE.CircleGeometry(.0068,8),holeMat);
-          h.position.set(sign*(rr+.0075),hz,.08+hx);h.rotation.y=sign*Math.PI/2;g.add(h);
+          h.position.set(sign*(rr+.0075),hz,.08+hx);h.rotation.y=sign*Math.PI/2;unit.add(h);
         }
         const frame=new THREE.Mesh(new THREE.TorusGeometry(.066,.005,6,24),edgeM);
-        frame.position.set(sign*(rr+.006),0,.08);frame.rotation.y=sign*Math.PI/2;g.add(frame);
-        if(side==='left')host.bracerDiscL=disc; // gag 星屑锚点
-        seamTorus(p,g,.040,.003,[sign*(rr+.0075),0,.08],[0,sign*Math.PI/2,0]);
+        frame.position.set(sign*(rr+.006),0,.08);frame.rotation.y=sign*Math.PI/2;unit.add(frame);
+        if(side==='left'){host.bracerDiscL=disc;host.bracerDiscUnitL=unit;}
+        seamTorus(p,unit,.040,.003,[sign*(rr+.0075),0,.08],[0,sign*Math.PI/2,0]);
       }
       // 锅盖盾（阿鏊左臂）：鎏金穹顶贴臂挂点 + 金沿 + 宝石盾心
       if(cfg.shield&&side==='left'){
@@ -386,7 +387,7 @@ function buildOrnateClad(host,cfg){
     const frontZ=.02+thR*.94-.004,backZ=-(at(beltY0)[1]+.012),sideX=d.hipHalf+thR*.55+.002; // 后叶贴臀面
     const fx=Math.sin(.5)*rxB*.62; // 前侧叶横向位
     const leafSpec=[ // [x, z, tag, 跟随腿]
-      [0,frontZ-.004,'FC','both'],[-fx,(frontZ+.030)*.92,'FL','left'],[fx,(frontZ+.030)*.92,'FR','right'], // R7 腿伸直后大腿骨略前移，FC 叶内移 4mm 防悬浮
+      [0,frontZ-.009,'FC','both'],[-fx,(frontZ+.030)*.92,'FL','left'],[fx,(frontZ+.030)*.92,'FR','right'], // R7/R16 腿越直大腿骨越前移，FC 叶两次内移（-4mm→-9mm）防悬浮
       [-sideX,.012,'SL','left'],[sideX,.012,'SR','right'],[0,backZ,'B','both'],
     ];
     for(const [lx,lz,tag,leg] of leafSpec){
@@ -591,7 +592,7 @@ export class AoaoCraft{
     this.cladStyle={pri:'#d8a04a',sec:'#b06a2a',trim:'#f0c568',gem:'#3dffc8',seam:'#3dffc8'};
     this.gemBase=new THREE.Color('#3dffc8');this.gemHi=new THREE.Color('#d8fff2');
     this.cladParts=buildOrnateClad(this,{style:this.cladStyle,shield:true,shoulderLayers:2,
-      crown:'spike',cape:{len:.80,w:.42,color:'#f0ece2'},
+      crown:'spike',cape:null, // R16 监制令：披风穿模去除（buildOrnateClad 披风支路保留不用）
       dims:{shoulderY:1.42,shoulderHalf:.14,hipIdle:.87,hipHalf:.078,chestY:1.24,chestR:[.155,.20,.105],profile:o.torsoProfile}});
     this.setCladState(0);
   }
@@ -653,7 +654,7 @@ export class DafuCraft{
       priGlow:'#241c10',secGlow:'#1c160c'};
     this.gemBase=new THREE.Color('#ffb35e');this.gemHi=new THREE.Color('#ffe8c8');
     this.cladParts=buildOrnateClad(this,{style:this.cladStyle,shoulderLayers:3,scale:1.22,
-      crown:'band',cape:{len:.48,w:.50,color:'#2a2c34'},
+      crown:'band',cape:null,
       dims:{shoulderY:1.58,shoulderHalf:.19,hipIdle:.96,hipHalf:.105,chestY:1.36,chestR:[.225,.26,.13],profile:o.torsoProfile}});
     this.setCladState(0);
   }
@@ -691,7 +692,7 @@ export class AzuCraft{
       priGlow:'#2a2030',secGlow:'#1e1a26'}; // 黑漆甲夜景固色（与小凿冷甲同法）
     this.gemBase=new THREE.Color('#e02a3c');this.gemHi=new THREE.Color('#ffc8ce');
     this.cladParts=buildOrnateClad(this,{style:this.cladStyle,shoulderLayers:2,scale:1.0,
-      crown:'pins',cape:{len:.85,w:.36,color:'#171420'},
+      crown:'pins',cape:null,
       dims:{shoulderY:1.56,shoulderHalf:.13,hipIdle:.95,hipHalf:.070,chestY:1.38,chestR:[.125,.20,.09],profile:o.torsoProfile}});
     // 双持筷刃（臂铠段延伸件：随 forearmRig 生长/跟随；rig +z=肘→腕骨轴，刃向腕前伸出）
     const armOrd=1+2+1; // 肩甲 2 层后的臂铠段（与 buildOrnateClad 生长序一致）
@@ -865,4 +866,112 @@ export class HestiaCraft{
     }
     this.mesh.updateMatrixWorld(true);
   }
+}
+
+// ── 夜刈（蚀星庭先锋斥候）：黑紫蚀纹暗色战壳 + 锁镰（人形敌役，R16 架构令：兽改人形）──
+// 剪影辨识度=兜帽感后掠尖发+单肩斜挂锁链+右前臂镰刃。台词能冷场压迫（人形才能打对话）。
+// 探针锚点：sickleTip（镰尖，接触帧活取）；clad_fit/lastFit 由 buildOrnateClad+sharedSetPose 自带。
+export class YekariCraft{
+  constructor(){
+    const o=boyBase('YekariCraft',{kind:'aoi',headHeight:1.66,
+      torso:[[.92,.112,.082],[1.02,.122,.088],[1.12,.124,.090],[1.22,.110,.080],[1.32,.118,.086],[1.44,.126,.092],[1.52,.112,.080],[1.60,.056,.050]],
+      leg:[[0,.062],[.25,.054],[.55,.043],[.8,.036],[1,.032]],
+      arm:[[0,.040],[.3,.036],[.6,.028],[1,.022]],
+      sleeve:'#171320',pants:'#120f1a',shoe:'#1a1622',shoeScale:.92,handScale:.70});
+    Object.assign(this,o);
+    // 脸谱：压眼高细长冷目+无笑基底+紫晕眼尾
+    this.face.setStyle({eyeHeight:.72,eyeWidth:1.02,eyeSpacing:82,mouthWidth:.84,lashes:false});
+    this.face.setActing({smile:0});
+    addYekariHair(this.headGroup);
+    const gorget=new THREE.Mesh(new THREE.TorusGeometry(.060,.016,8,20),phong('#171320',120));
+    gorget.rotation.x=Math.PI/2;gorget.position.y=1.595;this.body.add(gorget);
+    this.cladStyle={pri:'#171320',sec:'#241c34',trim:'#b8b4cc',gem:'#8a5cff',seam:'#a47cff',
+      priGlow:'#241a30',secGlow:'#1c1626'}; // 黑紫蚀纹（夜景固色）
+    this.gemBase=new THREE.Color('#8a5cff');this.gemHi=new THREE.Color('#e0d4ff');
+    this.cladParts=buildOrnateClad(this,{style:this.cladStyle,shoulderLayers:2,scale:.98,
+      crown:'wing',cape:{len:.55,w:.40,color:'#14101c'},
+      dims:{shoulderY:1.52,shoulderHalf:.125,hipIdle:.93,hipHalf:.068,chestY:1.34,chestR:[.12,.19,.086],profile:o.torsoProfile}});
+    // 锁镰（右前臂甲延伸：月牙镰刃+三节锁链坠；归属臂铠生长段随 forearmRig）
+    const armOrd=1+2+1;
+    const bladeM=phong('#12101c',150,0xd8ccff); // 黑钢紫光缘
+    {const g=new THREE.Group();g.position.set(.015,0,.150);this.rigs.right.rig.add(g);
+     const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.012,.010,.72,10),bladeM);
+     shaft.rotation.x=Math.PI/2;shaft.position.z=.10;shaft.castShadow=true;g.add(shaft);
+     const shape=new THREE.Shape();shape.moveTo(-.025,.24);shape.bezierCurveTo(-.08,.39,.06,.53,.23,.45);
+     shape.quadraticCurveTo(.33,.39,.22,.30);shape.quadraticCurveTo(.24,.43,.10,.40);
+     shape.quadraticCurveTo(.025,.36,.025,.25);shape.closePath();
+     const blade=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:.009,bevelEnabled:false}),
+       new THREE.MeshToonMaterial({color:'#a6adc9',side:THREE.DoubleSide}));
+     blade.rotation.x=Math.PI/2;blade.castShadow=true;g.add(blade);
+     this.sickleTip=new THREE.Object3D();this.sickleTip.position.set(.22,0,.30);g.add(this.sickleTip);
+     this.chainSocket=new THREE.Object3D();this.chainSocket.position.set(0,0,-.25);g.add(this.chainSocket);
+     this.weaponMark=new THREE.Group();this.weaponMark.position.set(0,-.016,-.12);g.add(this.weaponMark);
+     const mark=new THREE.Mesh(new THREE.TorusGeometry(.022,.004,6,24,Math.PI*1.55),new THREE.MeshBasicMaterial({color:'#c8bddc'}));
+     mark.rotation.x=Math.PI/2;this.weaponMark.add(mark);
+     this.chainLinks=[];
+     for(let i=0;i<120;i++){
+       const link=new THREE.Mesh(new THREE.TorusGeometry(.016,.0038,6,10),new THREE.MeshToonMaterial({color:'#9a94ad'}));
+       this.mesh.add(link);this.chainLinks.push(link);
+     }
+     const hook=new THREE.Shape();hook.moveTo(0,0);hook.quadraticCurveTo(.11,.10,.065,.16);
+     hook.quadraticCurveTo(-.06,.18,-.055,.045);hook.lineTo(-.022,.025);
+     hook.quadraticCurveTo(-.025,.13,.035,.10);hook.quadraticCurveTo(.067,.055,0,0);hook.closePath();
+     this.returnBlade=new THREE.Mesh(new THREE.ExtrudeGeometry(hook,{depth:.009,bevelEnabled:false}),new THREE.MeshToonMaterial({color:'#bdc2d5',side:THREE.DoubleSide}));
+     this.mesh.add(this.returnBlade);
+     const collar=new THREE.Mesh(new THREE.TorusGeometry(.010,.0035,6,14),
+       new THREE.MeshBasicMaterial({color:this.cladStyle.gem}));
+     collar.position.z=.01;g.add(collar);
+     const p=this.cladParts.find(pp=>pp.ord===armOrd&&pp.groups.includes(this.rigs.right.rig));
+     if(p)p.groups.push(g);
+     this.sickle=g;}
+    // 先锋徽记（胸口内嵌，平时暗；F03 镜头由谱面点亮 gemHi 脉冲放大即可见）
+    this.backMark=new THREE.Object3D();this.backMark.position.set(0,1.36,-.13);this.body.add(this.backMark); // 背中接触锚点
+    this.chestMark=new THREE.Object3D();this.chestMark.position.set(0,1.34,.14);this.body.add(this.chestMark); // 胸口徽记锚点（c4 砸落点+F03 镜头）
+    this.setCladState(0);
+  }
+  setCladState(t){applyCladState(this.cladParts,t);}
+  updateCladFX(t,cladT){
+    cladFX(this.cladParts,t,cladT,this.gemHi);
+    for(const p of this.cladParts)for(const g of p.gems)if(g.visible)
+      g.material.color.copy(this.gemBase).lerp(this.gemHi,.35+.35*Math.sin(t*2.4+p.ord*1.1));
+    updateCape(this.cape,t);
+  }
+  setEmotion(e,b){this.face.setEmotion(e,b);}
+  setPose(p){sharedSetPose(this,p);}
+  setChainEndWorld(end,slack=.08){
+    this.mesh.updateMatrixWorld(true);
+    const start=this.chainSocket.getWorldPosition(new THREE.Vector3());
+    const target=end??start.clone().add(new THREE.Vector3(0,-.19,0));
+    const at=u=>start.clone().lerp(target,u).add(new THREE.Vector3(0,-Math.sin(u*Math.PI)*slack,0));
+    let length=0,prev=at(0);
+    for(let k=1;k<=24;k++){const p=at(k/24);length+=p.distanceTo(prev);prev=p;}
+    const count=Math.min(this.chainLinks.length,Math.max(3,Math.ceil(length/.024)));
+    for(const [i,link] of this.chainLinks.entries()){
+      link.visible=this.mesh.visible&&i<count;if(!link.visible)continue;
+      const u=(i+.5)/count,world=at(u);
+      link.position.copy(this.mesh.worldToLocal(world));link.lookAt(at(Math.min(1,u+.04)));
+      link.rotateY(Math.PI/2);link.rotateX(i%2?Math.PI/2:0);
+    }
+    this.returnBlade.position.copy(this.mesh.worldToLocal(target.clone()));
+    this.returnBlade.rotation.set(.3,0,.65);this.returnBlade.visible=this.mesh.visible;
+  }
+}
+// 夜刈发型：后掠尖刺深紫黑（兜帽感剪影）——与阿箸长直/少年翘发拉开轮廓差
+function addYekariHair(head){
+  // Recolour the actual connected base hair; extra scalp shells crossed the face.
+  const color=new THREE.Color('#454052');
+  head.traverse(m=>{
+    if(!m.isMesh)return;
+    const c=m.geometry?.attributes.color;
+    if(c&&m.material.vertexColors){for(let i=0;i<c.count;i++)c.setXYZ(i,color.r,color.g,color.b);c.needsUpdate=true;}
+    const hex=m.material.color?.getHexString();
+    if(['24393e','294348'].includes(hex)){m.material=m.material.clone();m.material.color.set('#393343');}
+    const p=m.geometry?.parameters;
+    if(p?.width===.028&&p?.height===.008)m.visible=false;
+  });
+  const hairM=new THREE.MeshBasicMaterial({color:'#393343'});
+  const curve=new THREE.QuadraticBezierCurve3(new THREE.Vector3(0,.13,-.12),new THREE.Vector3(.10,.15,-.23),new THREE.Vector3(.15,-.055,-.20));
+  const tail=new THREE.Mesh(new THREE.TubeGeometry(curve,12,.036,8,false),hairM);head.add(tail);
+  const tie=new THREE.Mesh(new THREE.TorusGeometry(.033,.005,6,16),new THREE.MeshBasicMaterial({color:'#93869e'}));
+  tie.position.set(.04,.13,-.17);tie.rotation.y=.7;head.add(tie);
 }

@@ -21,6 +21,9 @@ export const MOVES={
     sfx:'双筷连续刺击残影，密集清脆的筷刃破空连响',cameraNote:'刃尖前侧追'},
   star_pierce:{id:'star_pierce',name:'合箸·夹星断',by:'azu',color:'#e02a3c',
     sfx:'双筷合拢夹断，能量收束后“咔”的脆响+星屑崩散',cameraNote:'夹点特写'},
+  // ── 敌区（蚀星庭灭焰者绝招；与主角区同库同工艺）──
+  night_reap:{id:'night_reap',name:'刈夜·无声镰弧',by:'yekari',color:'#b47cff',
+    sfx:'锁镰挥出无声弧光，切开夜风的低音裂帛+镰刃高频细鸣',cameraNote:'弧光中段侧拍'},
 };
 
 const lcg=seed=>()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
@@ -220,6 +223,33 @@ const BUILDERS={
       for(const s of ps){const d=s.userData;
         s.position.set(d.vx*tt,d.vy*tt-1.6*tt*tt,d.vz*tt);
         s.material.opacity=.9*(1-u);s.scale.setScalar(.05+.05*(1-u));}
+    }};
+  },
+  // ── 敌区（蚀星庭灭焰者绝招 VFX；与主角区同库同工艺）──
+  // 刈夜·无声镰弧：镰尖起点的月牙弧光横扫（前掠斩波+细屑尾迹；无声=低亮度薄刃不炸屏）
+  night_reap(color='#b47cff'){
+    const tex=moveGlowTex(),g=new THREE.Group(),ps=[];
+    const arc=new THREE.Mesh(new THREE.TorusGeometry(.9,.05,8,24,Math.PI*.8),
+      addMat(color,.9)); // 弧光薄刃
+    arc.rotation.z=-.4;g.add(arc);
+    const rr=lcg(139);
+    for(let i=0;i<10;i++){ // 细屑尾迹
+      const s=new THREE.Sprite(spMat(tex,color));
+      const a=-.4+rr()*.8;
+      s.userData={a,r:.5+rr()*.6,dl:rr()*.15};
+      g.add(s);ps.push(s);
+    }
+    return {group:g,update(t,t0,anchor,fwd){
+      const u=(t-t0)/.5;g.visible=u>0&&u<1;
+      if(!g.visible)return;
+      g.position.copy(anchor);
+      if(fwd)g.rotation.y=Math.atan2(fwd.x,fwd.z)-.5;
+      arc.rotation.z=-.4+u*1.9; // 横扫
+      arc.scale.setScalar(.4+.8*u);arc.material.opacity=.85*(1-u*u);
+      for(const s of ps){const d=s.userData,uu=Math.max(0,Math.min(1,(t-t0-d.dl)/.4));
+        s.visible=uu>0&&uu<1;if(!s.visible)continue;
+        s.position.set(Math.sin(d.a)*d.r*uu,1.1+.15*uu,Math.cos(d.a)*d.r*uu);
+        s.material.opacity=.7*(1-uu);s.scale.setScalar(.04+.03*(1-uu));}
     }};
   },
 };
