@@ -55,7 +55,7 @@ dula-assets/
 │   ├── FrightZoneScene.js / WhisperingWoodsScene.js / DestroyedCityScene.js
 │   ├── SarayashikiRoofScene.js / NightRoomScene.js
 │   └── GLTFArenaScene.js
-│   └── stardust/           # 《星屑战壳》六场景（圣殿/柱廊/火山口 + R9 星辉内殿/幽荧河/云巅；applyHybrid 纹理基路径参数化，纹理归调用剧集）
+│   └── stardust/           # 《星屑战壳》九场景（圣殿/柱廊/火山口 + R9 内殿/幽荧河/云巅 + R10 角斗场/门阙/海底遗迹；applyHybrid 纹理基路径参数化）
 ├── camera/               # 运镜实现
 │   ├── common/           # 通用运镜
 │   ├── ultraman/         # 奥特曼主题运镜
