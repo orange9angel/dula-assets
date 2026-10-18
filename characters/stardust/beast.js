@@ -9,6 +9,7 @@ import {LimbSurface,mesh,ellipsoid} from 'dula-assets/lib/craft3d/surface.js';
 const BODY='#0d0b12';         // 黑躯
 const ERODE='#a47cff';        // 蚀纹紫光
 const ERODE_HOT='#d8c8ff';
+const mix=(a,b,u)=>a+(b-a)*u;
 
 export class ErosionBeastCraft{
   constructor(){
@@ -51,18 +52,18 @@ export class ErosionBeastCraft{
     // ── 驭纹（颈后烙式环+三刻齿；平时近隐，F03 镜头 setMarkGlow 点亮）──
     this.mark=new THREE.Group();this.mark.position.set(0,.40,.78);this.mark.rotation.x=.35;
     this.markMats=[];
-    const ring=new THREE.Mesh(new THREE.TorusGeometry(.085,.012,8,28),
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(.11,.018,8,28),
       new THREE.MeshBasicMaterial({color:ERODE,transparent:true,opacity:.12,
         blending:THREE.AdditiveBlending,depthWrite:false}));
     this.mark.add(ring);this.markMats.push(ring.material);
     for(let i=0;i<3;i++){const a=i/3*Math.PI*2;
-      const tick=new THREE.Mesh(new THREE.BoxGeometry(.014,.05,.012),ring.material.clone());
-      tick.position.set(Math.cos(a)*.085,Math.sin(a)*.085,0);tick.rotation.z=a;
+      const tick=new THREE.Mesh(new THREE.BoxGeometry(.016,.06,.014),ring.material.clone());
+      tick.position.set(Math.cos(a)*.11,Math.sin(a)*.11,0);tick.rotation.z=a;
       this.mark.add(tick);this.markMats.push(tick.material);}
     this.markGlow=.12;
     this.body.add(this.mark);this.napeMark=ring;
     // ── 四肢（LimbSurface 两段管）+尾 ──
-    const legR=[[0,.085],[.45,.055],[1,.035]];
+    const legR=[[0,.11],[.45,.075],[1,.05]];
     this.legs={};
     for(const[key,hx,hz]of[['fl',.30,.55],['fr',-.30,.55],['bl',.28,-.55],['br',-.28,-.55]]){
       const hip=new THREE.Group();hip.position.set(hx,-.10,hz);this.body.add(hip);
@@ -102,6 +103,8 @@ export class ErosionBeastCraft{
       let pawZ=shuffle;
       if(air>0){pawY=-bodyY+.34*air;kneeY=-bodyY*.4;kneeZ=(front?.16:-.10)*air;pawZ+= (front?.10:-.14)*air;}
       if(down>0){pawY=-bodyY+.06;kneeY=-bodyY*.5;kneeZ=side*.22*down;pawZ+=side*.30*down;}
+      if(p.pawExt&&front){ // 扑击前爪前伸上抬（接触帧锚点=爪尖）
+        pawY=-bodyY+mix(.02,1.25,p.pawExt);pawZ+=.45*p.pawExt;kneeY=-bodyY*.42;kneeZ=.2;}
       L.limb.update([{x:0,y:0,z:0},{x:side*.03,y:kneeY,z:kneeZ},{x:side*.02,y:pawY+lift,z:pawZ}]);
       L.paw.position.set(L.hx+side*.02,bodyY+pawY+lift,L.hz+pawZ);
     }
