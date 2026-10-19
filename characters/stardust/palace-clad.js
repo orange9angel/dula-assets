@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 const basic=c=>new THREE.MeshBasicMaterial({color:c});
 const toon=c=>new THREE.MeshToonMaterial({color:c});
-function tube(parent,pts,color,r=.003){const curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p)));const m=new THREE.Mesh(new THREE.TubeGeometry(curve,Math.max(8,pts.length*4),r,5,false),basic(color));parent.add(m);return m;}
-function plate(parent,points,z,color,depth=.008){const shape=new THREE.Shape();points.forEach(([x,y],i)=>i?shape.lineTo(x,y):shape.moveTo(x,y));shape.closePath();const m=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:.002,bevelThickness:.002,bevelSegments:1}),toon(color));m.position.z=z;m.castShadow=true;parent.add(m);return m;}
+function tube(parent,pts,color,r=.003){const curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p)));const m=new THREE.Mesh(new THREE.TubeGeometry(curve,Math.max(8,pts.length*4),r,5,false),basic(color));m.userData.palaceMetal=true;parent.add(m);return m;}
+function plate(parent,points,z,color,depth=.008){const shape=new THREE.Shape();points.forEach(([x,y],i)=>i?shape.lineTo(x,y):shape.moveTo(x,y));shape.closePath();const m=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:.002,bevelThickness:.002,bevelSegments:2}),toon(color));m.position.z=z;m.castShadow=true;m.userData.palaceMetal=true;parent.add(m);return m;}
 export function applyPalaceClad(actor,kind){
  const fire=kind==='aoao',gold=fire?'#ffe4a0':'#d7d7ef',dark=fire?'#633124':'#201b34',main=fire?'#c8873c':'#4b4169';
  const chest=actor.cladParts.find(p=>p.ord===1).groups[0];
@@ -14,7 +14,7 @@ export function applyPalaceClad(actor,kind){
   const pts=[[side*.025,y+.03],[side*(rx-.012),y+.065],[side*(rx+.003),y+.005],[side*.055,y-.035]];
   plate(g,pts,rz*.80+.021,i%2?dark:main);
   tube(g,pts.slice(0,3).map(([x,y])=>[x,y,rz*.80+.033]),gold,.0035);
-  const rivet=new THREE.Mesh(new THREE.SphereGeometry(.006,8,6),basic(gold));rivet.position.set(side*(rx-.03),y+.025,rz*.80+.034);g.add(rivet);
+  const rivet=new THREE.Mesh(new THREE.SphereGeometry(.006,8,6),basic(gold));rivet.userData.palaceMetal=true;rivet.position.set(side*(rx-.03),y+.025,rz*.80+.034);g.add(rivet);
  }
  // Engraved sun-rays / diagonal moon-chain distinguish the two torsos.
  if(fire){
@@ -63,7 +63,7 @@ export function applyPalaceClad(actor,kind){
    tube(shield,[point(.105,a),point(.15,a+.09),point(.18,a)],i%2?gold:'#6c352a',.004);
   }
   actor.palaceScars=new THREE.Group();shield.add(actor.palaceScars);
-  for(const a of [.35,1.65])tube(actor.palaceScars,[point(.045,a),point(.09,a+.3),point(.14,a+.1),point(.235,a+.2)],'#362230',.006);
+  for(const a of [.35,1.65])tube(actor.palaceScars,[point(.045,a),point(.09,a+.3),point(.14,a+.1),point(.235,a+.2)],'#362230',.006).userData.palaceScar=true;
  }
  const head=actor.headGroup;
  for(const side of [-1,1]){

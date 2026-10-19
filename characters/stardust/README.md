@@ -49,3 +49,15 @@ S1E2《焰阶宫·盾与暗链》于2026-10-19获得用户“效果好了非常�
 
 当前消费入口是 `dula-story/episodes/stardust_clad_s1e2/viewer_palace.js`。
 数值证据范围及剩余读音观察项见该集 `NOTES.md`；通用制作纪律维护在相应skill。
+
+## R20 金属材质与环境通行候选
+
+`metal-clad.js` 的 `createArmorEnvironment(renderer)` 返回 PMREM render target；
+`await applyMetalClad(actor,{url,environment:target.texture})` 为宫殿圣衣启用金属反射、
+生成刻纹和曲面甲片，排除皮肤、披风、宝石与伤痕。先 `applyPalaceClad()` 再应用，
+素材 URL 由内容仓库传入。`refinePalaceLimbs(actor)` 可选调整四肢连续轮廓，保留 IK。
+二者都不自动修改所有角色的默认外观；R20 用户审美反馈待收集。
+
+`createCombatLight(scene,{detailed:true})` 启用 `impact-particles.js` 的实例化拖尾火星、
+柔边冲击波和低透明烟尘，按命中绝对时间求值。场景 `navigationObstacles` 登记真实
+box 实体，供 `lib/craft3d/stage-clearance.js` 做采样通行检查。范围及反例见单集 R20。
