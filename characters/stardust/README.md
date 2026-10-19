@@ -112,3 +112,23 @@ R24检查包含真实腿/臀/靴与四个墩座实体，历史70个导航实体�
 验证和待审范围见S1E2 `storyboard/palace_r25/REVIEW.md`；技术检查不能代替用户外观及表演认可。
 
 版本对照、真实剧情姿势和验证范围见S1E2各轮审查目录。
+
+## R26 可选脸光、连肩甲衣与连续裤装
+
+在R25构建链上显式应用；其他剧集默认角色保持：
+
+- `shaded-portrait.js` / `applyShadedPortrait(actor)`在R25头像后使用，复用脸图和
+  表演通道，增加有方向的色阶阴影、细笔画与后上扬发束；持续隐藏头冠。
+- `applyPalaceCuirass(actor,{integratedShoulders:true})`生成同一有厚度的胸背肩壳，
+  旧独立肩壳隐藏；外侧顶点随抬臂调整。默认参数保留原肩桥方案。
+- `connected-pelvis.js` / `applyConnectedPelvis(actor)`在 `applyPalaceAnatomy` 后调用，
+  替换可见骨盆与腿为连续裤装曲面；沿原腿骨变形，保留动作和装备挂点。
+  本例动作范围的造型适配，不是通用任意姿态求解器。
+- `removeCladGlow(actor)`在装备完成后调用，在每次成长更新后隐藏常驻宝石、
+  发光线环及胸前圆凸饰；金属本体继续接收反射和外部战斗回光。
+- `lib/craft3d/combustion-combat.js`保留旧战斗效果调用接口，以火舌、烟和定向火花
+  替代能量环；`combustion-particles.js`的 `hearthFire`也服务环境火闸。
+- `living-caldera.js`消费既有 `continuousBackdrop`，`update(t)`以绝对时间更新
+  烟、火口光和火星，固定岩体投影。
+
+本集R26的外观、动作范围和数值证据见 `storyboard/palace_r26/REVIEW.md`；等待用户复看。

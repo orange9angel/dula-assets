@@ -115,7 +115,7 @@ export function applyPalacePortrait(actor){
  face.setEmotion=(e,b)=>{state.emotion=e;state.blink=b;emotion(e,b);};
  face.setActing=a=>{state.acting=a;acting(a);};
  face.lookAtWorld=target=>{gaze(target);const local=face.head.worldToLocal(target.clone());state.gaze={x:clamp(local.x/Math.max(.3,Math.abs(local.z)),-1,1)*.55,y:clamp(-local.y/Math.max(.3,Math.abs(local.z)),-1,1)*.5};};
- const redraw=()=>{paintEyes(ctx,fire,state);texture.needsUpdate=true;};
- face.mouth.apply=v=>{const r=mouth(v);redraw();return r;};face.applyLip=v=>{const r=lip(v);redraw();return r;};
+ const redraw=()=>{paintEyes(ctx,fire,state);actor.palacePortrait?.afterPaint?.(ctx,state);texture.needsUpdate=true;};
+ face.mouth.apply=v=>{state.lip=v;const r=mouth(v);redraw();return r;};face.applyLip=v=>{state.lip=v;const r=lip(v);redraw();return r;};
  actor.palacePortrait={hair:fullHair(actor,fire),state};redraw();return actor.palacePortrait;
 }

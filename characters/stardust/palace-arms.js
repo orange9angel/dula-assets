@@ -21,3 +21,11 @@ export function applySingleShoulders(actor){
  const hide=()=>{for(const pd of actor.pauldronGroups)if(pd.li>0)pd.g.visible=false;};
  actor.updatePalaceClad=(...args)=>{update(...args);hide();};hide();
 }
+
+export function removeCladGlow(actor){
+ const hidden=actor.cladParts.flatMap(p=>[...p.gems,...p.seams,...p.rings]);
+ actor.mesh.traverse(m=>{if(m.name==='hearth-round-boss')hidden.push(m);});
+ const hide=()=>hidden.forEach(m=>m.visible=false),update=actor.updatePalaceClad.bind(actor);
+ actor.updatePalaceClad=(...args)=>{update(...args);hide();};hide();
+ actor.reflectiveClad={hidden};return actor.reflectiveClad;
+}

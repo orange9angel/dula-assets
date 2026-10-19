@@ -7,25 +7,28 @@ function line(root,p,c,name,r=.002){return metal(root,new THREE.TubeGeometry(new
 // A continuous front/back cuirass with a neck opening and two actual armholes.
 // Boundary edges of the cut surface are sealed to the inner wall, including the
 // armholes. The shoulder bridges continue under the animated outer pauldrons.
-export function applyPalaceCuirass(actor){
+export function applyPalaceCuirass(actor,{integratedShoulders=false}={}){
  const fire=actor.palaceKind==='aoao',d=actor.dimsRef,cy=d.chestY,shoulder=d.shoulderY;
  const root=actor.cladParts.find(p=>p.ord===1).groups[0],old=new THREE.Group();old.name='legacy-chest-plates';
  for(const c of [...root.children])if(c.isMesh||c.isGroup)old.add(c);root.add(old);old.visible=false;
  const archived=new Set();old.traverse(o=>archived.add(o));for(const p of actor.cladParts){p.seams=p.seams.filter(m=>!archived.has(m));p.rings=p.rings.filter(m=>!archived.has(m));}
  const bottom=d.hipIdle+.138,top=shoulder+.068,rows=64,sides=96,N=(rows+1)*sides,positions=[],uv=[],indices=[];
- const levels=[[bottom,fire?.139:.125,fire?.107:.101],[cy-.08,fire?.140:.126,fire?.112:.102],[cy+.045,fire?.180:.158,fire?.126:.116],[shoulder-.015,fire?.164:.148,.106],[shoulder+.029,fire?.161:.146,.089],[top,.064,.061]];
+ const levels=integratedShoulders?
+  [[bottom,fire?.139:.125,fire?.107:.101],[cy-.08,fire?.140:.126,fire?.112:.102],[cy+.045,fire?.182:.160,fire?.132:.120],[shoulder-.070,fire?.204:.188,.118],[shoulder-.005,fire?.286:.279,fire?.119:.108],[shoulder+.034,fire?.238:.226,.088],[top,.064,.061]]:
+  [[bottom,fire?.139:.125,fire?.107:.101],[cy-.08,fire?.140:.126,fire?.112:.102],[cy+.045,fire?.180:.158,fire?.126:.116],[shoulder-.015,fire?.164:.148,.106],[shoulder+.029,fire?.161:.146,.089],[top,.064,.061]];
  const profile=y=>{for(let i=1;i<levels.length;i++)if(y<=levels[i][0]){const q=smooth((y-levels[i-1][0])/(levels[i][0]-levels[i-1][0]));return [mix(levels[i-1][1],levels[i][1],q),mix(levels[i-1][2],levels[i][2],q)];}return levels.at(-1).slice(1);};
  const surface=(u,a,inset=0)=>{
   const y=mix(bottom,top,u),[rx,rz]=profile(y),front=Math.max(0,Math.cos(a)),x=(rx-inset)*Math.sin(a)*(fire?1:1-.08*Math.sin(a)*Math.sin(Math.PI*u));
   const pec=(fire?.026:.014)*Math.exp(-Math.pow((y-cy-.045)/.085,2))*front**3*(fire?(.65+.35*Math.exp(-Math.pow((Math.abs(x)-.075)/.05,2))):1);
   const keel=(fire?.003:.010)*Math.exp(-Math.pow((a%(Math.PI*2))/.20,2))*Math.sin(Math.PI*u)**2;
-  return new THREE.Vector3(x,y,(rz-inset)*Math.cos(a)+pec+keel);
+  const wing=integratedShoulders?smooth((Math.abs(x)-.11)/.16)*smooth((y-shoulder+.10)/.08):0;
+  return new THREE.Vector3(x,y+wing*(fire?.075:x<0?.135:.075),(rz-inset)*Math.cos(a)+pec+keel);
  };
  for(let l=0;l<2;l++)for(let i=0;i<=rows;i++)for(let j=0;j<sides;j++){const p=surface(i/rows,j/sides*Math.PI*2,l*.006);positions.push(p.x,p.y,p.z);uv.push(j/sides,i/rows);}
  const edges=new Map(),tri=(a,b,c)=>{indices.push(a,b,c);for(const [x,y] of [[a,b],[b,c],[c,a]]){const key=x<y?x+':'+y:y+':'+x;const old=edges.get(key);if(old)old.count++;else edges.set(key,{a:x,b:y,count:1});}};
  for(let i=0;i<rows;i++)for(let j=0;j<sides;j++){
   const a=(j+.5)/sides*Math.PI*2,y=mix(bottom,top,(i+.5)/rows),sideAngle=Math.min(Math.abs(a-Math.PI/2),Math.abs(a-3*Math.PI/2));
-  if((sideAngle/.64)**2+((y-(shoulder-.078))/.105)**2<1)continue;
+  if((sideAngle/(integratedShoulders?.72:.64))**2+((y-(shoulder-(integratedShoulders?.105:.078)))/(integratedShoulders?.095:.105))**2<1)continue;
   const q=i*sides+j,b=q+sides,c=i*sides+(j+1)%sides,e=c+sides;tri(q,c,b);tri(b,c,e);
  }
  const outer=[...indices];for(let i=0;i<outer.length;i+=3)indices.push(outer[i]+N,outer[i+2]+N,outer[i+1]+N);
@@ -50,7 +53,25 @@ export function applyPalaceCuirass(actor){
   const moon=metal(root,new THREE.TorusGeometry(.035,.007,10,48,Math.PI*1.45),edge,'crescent-chest-sigil');moon.position.copy(at(cy+.01,0,.009));moon.rotation.z=.5;
  }
  const gems=actor.cladParts.find(p=>p.ord===1).gems;for(const gem of gems)if(archived.has(gem)){root.add(gem);gem.position.copy(at(cy+.015,0,.016));}
- actor.cuirass={shell,root,surface,bottom,top};return actor.cuirass;
+ if(integratedShoulders){
+  // Shoulder wings are part of this same sealed shell. The former independent
+  // bowls are hidden after all growth updaters, rather than stacked underneath.
+  const update=actor.updatePalaceClad.bind(actor),hide=()=>actor.pauldronGroups.forEach(pd=>pd.g.visible=false);
+  actor.updatePalaceClad=(...args)=>{update(...args);hide();};hide();
+  const rest=Float32Array.from(geo.attributes.position.array),position=geo.attributes.position;
+  const oldPose=actor.setPose.bind(actor);
+  actor.setPose=p=>{
+   oldPose(p);
+   for(let i=0;i<position.count;i++){
+    const x=rest[i*3],y=rest[i*3+1],z=rest[i*3+2],side=x<0?'left':'right',a=p[side+'Arm'];
+    const lift=a?clamp((a[1].y-a[0].y)/Math.hypot(a[1].x-a[0].x,a[1].y-a[0].y,a[1].z-a[0].z)+.70,0,1):0;
+    const w=smooth((Math.abs(x)-.145)/.20)*smooth((y-shoulder+.11)/.14);
+    position.setXYZ(i,x,y+lift*w*.065,z);
+   }
+   position.needsUpdate=true;geo.computeVertexNormals();geo.computeBoundingSphere();
+  };
+ }
+ actor.cuirass={shell,root,surface,bottom,top,integratedShoulders};return actor.cuirass;
 }
 
 // Pelvis and upper legs share the retained hip/knee joints. The pelvis is a
