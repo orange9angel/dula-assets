@@ -13,7 +13,7 @@ function line(parent,points,color,name,r=.0013){
 
 /** Fitted armor uses the existing hand frame and finger bones. The shield and
  * weapons retain their original forearm rigs and contact coordinates. */
-export function applyPalaceGauntlets(actor){
+export function applyPalaceGauntlets(actor,{distinct=false}={}){
  const fire=actor.palaceKind==='aoao',main=fire?'#d9b16b':'#8490b1',edge=fire?'#f1d69b':'#d0dce9';
  const records={};
  for(const old of actor.palaceFins??[])old.removeFromParent();actor.palaceFins=[];
@@ -27,7 +27,9 @@ export function applyPalaceGauntlets(actor){
   const foreSurface=(u,v)=>{
    const a=-.88+v*(Math.PI+1.76),r=mix(.057,.0255,u)+.006*Math.sin(Math.PI*u);
    const cuff=.0025*Math.exp(-Math.pow((u-.95)/.06,2));
-   return new THREE.Vector3(-.20*(1-u)/hs,(r+cuff)*Math.cos(a)/hs,-s*(r*.88+cuff)*Math.sin(a)/hs);
+   const blade=distinct&&!fire?.016*Math.pow(Math.max(0,Math.sin(a)),10)*Math.sin(Math.PI*u):0;
+   const flare=distinct&&!fire?.035*(1-u)**5*Math.pow(Math.max(0,Math.sin(a)),6):0;
+   return new THREE.Vector3((-.20*(1-u)-flare)/hs,(r+cuff)*Math.cos(a)/hs,-s*(r*(distinct&&!fire?.78:.88)+cuff+blade)*Math.sin(a)/hs);
   };
   const bracer=metal(forearm,closedShell(foreSurface,s,.003/hs,28,36),main,'gauntlet-'+side+'-forearm');
   const innerSurface=(u,v)=>{
@@ -49,10 +51,13 @@ export function applyPalaceGauntlets(actor){
   // Palm +X = fingers, sign*Z = palm. The dorsal cap therefore faces -sign*Z.
   const palmSurface=(u,v)=>{
    const a=-.12+v*(Math.PI+.24),w=mix(.024,.034,u)*(1-.07*Math.pow(u,5));
-   const h=.0215+.0035*Math.sin(Math.PI*u);
+   const h=.0215+(distinct&&!fire?.012:.0035)*Math.sin(Math.PI*u);
    return new THREE.Vector3(-.010+.067*u,w*Math.cos(a),-s*h*Math.sin(a));
   };
   const palm=metal(root,closedShell(palmSurface,s,.0023,22,28),edge,'gauntlet-'+side+'-handback');
+  if(distinct&&fire){
+   const crest=metal(root,new THREE.SphereGeometry(.012,24,16),main,'hearth-gauntlet-round-boss');crest.scale.set(1,1,.32);crest.position.set(.028,0,-s*.026);
+  }
   for(const v of [.29,.71])line(root,Array.from({length:15},(_,i)=>palmSurface(.24+i/14*.66,v).add(new THREE.Vector3(0,0,-s*.0007))),main,'handback-tendon',.0007);
   const fingers=[];
   for(const chain of hand.chains){

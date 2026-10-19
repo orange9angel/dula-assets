@@ -56,9 +56,12 @@ export class EmberTierPalaceScene extends SceneBase{
    for(const sign of [-1,1]){const rail=box(v.length(),.035,.025,mid.x,.033,mid.z,gold);rail.rotation.y=slot.rotation.y;rail.position.add(new THREE.Vector3(-v.z,0,v.x).normalize().multiplyScalar(sign*.12));}
   }
   // Gate tongue: its notch is visible in the repair and trap shots.
-  box(.34,.24,.48,-.968,.12,.45,dark);
-  this.tongue=box(.27,.08,.42,-.968,.294,.45,gold);
-  for(const x of [-1.138,-.798])box(.055,.37,.56,x,.185,.45,dark);
+  this.lockSolids=[];
+  const lockSolid=(id,m)=>{m.name=id;this.lockSolids.push(m);return m;};
+  lockSolid('lock_base',box(.34,.24,.48,-.968,.12,.45,dark));
+  this.tongue=lockSolid('lock_tongue',box(.27,.08,.42,-.968,.294,.45,gold));
+  this.tongue.userData.clearanceTravel=[0,0,.16];
+  for(const [i,x] of [-1.138,-.798].entries())lockSolid('lock_cheek_'+i,box(.055,.37,.56,x,.185,.45,dark));
   this.scars=[];
   for(let j=0;j<2;j++){
    const m=box(1.4,.009,.022,-.3,.015,.20+j*.26,new THREE.MeshBasicMaterial({color:'#0b101b'}));m.rotation.y=.19+j*.1;this.scars.push(m);
@@ -115,7 +118,7 @@ export class EmberTierPalaceScene extends SceneBase{
  }
  update(t,events={}){
   const gate=smooth((t-(events.GATE_OPEN??1e9))/1.7),rest=smooth((t-(events.RESTORE??1e9))/3);
-  this.gate.position.y=gate*.95;this.tongue.position.y=.294;this.tongue.position.z=.45-smooth((t-(events.LOCK??1e9))/.8)*.16;
+  this.gate.position.y=gate*.95;this.tongue.position.y=.294;this.tongue.position.z=.45+smooth((t-(events.LOCK??1e9))/.8)*.16;
   for(const [i,m] of this.channel.entries()){const power=rest>.01?1:smooth((t-(events.HERO_CHARGE??1e9))/4)*.8;
    m.material.color.setRGB(1,.24+.3*power,.035+.15*power);}
   for(const [i,w] of this.windows.entries())w.visible=t>=(events.RESTORE??1e9)+i*.07;

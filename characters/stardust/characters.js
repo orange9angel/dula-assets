@@ -551,7 +551,10 @@ function sharedSetPose(host,p){
     host.limbs[side+'Arm'].update(arm);host.limbs[side+'Leg'].update(leg);
     const hand=host.hands[side],x=V(arm[2]).sub(V(arm[1])).normalize();
     const forward=new THREE.Vector3(0,0,1);
-    const y=forward.clone().addScaledVector(x,-forward.dot(x)).normalize(),z=x.clone().cross(y).normalize();
+    // Optional anatomical frame transports the resting thumb direction with the
+    // forearm. Projecting forward onto a lifted arm turns the thumb downward.
+    const y=host.anatomicalHands?forward.clone().applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,-1,0),x)):
+      forward.clone().addScaledVector(x,-forward.dot(x)).normalize(),z=x.clone().cross(y).normalize();
     y.copy(z).cross(x).normalize();hand.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x,y,z));
     hand.position.copy(V(arm[2]));
     hand.setGesture({fist:p.fist??0,open:p.open??0,point:p.point??0});

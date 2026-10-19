@@ -75,4 +75,23 @@ box 实体，供 `lib/craft3d/stage-clearance.js` 做采样通行检查。范围
   腰带按腰围抬高并同步裙甲挂点。`actor.lowerClad`提供壳体与位置供检查，
   旧默认角色不受影响。R23腿套及腰带外观待用户评价。
 
+## R24 连肩胸甲、骨盆和装备区分
+
+`body-clad.js` 的 `applyPalaceCuirass(actor)` 在PBR转换前调用，封闭胸背壳拥有
+领口、真实臂孔与肩桥；`applyPalaceAnatomy(actor)` 在 `refinePalaceLimbs` 之后
+调用，加入衣内臀部体积和大腿—膝盖收束。它消费 `pose.pelvisOffset`，使深蹲
+骨盆向后坐、腰部仍与上身连接；不改原骨长与脸。
+
+`applyPalaceGauntlets(actor,{distinct:true})`、`applyPalaceLowerClad(actor,{distinct:true})`
+启用两种装备形体：圆弧炉心/盾扣/圆靴与斜脊月纹/偏心扣/尖膝尖靴。
+默认不启用，以保留其他消费方原外观。`actor.anatomicalHands=true` 将垂臂的拇指
+方向随前臂旋转，避免把固定前向投影到抬臂平面后造成拇指翻下。
+
+`foot-clearance.js` / `makeFootClearance(actor,scene.lockSolids)` 是本场景的显式
+适配器，读取实际足部、墩座与滑舌行程形成连续落脚映射；它不是通用寻路器。
+剧集同时调整靠墩站位和深蹲重心，不能只挂适配器便认为任意动作都正确。
+`stage-clearance` 新增可选 `includeMesh`，供低位互动实体的局部配对使用。
+R24检查包含真实腿/臀/靴与四个墩座实体，历史70个导航实体检查不含这四件。
+外观及范围见S1E2 `storyboard/palace_r24/REVIEW.md`；R24仍待用户美术评价。
+
 版本对照、真实剧情姿势和验证范围见S1E2各轮 `storyboard/palace_r21…r23/REVIEW.md`。

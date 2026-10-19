@@ -14,7 +14,7 @@ export function buildPose(actor,s,t,d){
   let hipY=hipIdle+s.bob+st;
   const p={rootX:s.rootX,rootZ:s.rootZ,yaw:s.yaw,bob:s.bob+st,lean:s.lean,
     headYaw:s.headYaw,headPitch:s.headPitch,headRoll:s.headRoll,
-    fist:s.fist,open:s.open,point:s.point,blink:s.blink,capeLift:s.capeLift??0};
+    fist:s.fist,open:s.open,point:s.point,blink:s.blink,capeLift:s.capeLift??0,crouch:s.sit?.drop??0};
   let locomotion=null;
   if(s.walk||s.turn){
     const G=!s.turn&&s.walk.run?RUN_GAIT:WALK_GAIT;
@@ -29,6 +29,7 @@ export function buildPose(actor,s,t,d){
     }
     const heading=s.turn?s.yaw:(s.walk.facingYaw??s.yaw);
     p.rootX=s.rootX+Math.cos(heading)*gait.sway;p.rootZ=s.rootZ-Math.sin(heading)*gait.sway;
+    if(actor.footClearance)for(const side of ['left','right']){const f=gait[side],fit=actor.footClearance.adjust(f,side,p,f.pitch,f.yaw);f.yaw=fit.yaw;f.kneePole=fit.pole;}
     hipY=hipIdle+st+s.bob-(s.sit?.drop??0)+gait.hipDelta-(s.tuck??0)*.1;
     for(const [side,sign] of [['left',-1],['right',1]]){
       const f=gait[side],horizontal=(f.x-sign*d.hipHalf)**2+f.z*f.z;
@@ -36,7 +37,7 @@ export function buildPose(actor,s,t,d){
     }
     for(const [side,sign] of [['left',-1],['right',1]]){
       const f=gait[side],start=V(sign*d.hipHalf,hipY,0),end=V(f.x,f.y,f.z+(s.tuck??0)*.3);
-      try{p[side+'Leg']=[start,twoBone(start,end,V(0,0,1),d.legA,d.legB),end];}
+      try{p[side+'Leg']=[start,twoBone(start,end,f.kneePole??V(0,0,1),d.legA,d.legB),end];}
       catch(e){throw new Error(`leg[${side}] hip=${start.y.toFixed(3)} foot=(${end.x.toFixed(2)},${end.y.toFixed(2)},${end.z.toFixed(2)}) ${e.message}`);} // 腿长帽撞线时的真值
       p[side+'FootPitch']=f.pitch;p[side+'FootYaw']=f.yaw;
     }
@@ -68,17 +69,24 @@ export function buildPose(actor,s,t,d){
       p.bob=s.bob+st-s.sit.drop;
     }
     // R16 站直：腿长帽细化到脚位水平距（epsilon .003 留膝向 slack），挺身被帽收成微屈不抛错
+    const ends={},fits={};
+    // A deep squat folds at the hips: move the pelvis behind the low block
+    // while the chest and working shield keep their established contact pose.
+    const retreat=actor.footClearance&&s.sit?ease(s.sit.drop/.40)*.25:0;
+    const shift=V(Math.sin(p.yaw)*retreat,0,-Math.cos(p.yaw)*retreat);
+    p.pelvisOffset=shift;
     for(const [side,sign] of [['left',-1],['right',1]]){
-      const end=planted(s.sit?V(sign*.13,d.footY,s.sit.feet):V(sign*half,d.footY+tuck,-.4*tuck));
+      const end=ends[side]=planted(s.sit&&!actor.footClearance?V(sign*.13,d.footY,s.sit.feet):V(sign*half,d.footY+tuck,-.4*tuck));
+      if(actor.footClearance){fits[side]=actor.footClearance.adjust(end,side,p);p[side+'FootYaw']=fits[side].yaw;}
       hipY=Math.min(hipY,end.y+Math.sqrt(Math.max(.01,(d.legA+d.legB-.003)**2-((end.x-sign*d.hipHalf)**2+end.z*end.z))));
     }
     p.bob=hipY-hipIdle;
     for(const [side,sign] of [['left',-1],['right',1]]){
-      const end=planted(s.sit?V(sign*.13,d.footY,s.sit.feet):V(sign*half,d.footY+tuck,-.4*tuck));
-      p[side+'Leg']=[V(sign*d.hipHalf,hipY,0),null,end];
+      const end=ends[side];
+      p[side+'Leg']=[V(sign*d.hipHalf+shift.x,hipY,shift.z),null,end];
     }
     for(const [side,sign] of [['left',-1],['right',1]]){
-      const leg=p[side+'Leg'];leg[1]=twoBone(leg[0],leg[2],V(0,0,1),d.legA,d.legB);
+      const leg=p[side+'Leg'];leg[1]=twoBone(leg[0],leg[2],fits[side]?.pole??V(0,0,1),d.legA,d.legB);
       const shoulder=V(sign*d.shoulderHalf,d.shoulderY+p.bob,0),target=V(s[side].x,s[side].y+p.bob,s[side].z);
       const delta=new THREE.Vector3(target.x-shoulder.x,target.y-shoulder.y,target.z-shoulder.z);
       const maxR=d.armA+d.armB-.005;

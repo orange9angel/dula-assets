@@ -33,7 +33,7 @@ function hideLegacy(parent,name){
 
 // Opt-in palace equipment. Existing joints, foot contacts and upper-body armor
 // remain owned by the original rig. New calf rigs avoid legacy XY rescaling.
-export function applyPalaceLowerClad(actor){
+export function applyPalaceLowerClad(actor,{distinct=false}={}){
  const fire=actor.palaceKind==='aoao',main=fire?'#d9ab63':'#7c89a7',edge=fire?'#f5d898':'#c2d0e3',dark=fire?'#9d6a34':'#454e6b';
  const records={},length=fire?.42:.49,k=fire?1:.81;
  for(const side of ['left','right']){
@@ -46,8 +46,8 @@ export function applyPalaceLowerClad(actor){
    return .037*k;
   };
   const surface=(u,a,inset=0)=>{
-   const front=Math.max(0,Math.cos(a)),top=.044-.068*Math.pow(front,4),z=mix(top,length-.012,u);
-   const r=radius(Math.max(0,z/length))+.011-inset,crest=.003*Math.pow(front,12)*Math.sin(Math.PI*u);
+   const front=Math.max(0,Math.cos(a)),top=.044-(distinct?(fire?.078:.105):.068)*Math.pow(front,distinct&&!fire?12:4),z=mix(top,length-.012,u);
+   const r=radius(Math.max(0,z/length))+.011-inset,crest=(distinct&&!fire?.013:.003)*Math.pow(front,12)*Math.sin(Math.PI*u);
    return new THREE.Vector3(r*Math.sin(a),(r*1.08+crest)*Math.cos(a),z);
   };
   const shell=metal(rig,sleeve((u,a)=>surface(u,a),(u,a)=>surface(u,a,.0045)),main,'greave-'+side+'-sleeve');
@@ -57,6 +57,9 @@ export function applyPalaceLowerClad(actor){
   // A single low side flute keeps the two identities without fragmenting the leg.
   const sign=side==='left'?-1:1;
   line(rig,Array.from({length:29},(_,i)=>surface(.12+i/28*.73,sign*(fire?1.05:1.22))),dark,'greave-side-flute',.0014);
+  if(distinct){
+   for(const angle of (fire?[-.7,.7]:[-.38,.38]))line(rig,Array.from({length:32},(_,i)=>{const u=i/31;return surface(.08+u*.76,angle*(fire?(.7+.3*Math.sin(Math.PI*u)):(1-u*.7)));}),edge,fire?'hearth-round-knee-flute':'crescent-tapered-shin-rib',fire?.002:.0018);
+  }
   const foot=actor.feet[side],shoe=foot.children.find(c=>c.isMesh&&c.material.side!==THREE.BackSide),ss=shoe.scale.x;
   // Keep the accepted foot volume/sole exactly, but continue metal around the
   // heel and toe; a top-only cap leaves a conspicuous black rear boot.
@@ -68,31 +71,42 @@ export function applyPalaceLowerClad(actor){
   const bootSurface=(u,v)=>{
    const z=mix(rows[0][0],rows.at(-1)[0],u);let w,top;
    for(let i=1;i<rows.length;i++)if(z<=rows[i][0]+1e-8){const t=(z-rows[i-1][0])/(rows[i][0]-rows[i-1][0]);w=mix(rows[i-1][1],rows[i][1],t);top=mix(rows[i-1][2],rows[i][2],t);break;}
-   const a=mix(-Math.PI/2,Math.PI/2,v);return new THREE.Vector3(w*Math.sin(a)*ss,(-.060+(top+.060)*Math.cos(a))*ss,z*ss);
+   const a=mix(-Math.PI/2,Math.PI/2,v),nose=distinct&&!fire?.027*Math.max(0,(z-.06)/.092)**2:0;
+   return new THREE.Vector3(w*Math.sin(a)*ss,(-.060+(top+.060+(distinct&&!fire?.008*Math.sin(Math.PI*u):0))*Math.cos(a))*ss,(z+nose)*ss);
   };
   const instep=metal(boot,closedShell(bootSurface,1,.003,48,32),main,'boot-'+side+'-instep');
   // The ankle collar belongs to the foot, overlapping the calf sleeve as a joint.
   const ankleSurface=(u,a,inset=0)=>new THREE.Vector3((.050*k+.003*u-inset)*Math.sin(a),mix(-.024,.036,u),(.054*k+.003*u-inset)*Math.cos(a)-.002);
   const ankle=metal(boot,sleeve((u,a)=>ankleSurface(u,a),(u,a)=>ankleSurface(u,a,.0035),{rows:8,sign:-1}),dark,'boot-'+side+'-ankle');
   line(boot,Array.from({length:25},(_,i)=>bootSurface(.45+i/24*.43,.5).add(new THREE.Vector3(0,.001,0))),edge,'boot-instep-crest',.0014);
+  if(distinct&&fire)for(const u of [.48,.64,.79])line(boot,Array.from({length:25},(_,i)=>bootSurface(u,i/24)),edge,'hearth-rounded-sabatons',.0022);
   records[side]={rig,source,shell,boot,instep,ankle,length};
  }
  // Move the metal belt to the natural waist instead of wrapping the thigh roots.
  const beltRoot=actor.fitRefs.belt.parent,oldBelt=hideLegacy(beltRoot,'legacy-low-belt');
  const center=actor.dimsRef.hipIdle+.09,height=.095;
  const beltSurface=(u,a,inset=0)=>{
-  const front=Math.max(0,Math.cos(a)),y=center+(u-.5)*height-.012*Math.pow(front,6)*(1-u),[rx,rz]=actor.profileAt(y);
-  return new THREE.Vector3((rx+.014-inset)*Math.sin(a),y,(rz+.014-inset)*Math.cos(a));
+  const front=Math.max(0,Math.cos(a)),y=center+(u-.5)*height-(distinct&&!fire?.026:.012)*Math.pow(front,6)*(1-u)+(distinct&&!fire?.011*Math.sin(a):0),[rx,rz]=actor.profileAt(y);
+  const extra=distinct?.033*(1-u):0,back=distinct?.066*(1-u)*Math.max(0,-Math.cos(a)):0;
+  return new THREE.Vector3((rx+.014+extra-inset)*Math.sin(a),y,(rz+.014+extra*.45+back-inset)*Math.cos(a));
  };
  const belt=metal(beltRoot,sleeve((u,a)=>beltSurface(u,a),(u,a)=>beltSurface(u,a,.006),{rows:12,sign:-1}),main,'solid-raised-waist-belt');
  for(const u of [0,1])line(beltRoot,Array.from({length:97},(_,i)=>beltSurface(u,i/96*TAU)),edge,'belt-solid-rim',.0024);
- const buckleSurface=(u,v)=>{const a=(v-.5)*.53,q=beltSurface(.10+u*.8,a);q.z+=.005+.005*Math.sin(Math.PI*u)*Math.sin(Math.PI*v);return q;};
+ const buckleSurface=(u,v)=>{const width=distinct?(fire?.90*(.50+.50*Math.sin(Math.PI*u/2)):.70*(.32+.68*Math.sin(Math.PI*u))):.53,a=(v-.5)*width+(distinct&&!fire?.14:0),q=beltSurface(.10+u*.8,a);q.z+=.005+.005*Math.sin(Math.PI*u)*Math.sin(Math.PI*v);return q;};
  const buckle=metal(beltRoot,closedShell(buckleSurface,-1,.004,16,24),edge,'belt-raised-buckle');
  const jewel=oldBelt.children.find(c=>actor.cladParts.some(p=>p.gems.includes(c)));
  if(jewel){beltRoot.add(jewel);jewel.position.set(0,center,actor.profileAt(center)[1]+.031);}
  // Move the attached hip leaves with the belt so the old dropped hem does not
  // continue to shorten the legs. Their existing thigh-driven hinges stay active.
  const rise=.105;for(const leaf of actor.skirtLeaves)leaf.g.position.y+=rise;
+ if(distinct){
+  // Replace the old hanging diamond belt leaves with short curved hip flanges.
+  for(const leaf of actor.skirtLeaves)hideLegacy(leaf.g,'legacy-hanging-diamond');
+  for(const sign of [-1,1]){
+   const hipSurface=(u,v)=>{const a=sign*(.85+v*.95),q=beltSurface(0,a);q.y-=u*(fire?.050:.075)*(fire?1:Math.sin(Math.PI*v));q.x*=1+u*.12;q.z*=1+u*.12;return q;};
+   metal(beltRoot,closedShell(hipSurface,-sign,.005,14,24),main,fire?'hearth-curved-hip-flange':'crescent-pointed-hip-flange');
+  }
+ }
  actor.fitRefs.belt.position.set(actor.profileAt(center)[0]+.011,center,0);actor.fitRefs.belt.userData.waistBelt=true;
  const oldPose=actor.setPose.bind(actor);
  actor.setPose=p=>{oldPose(p);for(const [side,r] of Object.entries(records)){
