@@ -513,7 +513,7 @@ function fitMetrics(host,p){
     return Math.hypot(pt.x-(a.x+ab.x*u),pt.y-(a.y+ab.y*u),pt.z-(a.z+ab.z*u));
   };
   if(host.fitRefs.chest){const pt=localOf(host.fitRefs.chest);M.chest=pt.z-at(pt.y)[1];}
-  if(host.fitRefs.belt){const pt=localOf(host.fitRefs.belt);M.belt=pt.x-(host.dimsRef.hipHalf+host.limbs.leftLeg.radius(.12));} // 腰带侧向贴髋净空
+  if(host.fitRefs.belt){const pt=localOf(host.fitRefs.belt);M.belt=pt.x-(host.fitRefs.belt.userData.waistBelt?host.profileAt(host.fitRefs.belt.position.y)[0]:host.dimsRef.hipHalf+host.limbs.leftLeg.radius(.12));} // 腰带按实际腰部或旧髋部剖面采样
   for(const lf of host.fitRefs.leaves){
     // 骨轴最近点 → 叶内面平面的垂直净空（负=搭盖/交叠区，搭盖合法；正=悬空间隙）
     const pt=localOf(lf.ref);

@@ -56,8 +56,23 @@ S1E2《焰阶宫·盾与暗链》于2026-10-19获得用户“效果好了非常�
 `await applyMetalClad(actor,{url,environment:target.texture})` 为宫殿圣衣启用金属反射、
 生成刻纹和曲面甲片，排除皮肤、披风、宝石与伤痕。先 `applyPalaceClad()` 再应用，
 素材 URL 由内容仓库传入。`refinePalaceLimbs(actor)` 可选调整四肢连续轮廓，保留 IK。
-二者都不自动修改所有角色的默认外观；R20 用户审美反馈待收集。
+二者都不自动修改所有角色的默认外观。R20随后收到肩甲薄板和盾背缺面反馈，
+后续曲壳及金属手套修订见下；原材质接入不代表所有部位都已获认可。
 
 `createCombatLight(scene,{detailed:true})` 启用 `impact-particles.js` 的实例化拖尾火星、
 柔边冲击波和低透明烟尘，按命中绝对时间求值。场景 `navigationObstacles` 登记真实
 box 实体，供 `lib/craft3d/stage-clearance.js` 做采样通行检查。范围及反例见单集 R20。
+
+## R21—R23 可选装备形体
+
+- `sculpted-clad.js`：`applyPalaceClad()` 默认调用曲面肩壳和封闭盾背；传
+  `{sculpted:false}` 可保留旧片状肩甲。肩甲已获用户认可。
+- `gauntlet-clad.js` / `applyPalaceGauntlets(actor)`：在宫殿饰甲后、PBR转换前调用，
+  连续前臂壳、手背甲及随原指骨的金属指节片。保留盾/武器挂点，护臂已获认可。
+- `lower-clad.js` / `applyPalaceLowerClad(actor)`：同样在PBR转换前显式调用；
+  本例顺序为宫殿饰甲→护臂→腿套/腰带→金属转换→可选人体轮廓细化。
+  只用于阿鏊、夜刈：腿套独立跟旧膝踝轴，踝靴跟原脚；不改足底与骨长。
+  腰带按腰围抬高并同步裙甲挂点。`actor.lowerClad`提供壳体与位置供检查，
+  旧默认角色不受影响。R23腿套及腰带外观待用户评价。
+
+版本对照、真实剧情姿势和验证范围见S1E2各轮 `storyboard/palace_r21…r23/REVIEW.md`。
