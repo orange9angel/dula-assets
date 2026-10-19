@@ -94,4 +94,21 @@ box 实体，供 `lib/craft3d/stage-clearance.js` 做采样通行检查。范围
 R24检查包含真实腿/臀/靴与四个墩座实体，历史70个导航实体检查不含这四件。
 外观及范围见S1E2 `storyboard/palace_r24/REVIEW.md`；R24仍待用户美术评价。
 
-版本对照、真实剧情姿势和验证范围见S1E2各轮 `storyboard/palace_r21…r23/REVIEW.md`。
+## R25 可选上臂、头像和金属层次
+
+在R24装备与金属转换后显式应用，不修改其他剧集的默认角色：
+
+- `palace-arms.js` / `applyPalaceArms(actor)`：旧肩球隐藏，以同一连续臂曲面
+  连接肩根和肘；`applySingleShoulders(actor)`在成长更新后维持单层肩壳。
+- `palace-portrait.js` / `applyPalacePortrait(actor)`：沿用头面几何，改眼眉绘制及
+  发束，仍消费视线、眨眼、fear/focus/browAsym及原音频口型；保存 `actor.palacePortrait`。
+  侧发与后脑使用不同发际边界，不以覆盖双眉双耳来增加发量。
+- `ornament-metal.js`：`createRegalMetalEnvironment(renderer)` 返回PMREM target；
+  `applyOrnamentMetal(actor,target.texture)`在 `applyMetalClad` 之后调用。
+  浓金/紫黑大面、不同刻纹和粗糙度变化共同参与；原生成图只作弱微凹凸。
+- `makeFootClearance(actor,solids,{anatomicalKnees:true})`联合脚向、膝极向及站距，
+  不再让旧避障膝极与鞋方向独立偏转。适用本宫低位工作姿势，非通用人体约束。
+
+验证和待审范围见S1E2 `storyboard/palace_r25/REVIEW.md`；技术检查不能代替用户外观及表演认可。
+
+版本对照、真实剧情姿势和验证范围见S1E2各轮审查目录。
