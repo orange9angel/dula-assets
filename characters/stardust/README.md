@@ -132,3 +132,17 @@ R24检查包含真实腿/臀/靴与四个墩座实体，历史70个导航实体�
   烟、火口光和火星，固定岩体投影。
 
 本集R26的外观、动作范围和数值证据见 `storyboard/palace_r26/REVIEW.md`；等待用户复看。
+
+## R27 可选柔和头像、角色轮廓与壁火
+
+- `applySoftPortrait(actor)` 在 `applyShadedPortrait` 后使用，保留表情、视线与口型，
+  以较软的形体明暗、小鼻口笔画和耳内结构替换硬脸影。阿鏊为短乱发，夜刈为长侧分；
+  `softPortrait.update(t)` 驱动小幅发束摆动。发束使用朝外三角面，侧后脑也有连续体积。
+- 胸肩、护腕、护腿构建器增加 `signature:true`：圆宽/窄斜两套形状沿用原关节和挂点。
+  默认关闭，旧剧集无需改变。尺寸改变后必须重测实际鞋面与场景净空。
+- `pose-rig` 可消费 `actor.palaceGait`，脚位补偿根部侧摆，零下沉坐姿平滑恢复站宽。
+  本宫有限步计划在剧集 `palace_locomotion.js`，不覆盖共享步态默认值。
+- `scenes/stardust/palace-torchlight.js` 显式接入暗殿四处壁火和点光照明，门框前面与
+  外墙错开6厘米。火焰、光强和阴影均由绝对时间驱动；后墙保持不透明。
+
+R27外观待用户复看，数值与视觉证据见剧集 `storyboard/palace_r27/REVIEW.md`。

@@ -13,7 +13,7 @@ function line(parent,points,color,name,r=.0013){
 
 /** Fitted armor uses the existing hand frame and finger bones. The shield and
  * weapons retain their original forearm rigs and contact coordinates. */
-export function applyPalaceGauntlets(actor,{distinct=false}={}){
+export function applyPalaceGauntlets(actor,{distinct=false,signature=false}={}){
  const fire=actor.palaceKind==='aoao',main=fire?'#d9b16b':'#8490b1',edge=fire?'#f1d69b':'#d0dce9';
  const records={};
  for(const old of actor.palaceFins??[])old.removeFromParent();actor.palaceFins=[];
@@ -25,10 +25,10 @@ export function applyPalaceGauntlets(actor,{distinct=false}={}){
   const root=new THREE.Group();root.name='articulated-gauntlet-'+side;hand.add(root);
   const forearm=new THREE.Group();root.add(forearm);
   const foreSurface=(u,v)=>{
-   const a=-.88+v*(Math.PI+1.76),r=mix(.057,.0255,u)+.006*Math.sin(Math.PI*u);
+   const a=-.88+v*(Math.PI+1.76),r=(mix(.057,.0255,u)+.006*Math.sin(Math.PI*u))*(signature?(fire?1+.15*(1-u):.94):1);
    const cuff=.0025*Math.exp(-Math.pow((u-.95)/.06,2));
    const blade=distinct&&!fire?.016*Math.pow(Math.max(0,Math.sin(a)),10)*Math.sin(Math.PI*u):0;
-   const flare=distinct&&!fire?.035*(1-u)**5*Math.pow(Math.max(0,Math.sin(a)),6):0;
+   const flare=distinct&&!fire?(signature?.065:.035)*(1-u)**5*Math.pow(Math.max(0,Math.sin(a)),6):0;
    return new THREE.Vector3((-.20*(1-u)-flare)/hs,(r+cuff)*Math.cos(a)/hs,-s*(r*(distinct&&!fire?.78:.88)+cuff+blade)*Math.sin(a)/hs);
   };
   const bracer=metal(forearm,closedShell(foreSurface,s,.003/hs,28,36),main,'gauntlet-'+side+'-forearm');
@@ -50,11 +50,13 @@ export function applyPalaceGauntlets(actor,{distinct=false}={}){
   }
   // Palm +X = fingers, sign*Z = palm. The dorsal cap therefore faces -sign*Z.
   const palmSurface=(u,v)=>{
-   const a=-.12+v*(Math.PI+.24),w=mix(.024,.034,u)*(1-.07*Math.pow(u,5));
+   const a=-.12+v*(Math.PI+.24),w=mix(.024,.034,u)*(1-.07*Math.pow(u,5))*(signature?(fire?1.12:1-.18*u):1);
    const h=.0215+(distinct&&!fire?.012:.0035)*Math.sin(Math.PI*u);
    return new THREE.Vector3(-.010+.067*u,w*Math.cos(a),-s*h*Math.sin(a));
   };
   const palm=metal(root,closedShell(palmSurface,s,.0023,22,28),edge,'gauntlet-'+side+'-handback');
+  if(signature&&fire)for(const u of [.40,.62,.83])line(root,Array.from({length:22},(_,i)=>palmSurface(u,i/21).add(new THREE.Vector3(0,0,-s*.001))),main,'rounded-knuckle-bridge',.0014);
+  if(signature&&!fire)for(const v of [.25,.75])line(forearm,Array.from({length:28},(_,i)=>foreSurface(.08+i/27*.83,v+(i/27)*(.5-v)*.75)),edge,'blade-gauntlet-chevron',.0018/hs);
   if(distinct&&fire){
    const crest=metal(root,new THREE.SphereGeometry(.012,24,16),main,'hearth-gauntlet-round-boss');crest.scale.set(1,1,.32);crest.position.set(.028,0,-s*.026);
   }

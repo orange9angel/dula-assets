@@ -33,7 +33,7 @@ function hideLegacy(parent,name){
 
 // Opt-in palace equipment. Existing joints, foot contacts and upper-body armor
 // remain owned by the original rig. New calf rigs avoid legacy XY rescaling.
-export function applyPalaceLowerClad(actor,{distinct=false}={}){
+export function applyPalaceLowerClad(actor,{distinct=false,signature=false}={}){
  const fire=actor.palaceKind==='aoao',main=fire?'#d9ab63':'#7c89a7',edge=fire?'#f5d898':'#c2d0e3',dark=fire?'#9d6a34':'#454e6b';
  const records={},length=fire?.42:.49,k=fire?1:.81;
  for(const side of ['left','right']){
@@ -46,9 +46,9 @@ export function applyPalaceLowerClad(actor,{distinct=false}={}){
    return .037*k;
   };
   const surface=(u,a,inset=0)=>{
-   const front=Math.max(0,Math.cos(a)),top=.044-(distinct?(fire?.078:.105):.068)*Math.pow(front,distinct&&!fire?12:4),z=mix(top,length-.012,u);
+   const front=Math.max(0,Math.cos(a)),top=.044-(signature?(fire?.067:.128):distinct?(fire?.078:.105):.068)*Math.pow(front,distinct&&!fire?12:4),z=mix(top,length-.012,u);
    const r=radius(Math.max(0,z/length))+.011-inset,crest=(distinct&&!fire?.013:.003)*Math.pow(front,12)*Math.sin(Math.PI*u);
-   return new THREE.Vector3(r*Math.sin(a),(r*1.08+crest)*Math.cos(a),z);
+   return new THREE.Vector3(r*Math.sin(a)*(signature?(fire?1+.10*Math.sin(Math.PI*u):1-.07*Math.sin(Math.PI*u)):1),(r*1.08+crest)*Math.cos(a),z);
   };
   const shell=metal(rig,sleeve((u,a)=>surface(u,a),(u,a)=>surface(u,a,.0045)),main,'greave-'+side+'-sleeve');
   // The raised front lip forms the knee cup; the rear lip is cut lower for flexion.
@@ -71,8 +71,8 @@ export function applyPalaceLowerClad(actor,{distinct=false}={}){
   const bootSurface=(u,v)=>{
    const z=mix(rows[0][0],rows.at(-1)[0],u);let w,top;
    for(let i=1;i<rows.length;i++)if(z<=rows[i][0]+1e-8){const t=(z-rows[i-1][0])/(rows[i][0]-rows[i-1][0]);w=mix(rows[i-1][1],rows[i][1],t);top=mix(rows[i-1][2],rows[i][2],t);break;}
-   const a=mix(-Math.PI/2,Math.PI/2,v),nose=distinct&&!fire?.027*Math.max(0,(z-.06)/.092)**2:0;
-   return new THREE.Vector3(w*Math.sin(a)*ss,(-.060+(top+.060+(distinct&&!fire?.008*Math.sin(Math.PI*u):0))*Math.cos(a))*ss,(z+nose)*ss);
+   const a=mix(-Math.PI/2,Math.PI/2,v),nose=distinct&&!fire?(signature?.042:.027)*Math.max(0,(z-.06)/.092)**2:0;
+   return new THREE.Vector3(w*Math.sin(a)*ss*(signature?(fire?1.06:1-.24*Math.max(0,(u-.6)/.4)):1),(-.060+(top+.060+(distinct&&!fire?.008*Math.sin(Math.PI*u):0))*Math.cos(a))*ss,(z+nose)*ss);
   };
   const instep=metal(boot,closedShell(bootSurface,1,.003,48,32),main,'boot-'+side+'-instep');
   // The ankle collar belongs to the foot, overlapping the calf sleeve as a joint.

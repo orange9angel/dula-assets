@@ -7,7 +7,7 @@ function line(root,p,c,name,r=.002){return metal(root,new THREE.TubeGeometry(new
 // A continuous front/back cuirass with a neck opening and two actual armholes.
 // Boundary edges of the cut surface are sealed to the inner wall, including the
 // armholes. The shoulder bridges continue under the animated outer pauldrons.
-export function applyPalaceCuirass(actor,{integratedShoulders=false}={}){
+export function applyPalaceCuirass(actor,{integratedShoulders=false,signature=false}={}){
  const fire=actor.palaceKind==='aoao',d=actor.dimsRef,cy=d.chestY,shoulder=d.shoulderY;
  const root=actor.cladParts.find(p=>p.ord===1).groups[0],old=new THREE.Group();old.name='legacy-chest-plates';
  for(const c of [...root.children])if(c.isMesh||c.isGroup)old.add(c);root.add(old);old.visible=false;
@@ -18,11 +18,14 @@ export function applyPalaceCuirass(actor,{integratedShoulders=false}={}){
   [[bottom,fire?.139:.125,fire?.107:.101],[cy-.08,fire?.140:.126,fire?.112:.102],[cy+.045,fire?.180:.158,fire?.126:.116],[shoulder-.015,fire?.164:.148,.106],[shoulder+.029,fire?.161:.146,.089],[top,.064,.061]];
  const profile=y=>{for(let i=1;i<levels.length;i++)if(y<=levels[i][0]){const q=smooth((y-levels[i-1][0])/(levels[i][0]-levels[i-1][0]));return [mix(levels[i-1][1],levels[i][1],q),mix(levels[i-1][2],levels[i][2],q)];}return levels.at(-1).slice(1);};
  const surface=(u,a,inset=0)=>{
-  const y=mix(bottom,top,u),[rx,rz]=profile(y),front=Math.max(0,Math.cos(a)),x=(rx-inset)*Math.sin(a)*(fire?1:1-.08*Math.sin(a)*Math.sin(Math.PI*u));
+  const y=mix(bottom,top,u),[rx,rz]=profile(y),front=Math.max(0,Math.cos(a));
+  const upper=smooth((y-shoulder+.10)/.09),outer=smooth((Math.abs(Math.sin(a))-.38)/.56);
+  const x=(rx-inset)*Math.sin(a)*(fire?1:1-.08*Math.sin(a)*Math.sin(Math.PI*u))*(signature?1+upper*outer*(fire?.075:-.10):1);
   const pec=(fire?.026:.014)*Math.exp(-Math.pow((y-cy-.045)/.085,2))*front**3*(fire?(.65+.35*Math.exp(-Math.pow((Math.abs(x)-.075)/.05,2))):1);
   const keel=(fire?.003:.010)*Math.exp(-Math.pow((a%(Math.PI*2))/.20,2))*Math.sin(Math.PI*u)**2;
   const wing=integratedShoulders?smooth((Math.abs(x)-.11)/.16)*smooth((y-shoulder+.10)/.08):0;
-  return new THREE.Vector3(x,y+wing*(fire?.075:x<0?.135:.075),(rz-inset)*Math.cos(a)+pec+keel);
+  const crest=signature?(fire?.012:.027)*front**(fire?4:16)*Math.sin(Math.PI*u)**2:0;
+  return new THREE.Vector3(x,y+wing*(signature?(fire?.030:x<0?.180:.145):(fire?.075:x<0?.135:.075)),(rz-inset)*Math.cos(a)+pec+keel+crest);
  };
  for(let l=0;l<2;l++)for(let i=0;i<=rows;i++)for(let j=0;j<sides;j++){const p=surface(i/rows,j/sides*Math.PI*2,l*.006);positions.push(p.x,p.y,p.z);uv.push(j/sides,i/rows);}
  const edges=new Map(),tri=(a,b,c)=>{indices.push(a,b,c);for(const [x,y] of [[a,b],[b,c],[c,a]]){const key=x<y?x+':'+y:y+':'+x;const old=edges.get(key);if(old)old.count++;else edges.set(key,{a:x,b:y,count:1});}};

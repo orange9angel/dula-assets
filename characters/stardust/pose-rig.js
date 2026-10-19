@@ -17,11 +17,11 @@ export function buildPose(actor,s,t,d){
     fist:s.fist,open:s.open,point:s.point,blink:s.blink,capeLift:s.capeLift??0,crouch:s.sit?.drop??0};
   let locomotion=null;
   if(s.walk||s.turn){
-    const G=!s.turn&&s.walk.run?RUN_GAIT:WALK_GAIT;
-    const gait=s.turn?WALK_GAIT.turningFeet(s.turn,s.rootX,s.rootZ,s.yaw,half,d.footY)
+    const G=actor.palaceGait??(!s.turn&&s.walk.run?RUN_GAIT:WALK_GAIT);
+    const gait=s.turn?G.turningFeet(s.turn,s.rootX,s.rootZ,s.yaw,half,d.footY)
       :G.walkingFeet({...s.walk,facingYaw:s.walk.facingYaw??s.yaw},s.rootX,s.rootZ,s.yaw,half,d.footY,(d.legA+d.legB)*.75);
     // Foot roll resolves to flat soles at both finite-path endpoints.
-    const settle=s.walk?ease(s.walk.a/.06)*ease((1-s.walk.a)/.10):1;
+    const settle=actor.palaceGait?1:s.walk?ease(s.walk.a/.06)*ease((1-s.walk.a)/.10):1;
     for(const side of ['left','right']){
       const f=gait[side],oldPitch=f.pitch;
       f.pitch*=settle;
@@ -29,6 +29,7 @@ export function buildPose(actor,s,t,d){
     }
     const heading=s.turn?s.yaw:(s.walk.facingYaw??s.yaw);
     p.rootX=s.rootX+Math.cos(heading)*gait.sway;p.rootZ=s.rootZ-Math.sin(heading)*gait.sway;
+    if(actor.palaceGait)for(const side of ['left','right']){gait[side].x-=Math.cos(s.yaw-heading)*gait.sway;gait[side].z-=Math.sin(s.yaw-heading)*gait.sway;}
     if(actor.footClearance)for(const side of ['left','right']){const f=gait[side],fit=actor.footClearance.adjust(f,side,p,f.pitch,f.yaw);f.yaw=fit.yaw;f.kneePole=fit.pole;}
     hipY=hipIdle+st+s.bob-(s.sit?.drop??0)+gait.hipDelta-(s.tuck??0)*.1;
     for(const [side,sign] of [['left',-1],['right',1]]){
@@ -76,7 +77,8 @@ export function buildPose(actor,s,t,d){
     const shift=V(Math.sin(p.yaw)*retreat,0,-Math.cos(p.yaw)*retreat);
     p.pelvisOffset=shift;
     for(const [side,sign] of [['left',-1],['right',1]]){
-      const end=ends[side]=planted(s.sit&&!actor.footClearance?V(sign*.13,d.footY,s.sit.feet):V(sign*half,d.footY+tuck,-.4*tuck));
+      const sitHalf=actor.palaceGait&&s.sit?mix(half,.13,ease(s.sit.drop/.10)):.13;
+      const end=ends[side]=planted(s.sit&&!actor.footClearance?V(sign*sitHalf,d.footY,s.sit.feet):V(sign*half,d.footY+tuck,-.4*tuck));
       if(actor.footClearance){fits[side]=actor.footClearance.adjust(end,side,p);p[side+'FootYaw']=fits[side].yaw;}
       hipY=Math.min(hipY,end.y+Math.sqrt(Math.max(.01,(d.legA+d.legB-.003)**2-((end.x-sign*d.hipHalf)**2+end.z*end.z))));
     }
