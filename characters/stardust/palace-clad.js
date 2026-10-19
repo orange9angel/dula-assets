@@ -1,9 +1,10 @@
 import * as THREE from 'three';
+import {sculptPalaceShoulders,closePalaceShield} from './sculpted-clad.js';
 const basic=c=>new THREE.MeshBasicMaterial({color:c});
 const toon=c=>new THREE.MeshToonMaterial({color:c});
 function tube(parent,pts,color,r=.003){const curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p)));const m=new THREE.Mesh(new THREE.TubeGeometry(curve,Math.max(8,pts.length*4),r,5,false),basic(color));m.userData.palaceMetal=true;parent.add(m);return m;}
 function plate(parent,points,z,color,depth=.008){const shape=new THREE.Shape();points.forEach(([x,y],i)=>i?shape.lineTo(x,y):shape.moveTo(x,y));shape.closePath();const m=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:.002,bevelThickness:.002,bevelSegments:2}),toon(color));m.position.z=z;m.castShadow=true;m.userData.palaceMetal=true;parent.add(m);return m;}
-export function applyPalaceClad(actor,kind){
+export function applyPalaceClad(actor,kind,{sculpted=true}={}){
  const fire=kind==='aoao',gold=fire?'#ffe4a0':'#d7d7ef',dark=fire?'#633124':'#201b34',main=fire?'#c8873c':'#4b4169';
  const chest=actor.cladParts.find(p=>p.ord===1).groups[0];
  const cy=fire?1.24:1.34;
@@ -71,6 +72,7 @@ export function applyPalaceClad(actor,kind){
   plate(head,pts,.095,main,.008);tube(head,pts.slice(1).map(([x,y])=>[x,y,.11]),gold,.003);
  }
  actor.palaceKind=kind;
+ if(sculpted){sculptPalaceShoulders(actor,fire);if(fire)closePalaceShield(actor);}
  if(!fire){
   const ratchet=new THREE.Group();actor.rigs.right.rig.add(ratchet);ratchet.position.set(.045,.035,-.08);actor.palaceRatchet=ratchet;
   const ring=new THREE.Mesh(new THREE.TorusGeometry(.039,.008,6,24),toon('#aaa4c5'));ratchet.add(ring);

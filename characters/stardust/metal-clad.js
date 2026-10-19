@@ -50,7 +50,7 @@ function curvePlate(mesh){
  }
 }
 
-export async function applyMetalClad(actor,{url,environment}){
+export async function applyMetalClad(actor,{url,environment,cleanMetal=false}){
  const map=await new THREE.TextureLoader().loadAsync(url);map.colorSpace=THREE.SRGBColorSpace;map.wrapS=map.wrapT=THREE.MirroredRepeatWrapping;map.anisotropy=8;
  const data=map.clone();data.colorSpace=THREE.NoColorSpace;data.needsUpdate=true;
  const roots=new Set(actor.cladParts.flatMap(p=>p.groups));
@@ -67,11 +67,14 @@ export async function applyMetalClad(actor,{url,environment}){
   if(m.geometry.type==='PlaneGeometry'||m===actor.cape?.m)continue;
   const col=old.color?.clone();if(!col)continue;
   const hsl=col.getHSL({}),trim=hsl.l>.43||m.geometry.type==='TubeGeometry'||m.geometry.type==='TorusGeometry';
-  const cacheKey=old.uuid+':'+trim;
+  const polished=!!m.userData.polishedArmor;
+  const cacheKey=old.uuid+':'+trim+':'+polished;
   if(!materials.has(cacheKey)){
    if(!fire&&hsl.l<.08)col.set('#34314d');
-   const mat=new THREE.MeshPhysicalMaterial({color:col,metalness:1,roughness:trim?.23:.35,
-    map:trim?null:map,bumpMap:trim?null:data,bumpScale:.00016,
+   // In the clean finish the generated engraving modulates surface relief only:
+   // its gray albedo used at full strength reads as dirty sandpaper in close-up.
+   const mat=new THREE.MeshPhysicalMaterial({color:col,metalness:1,roughness:polished?.22:trim?.23:cleanMetal?.28:.35,
+    map:trim||polished||cleanMetal?null:map,bumpMap:trim?null:data,bumpScale:polished?.000025:cleanMetal?.000045:.00016,
     envMap:environment,envMapIntensity:1.35,clearcoat:.15,clearcoatRoughness:.24,side:old.side});
    mat.name='palace-metal-'+(trim?'polished-edge':'engraved-plate');materials.set(cacheKey,mat);
   }
