@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 // A closed, double-curved metal shell. The inner wall has its own outward
 // winding; FrontSide is sufficient from both outside and the open underside.
-function closedShell(surface,sign,thickness=.007,nu=32,nv=32){
+export function closedShell(surface,sign,thickness=.007,nu=32,nv=32){
  const p=[],uv=[],ix=[],N=(nu+1)*(nv+1),eps=.0001;
  for(let layer=0;layer<2;layer++)for(let i=0;i<=nu;i++)for(let j=0;j<=nv;j++){
   const u=i/nu,v=j/nv,q=surface(u,v);

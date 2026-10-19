@@ -301,29 +301,30 @@ function buildOrnateClad(host,cfg){
 
   // 4 臂铠（贴臂分段板）：肘甲盖+肘翼 + 前臂半管板（分段环纹贴板面）；
   {
-    host.rigs={};
+    host.rigs={};host.forearmShells={};
     for(const [side,sign] of [['left',-1],['right',1]]){
       const r=host.rigs[side]=forearmRig(host);
       const p=part(1+layers+1),g=reg(p,r.rig,.062);
+      const shell=host.forearmShells[side]=new THREE.Group();shell.name='legacy-forearm-shell';g.add(shell);
       const rr=.050*k;
       // 肘甲盖贴肘点 + 肘部翼状突起
       const elbow=new THREE.Mesh(new THREE.SphereGeometry(.046*k,16,12,0,TAU,0,Math.PI/2),pri);
-      elbow.rotation.x=-Math.PI/2;elbow.position.z=-.012;g.add(elbow);
+      elbow.rotation.x=-Math.PI/2;elbow.position.z=-.012;shell.add(elbow);
       const ewing=new THREE.Mesh(new THREE.ConeGeometry(.014,.05,6),trimM);
-      ewing.position.set(sign*.040,.005,-.028);ewing.rotation.z=sign*1.9;g.add(ewing);
+      ewing.position.set(sign*.040,.005,-.028);ewing.rotation.z=sign*1.9;shell.add(ewing);
       // 前臂半管贴板（弧面贴前臂**外侧**，不悬空——R15 监制修正：手和脚不一样，
       // 腿甲胫前板在正前（R7），臂甲护板在手臂外侧，与盾/花窗盘/肘翼同侧设计语言）
       // rig 局部 ±x=臂外侧（直筒臂时 rig 只绕 x 轴旋转，x 直通；left 外侧=-x，right=+x）；
       // 弧心放柱局部 θ_c=sign·π/2（rotation.x=π/2 后 (r·sinθ_c,-r·cosθ_c)=(sign·r,0)=外侧）。
       // 历史：θ=0 在臂后侧（R2.6 装反）→ R8 翻到 +y 前侧（脚思路误套手）→ R15 落定外侧。
       const plate=new THREE.Mesh(new THREE.CylinderGeometry(rr,rr+.006*k,.17,16,1,false,sign*Math.PI/2-.75,1.5),pri);
-      plate.rotation.x=Math.PI/2;plate.position.z=.078;plate.castShadow=true;g.add(plate);
+      plate.rotation.x=Math.PI/2;plate.position.z=.078;plate.castShadow=true;shell.add(plate);
       // 分段环纹（贴板面弧条，非悬空环；环弧随板面转到外侧：弧心目标角 右 0°/左 180°）
       for(const z of [.035,.125]){
         const band=new THREE.Mesh(new THREE.TorusGeometry(rr+.004,.0035,6,20,Math.PI*1.15),edgeM);
-        band.position.z=z;band.rotation.z=-Math.PI*.575+(sign<0?Math.PI:0);g.add(band);
+        band.position.z=z;band.rotation.z=-Math.PI*.575+(sign<0?Math.PI:0);shell.add(band);
       }
-      seamTorus(p,g,rr+.003,.0028,[0,0,.08]);
+      seamTorus(p,shell,rr+.003,.0028,[0,0,.08]);
       // 漏勺花窗盘（打孔阵保留：盘贴臂板+孔阵+银丝框）
       if(cfg.strainer){
         const unit=new THREE.Group();g.add(unit);
